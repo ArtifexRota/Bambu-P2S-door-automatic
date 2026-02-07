@@ -1,0 +1,26 @@
+{
+  "printer": {
+    "ip": "192.168.100.146",
+    "accessCode": "e245c3fb",
+    "serial": "22E8BJ5A3000293",
+    "targetOpenTemp": 80
+  },
+  "serial": {
+    "port": "COM100",
+    "baudRate": 115200
+  },
+  "servo": {
+    "open": 0,
+    "close": 175
+  },
+  "bot": {
+    "clickDelayMs": 1500,
+    "closeDelayMs": 20000,
+    "posTaskbar": "344, 1053",
+    "posPreview": "247, 46",
+    "posPrint": "1765, 48",
+    "posSend": "1237, 811",
+    "posBackground": "1237, 1053"
+  },
+  "language": "de"
+}
