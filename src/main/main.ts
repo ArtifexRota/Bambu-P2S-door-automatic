@@ -41,6 +41,7 @@ interface PrinterData {
 let mainWindow: BrowserWindow | null = null;
 let port: SerialPort | null = null;
 let parser: ReadlineParser | null = null;
+let currentTranslations: any = {};
 
 // --- KONFIGURATION LADEN ---
 // Da wir in src/main/main.ts sind, müssen wir zwei Ebenen hoch zur config.json
@@ -101,6 +102,16 @@ app.whenReady().then(() => {
   createWindow();
   connectSerial();
   connectMQTT();
+});
+
+ipcMain.on('get-initial-config', (event) => {
+  // Wir schicken die Config einfach nochmal los
+  if (mainWindow) {
+    mainWindow.webContents.send('init-app', { 
+      config: config, 
+      i18n: currentTranslations 
+    });
+  }
 });
 
 app.on("window-all-closed", () => {

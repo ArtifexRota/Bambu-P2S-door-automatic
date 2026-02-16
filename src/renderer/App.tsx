@@ -16,15 +16,25 @@ const App: React.FC = () => {
   });
   const [config, setConfig] = useState<any>(null);
 
-  useEffect(() => {
-    if (window.electronAPI) {
-      window.electronAPI.onInitConfigs((data: any) => {
-        // WICHTIG: Prüfe, ob du 'data' oder 'data.config' setzen musst,
-        // je nachdem wie deine main.ts das Objekt sendet.
-        setConfig(data.config || data);
-      });
-    }
-  }, []);
+useEffect(() => {
+  // Sicherheitscheck: Gibt es die Bridge?
+  if (window.electronAPI) {
+    
+    // 1. ZUHÖREN: Wenn Daten kommen, speichern wir sie
+    window.electronAPI.onInitConfigs((data: any) => {
+      console.log("Daten empfangen:", data); // Zur Kontrolle in der Konsole
+      setConfig(data.config || data); 
+    });
+
+    window.electronAPI.onPrinterUpdate((data: any) => {
+      setPrinterData(data);
+    });
+
+    // 2. RUFEN: "Hallo Main-Prozess, schick mir die Daten bitte jetzt!"
+    // ---> DIESE ZEILE IST NEU UND WICHTIG: <---
+    window.electronAPI.requestConfig(); 
+  }
+}, []);
 
   useEffect(() => {
     // Auf Daten vom Main-Prozess hören

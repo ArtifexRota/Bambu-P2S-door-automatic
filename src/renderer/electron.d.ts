@@ -4,7 +4,9 @@ export interface IElectronAPI {
   startBot: (data: any) => void;
   onPrinterUpdate: (callback: (data: any) => void) => void;
   onInitConfigs: (callback: (config: any, i18n: any) => void) => void;
+requestConfig: () => void; 
 }
+
 
 declare global {
   interface Window {

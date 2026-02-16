@@ -96,6 +96,7 @@ var distExports = requireDist();
 let mainWindow = null;
 let port = null;
 let parser = null;
+let currentTranslations = {};
 const configPath = path__namespace.join(electron.app.getAppPath(), "config.json");
 let config = JSON.parse(fs__namespace.readFileSync(configPath, "utf-8"));
 const lang = config.language || "de";
@@ -144,6 +145,14 @@ electron.app.whenReady().then(() => {
   createWindow();
   connectSerial();
   connectMQTT();
+});
+electron.ipcMain.on("get-initial-config", (event) => {
+  if (mainWindow) {
+    mainWindow.webContents.send("init-app", {
+      config,
+      i18n: currentTranslations
+    });
+  }
 });
 electron.app.on("window-all-closed", () => {
   if (process.platform !== "darwin") electron.app.quit();
