@@ -1,0 +1,41 @@
+{
+  "printer": {
+    "ip": "192.168.X.X",
+    "accessCode": "",
+    "serial": ""
+  },
+  "serial": {
+    "port": "COM3",
+    "baudRate": 115200
+  },
+  "servo": {
+    "open": 0,
+    "close": 175
+  },
+  "bot": {
+    "closeDelayMs": 20000,
+    "sequence": []
+  },
+  "materials": {
+    "activeProfileId": "1",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "PLA",
+        "openTemp": 45
+      },
+      {
+        "id": "2",
+        "name": "ABS",
+        "openTemp": 80
+      },
+      {
+        "id": "3",
+        "name": "ASA",
+        "openTemp": 90
+      }
+    ]
+  },
+  "language": "de",
+  "eulaAccepted": false
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Bambi P2S Steuerung",
+  "monitor": {
+    "printer": "Drucker",
+    "temp": "Temp",
+    "spools": "Spulen"
+  },
+  "servo": {
+    "title": "ESP32 Servo Einstellungen",
+    "open": "Öffnungswinkel (°)",
+    "close": "Schließwinkel (°)",
+    "test": "Winkel testen",
+    "save": "Im ESP32 speichern"
+  },
+  "bot": {
+    "title": "Bot & Klick-Konfiguration",
+    "delay": "Verzögerung (ms)",
+    "run": "Bot Testlauf"
+  }
+}

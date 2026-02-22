@@ -1,8 +1,55 @@
 {
+  "name": "bambu-p2s-door-automatic",
+  "version": "1.0.0",
+  "description": "Automatischer Türöffner für Bambu Lab P2S",
+  "main": "dist/main/main.js",
+  "author": "Belling-Software",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:start": "electron .",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.belling.bambu-p2s",
+    "productName": "Bambu P2S Door Automatic",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "locales/**/*"
+    ],
+    "asarUnpack": [
+      "**/*.node",
+      "**/node_modules/node-key-sender/jar/**/*"
+    ],
+    "win": {
+      "target": "portable"
+    }
+  },
   "dependencies": {
     "@serialport/parser-readline": "^13.0.0",
     "mqtt": "^5.14.1",
     "node-key-sender": "^1.0.11",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-hot-toast": "^2.6.0",
     "serialport": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/mqtt": "^0.0.34",
+    "@types/node": "^25.2.1",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.3",
+    "electron": "^40.2.1",
+    "electron-builder": "^26.8.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-electron": "^0.29.0"
   }
 }
