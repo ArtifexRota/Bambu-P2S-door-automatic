@@ -55,10 +55,101 @@ let port: SerialPort | null = null;
 let parser: ReadlineParser | null = null;
 let currentTranslations: any = {};
 
-// --- KONFIGURATION LADEN ---
-const configPath = path.join(app.getAppPath(), "config.json");
-let config: Config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+// --- INTERFACES (Aktualisiert mit eulaAccepted) ---
+interface MaterialProfile {
+  id: string;
+  name: string;
+  openTemp: number;
+}
 
+interface Config {
+  printer: {
+    ip: string;
+    accessCode: string;
+    serial: string;
+  };
+  serial: { port: string; baudRate: number };
+  servo: { open: number; close: number };
+  bot: {
+    closeDelayMs: number;
+    sequence: Array<{
+      id: string;
+      name: string;
+      x: number;
+      y: number;
+      delaySeconds: number;
+    }>;
+  };
+  materials: {
+    activeProfileId: string;
+    profiles: MaterialProfile[];
+  };
+  language: string;
+  eulaAccepted: boolean;
+}
+
+// --- STANDARD KONFIGURATION (Hardcoded im Code) ---
+const defaultConfig: Config = {
+  printer: {
+    ip: "192.168.X.X",
+    accessCode: "",
+    serial: ""
+  },
+  serial: {
+    port: "COM3",
+    baudRate: 115200
+  },
+  servo: {
+    open: 0,
+    close: 175
+  },
+  bot: {
+    closeDelayMs: 20000,
+    sequence: []
+  },
+  materials: {
+    activeProfileId: "1",
+    profiles: [
+      { id: "1", name: "PLA", openTemp: 45 },
+      { id: "2", name: "ABS", openTemp: 80 },
+      { id: "3", name: "ASA", openTemp: 90 }
+    ]
+  },
+  language: "de",
+  eulaAccepted: false
+};
+
+// --- KONFIGURATION LADEN & ERSTELLEN ---
+const userDataPath = app.getPath("userData");
+const configPath = path.join(userDataPath, "config.json");
+
+// SCHRITT 1: Sicherstellen, dass der ORDNER existiert
+if (!fs.existsSync(userDataPath)) {
+  // { recursive: true } erstellt auch übergeordnete Ordner, falls nötig
+  fs.mkdirSync(userDataPath, { recursive: true });
+}
+
+let config: any; // oder dein Interface Config
+
+// SCHRITT 2: Datei laden oder erstellen
+try {
+  if (fs.existsSync(configPath)) {
+    // Datei ist da -> Laden
+    const rawData = fs.readFileSync(configPath, "utf-8");
+    config = JSON.parse(rawData);
+  } else {
+    // Datei fehlt -> Standardwerte nehmen und SPEICHERN
+    console.log("Erstelle neue config.json...");
+    config = defaultConfig;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+  }
+} catch (error) {
+  console.error("Config defekt, nutze Defaults:", error);
+  config = defaultConfig;
+}
+
+
+// (Die locales können im getAppPath bleiben, da wir sie nur lesen, nicht überschreiben)
 const lang = config.language || "de";
 const localesPath = path.join(app.getAppPath(), "locales", `${lang}.json`);
 const translations = JSON.parse(fs.readFileSync(localesPath, "utf-8"));
@@ -80,16 +171,24 @@ function createWindow(): void {
     width: 1200,
     height: 900,
     webPreferences: {
-      preload: path.join(__dirname, "../preload/preload.js"),
+      // Nutzt den absoluten Pfad zur preload.js
+      preload: path.join(app.getAppPath(), "dist", "preload", "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
 
-  const indexPath = path.join(__dirname, "../renderer/index.html");
-  if (fs.existsSync(indexPath)) {
-    mainWindow.loadFile(indexPath);
+  if (app.isPackaged) {
+    // In der Produktion: Pfad direkt ab App-Root
+    const indexPath = path.join(app.getAppPath(), "dist", "renderer", "index.html");
+    
+    if (fs.existsSync(indexPath)) {
+      mainWindow.loadFile(indexPath);
+    } else {
+      console.error("Index nicht gefunden an:", indexPath);
+    }
   } else {
+    // Im Entwicklungsmodus
     mainWindow.loadURL("http://localhost:3000");
   }
 

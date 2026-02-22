@@ -1,11 +1,11 @@
 {
   "printer": {
-    "ip": "192.168.100.146",
-    "accessCode": "e245c3fb",
-    "serial": "22E8BJ5A3000293"
+    "ip": "192.168.X.X",
+    "accessCode": "",
+    "serial": ""
   },
   "serial": {
-    "port": "COM100",
+    "port": "COM3",
     "baudRate": 115200
   },
   "servo": {
@@ -14,45 +14,8 @@
   },
   "bot": {
     "closeDelayMs": 20000,
-    "sequence": [
-      {
-        "id": "1",
-        "name": "Taskbar",
-        "x": 344,
-        "y": 1053,
-        "delaySeconds": 1.5
-      },
-      {
-        "id": "2",
-        "name": "Preview",
-        "x": 247,
-        "y": 46,
-        "delaySeconds": 1.5
-      },
-      {
-        "id": "3",
-        "name": "Print",
-        "x": 1765,
-        "y": 48,
-        "delaySeconds": 1.5
-      },
-      {
-        "id": "4",
-        "name": "Send",
-        "x": 1237,
-        "y": 811,
-        "delaySeconds": 1.5
-      },
-      {
-        "id": "5",
-        "name": "Background",
-        "x": 1237,
-        "y": 1053,
-        "delaySeconds": 1.5
-      }
-    ]
+    "sequence": []
   },
-  "language": "de",
   "materials": {
     "activeProfileId": "1",
     "profiles": [
@@ -73,5 +36,6 @@
       }
     ]
   },
-  "eulaAccepted": true
+  "language": "de",
+  "eulaAccepted": false
 }
