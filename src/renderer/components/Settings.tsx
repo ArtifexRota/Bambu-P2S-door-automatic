@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface MaterialProfile {
   id: string;
@@ -29,6 +30,7 @@ const labelStyle = {
 };
 
 const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
+  const { t } = useTranslation();
   // --- STATE: Verbindung ---
   const [ip, setIp] = useState('');
   const [accessCode, setAccessCode] = useState('');
@@ -69,7 +71,7 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
   const addProfile = () => {
     const newProfile: MaterialProfile = {
       id: Date.now().toString(),
-      name: `Neues Material`,
+      name: t("settings.materials.new_profile"),
       openTemp: 50
     };
     setProfiles([...profiles, newProfile]);
@@ -100,50 +102,50 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
 
     if (window.electronAPI && window.electronAPI.saveConfig) {
       window.electronAPI.saveConfig(updatedConfig);
-      toast.success("Einstellungen erfolgreich gespeichert!");
+      toast.success(t("settings.success"));
     }
   };
 
   return (
     <div className="card full-width" style={{ paddingBottom: '80px' }}>
-      <h2>⚙️ Systemeinstellungen</h2>
+      <h2>⚙️ {t("settings.title")}</h2>
       <p style={{ color: '#888', marginBottom: '30px' }}>
-        Konfiguriere hier die Verbindung zum Drucker, die Hardware-Ports und deine Material-Profile.
+        {t("settings.description")}
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '40px' }}>
         {/* LINKS: Verbindung */}
         <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '20px' }}>🔌 Verbindung</h3>
+          <h3 style={{ marginTop: 0, marginBottom: '20px' }}>🔌 {t("settings.connection.title")}</h3>
           
           <div style={{ marginBottom: '15px' }}>
-            <label style={labelStyle}>Drucker IP-Adresse</label>
+            <label style={labelStyle}>{t("settings.connection.ip")}</label>
             <input type="text" value={ip} onChange={e => setIp(e.target.value)} style={inputStyle} />
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <label style={labelStyle}>Access Code</label>
+            <label style={labelStyle}>{t("settings.connection.access_code")}</label>
             <input type="text" value={accessCode} onChange={e => setAccessCode(e.target.value)} style={inputStyle} />
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <label style={labelStyle}>Seriennummer</label>
+            <label style={labelStyle}>{t("settings.connection.serial")}</label>
             <input type="text" value={serialNum} onChange={e => setSerialNum(e.target.value)} style={inputStyle} />
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <label style={labelStyle}>ESP32 COM-Port</label>
+            <label style={labelStyle}>{t("settings.connection.com_port")}</label>
             <input type="text" value={comPort} onChange={e => setComPort(e.target.value)} style={inputStyle} placeholder="z.B. COM100" />
           </div>
         </div>
 
         {/* RECHTS: Hardware */}
         <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '20px' }}>⚙️ Servo Kalibrierung</h3>
+          <h3 style={{ marginTop: 0, marginBottom: '20px' }}>⚙️ {t("settings.servo.title")}</h3>
           
           <div style={{ marginBottom: '15px' }}>
-            <label style={labelStyle}>Winkel: Offen (0-180)</label>
+            <label style={labelStyle}>{t("settings.servo.open_angle")}</label>
             <input type="number" value={servoOpen} onChange={e => setServoOpen(Number(e.target.value))} style={inputStyle} />
           </div>
           <div style={{ marginBottom: '15px' }}>
-            <label style={labelStyle}>Winkel: Geschlossen (0-180)</label>
+            <label style={labelStyle}>{t("settings.servo.close_angle")}</label>
             <input type="number" value={servoClose} onChange={e => setServoClose(Number(e.target.value))} style={inputStyle} />
           </div>
           
@@ -152,13 +154,13 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
               onClick={() => window.electronAPI?.sendSerial('OPEN')}
               style={{ flex: 1, padding: '10px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer' }}
             >
-              Test Öffnen
+              {t("settings.servo.test_open")}
             </button>
             <button 
               onClick={() => window.electronAPI?.sendSerial('CLOSE')}
               style={{ flex: 1, padding: '10px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer' }}
             >
-              Test Schließen
+              {t("settings.servo.test_close")}
             </button>
           </div>
         </div>
@@ -166,7 +168,7 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
 
       {/* UNTEN: Material Profile */}
       <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '20px' }}>🧵 Material Profile (Auto-Öffnen)</h3>
+        <h3 style={{ marginTop: 0, marginBottom: '20px' }}>🧵 {t("settings.materials.title")}</h3>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           {profiles.map(profile => (
@@ -181,12 +183,12 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
               />
 
               <div style={{ flex: 1 }}>
-                <label style={labelStyle}>Material Name</label>
+                <label style={labelStyle}>{t("settings.materials.name")}</label>
                 <input type="text" value={profile.name} onChange={e => updateProfile(profile.id, 'name', e.target.value)} style={{ ...inputStyle, background: '#1e1e24' }} />
               </div>
 
               <div style={{ width: '150px' }}>
-                <label style={labelStyle}>Tür auf ab (°C)</label>
+                <label style={labelStyle}>{t("settings.materials.open_temp")}</label>
                 <input type="number" value={profile.openTemp} onChange={e => updateProfile(profile.id, 'openTemp', Number(e.target.value))} style={{ ...inputStyle, background: '#1e1e24' }} />
               </div>
 
@@ -198,7 +200,7 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
         </div>
 
         <button onClick={addProfile} style={{ marginTop: '20px', padding: '10px 20px', background: '#2196f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          + Neues Profil
+          {t("settings.materials.add")}
         </button>
       </div>
 
@@ -208,7 +210,7 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
           onClick={handleSave} 
           style={{ padding: '15px 30px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '50px', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
         >
-          💾 Alles Speichern
+          💾 {t("settings.save_all")}
         </button>
       </div>
 

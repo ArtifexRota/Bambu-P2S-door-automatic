@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from '../hooks/useTranslation';
 
 // Struktur für einen einzelnen Klick-Auftrag
 interface ClickTask {
@@ -16,6 +17,7 @@ interface BotConfigProps {
 }
 
 const BotConfig: React.FC<BotConfigProps> = ({ initialSequence = [] }) => {
+  const { t } = useTranslation();
   // Wir nutzen die Startdaten, falls vorhanden. Sonst leeres Array [].
   const [tasks, setTasks] = useState<ClickTask[]>(initialSequence);
   const [capturingId, setCapturingId] = useState<string | null>(null);
@@ -32,7 +34,7 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialSequence = [] }) => {
   const addTask = () => {
     const newTask: ClickTask = {
       id: Date.now().toString(),
-      name: `Klick ${tasks.length + 1}`,
+      name: `${t("bot.click_name")} ${tasks.length + 1}`,
       x: 0,
       y: 0,
       delaySeconds: 2 // Standardwert: 2 Sekunden
@@ -77,9 +79,9 @@ const updateTask = (id: string, field: keyof ClickTask, value: any) => {
 
   return (
     <div className="card full-width">
-      <h2>🤖 Bot Klick-Sequenz</h2>
+      <h2>🤖 {t("bot.title")}</h2>
       <p style={{ color: '#888', marginBottom: '20px' }}>
-        Lege beliebig viele Klicks an. Drücke auf "Erfassen" und bewege die Maus innerhalb von 3 Sekunden an die gewünschte Stelle auf dem Bildschirm.
+        {t("bot.description")}
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -115,11 +117,11 @@ const updateTask = (id: string, field: keyof ClickTask, value: any) => {
               disabled={capturingId !== null}
               style={{ background: capturingId === task.id ? '#e6a800' : '#4caf50', cursor: 'pointer' }}
             >
-              {capturingId === task.id ? `Warte ${countdown}s...` : '📍 Position erfassen'}
+              {capturingId === task.id ? `${t("bot.waiting")} ${countdown}s...` : `📍 ${t("bot.capture")}`}
             </button>
 
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginLeft: 'auto' }}>
-              <span>Warten (Sek):</span>
+              <span>{t("bot.delay")}:</span>
               <input 
   type="number" 
   value={task.delaySeconds} 
@@ -139,30 +141,30 @@ const updateTask = (id: string, field: keyof ClickTask, value: any) => {
 
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
         <button onClick={addTask} style={{ padding: '10px 20px', background: '#2196f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          + Neuen Klick hinzufügen
+          {t("bot.add_click")}
         </button>
 
         <button 
   onClick={() => {
     if (window.electronAPI && window.electronAPI.saveBotSequence) {
       window.electronAPI.saveBotSequence(tasks);
-      toast.success("Sequenz gespeichert!"); 
+      toast.success(t("bot.success"));
     }
   }} 
   style={{ padding: '10px 20px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
 >
-  💾 Sequenz Speichern
+  💾 {t("bot.save_sequence")}
 </button>
 <button 
           onClick={() => {
             if (window.electronAPI && window.electronAPI.startBot) {
-              toast('Bot Testlauf gestartet...', { icon: '🤖' });
+              toast(t("bot.running"), { icon: '🤖' });
               window.electronAPI.startBot();
             }
           }} 
           style={{ padding: '10px 20px', background: '#e6a800', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', marginLeft: 'auto' }}
         >
-          🎯 Sequenz testen
+          🎯 {t("bot.test_sequence")}
         </button>
       </div>
     </div>
