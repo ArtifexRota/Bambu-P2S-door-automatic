@@ -2,8 +2,7 @@
   "printer": {
     "ip": "192.168.100.146",
     "accessCode": "e245c3fb",
-    "serial": "22E8BJ5A3000293",
-    "targetOpenTemp": 80
+    "serial": "22E8BJ5A3000293"
   },
   "serial": {
     "port": "COM100",
@@ -14,13 +13,65 @@
     "close": 175
   },
   "bot": {
-    "clickDelayMs": 1500,
     "closeDelayMs": 20000,
-    "posTaskbar": "344, 1053",
-    "posPreview": "247, 46",
-    "posPrint": "1765, 48",
-    "posSend": "1237, 811",
-    "posBackground": "1237, 1053"
+    "sequence": [
+      {
+        "id": "1",
+        "name": "Taskbar",
+        "x": 344,
+        "y": 1053,
+        "delaySeconds": 1.5
+      },
+      {
+        "id": "2",
+        "name": "Preview",
+        "x": 247,
+        "y": 46,
+        "delaySeconds": 1.5
+      },
+      {
+        "id": "3",
+        "name": "Print",
+        "x": 1765,
+        "y": 48,
+        "delaySeconds": 1.5
+      },
+      {
+        "id": "4",
+        "name": "Send",
+        "x": 1237,
+        "y": 811,
+        "delaySeconds": 1.5
+      },
+      {
+        "id": "5",
+        "name": "Background",
+        "x": 1237,
+        "y": 1053,
+        "delaySeconds": 1.5
+      }
+    ]
   },
-  "language": "de"
+  "language": "de",
+  "materials": {
+    "activeProfileId": "1",
+    "profiles": [
+      {
+        "id": "1",
+        "name": "PLA",
+        "openTemp": 45
+      },
+      {
+        "id": "2",
+        "name": "ABS",
+        "openTemp": 80
+      },
+      {
+        "id": "3",
+        "name": "ASA",
+        "openTemp": 90
+      }
+    ]
+  },
+  "eulaAccepted": true
 }

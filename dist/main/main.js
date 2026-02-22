@@ -108,9 +108,9 @@ let printerData = {
   percent: 0,
   status: "Offline",
   bambiState: "Unbekannt",
-  readyToCool: false,
   isWaitingToClose: false,
-  spoolsDone: 0
+  isDoorOpen: false,
+  printedParts: 0
 };
 function createWindow() {
   mainWindow = new electron.BrowserWindow({
@@ -130,13 +130,7 @@ function createWindow() {
   }
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow?.webContents.send("init-app", {
-      config: {
-        servoOpen: config.servo.open,
-        servoClose: config.servo.close,
-        clickDelay: config.bot.clickDelayMs,
-        posTaskbar: config.bot.posTaskbar,
-        posPrint: config.bot.posPrint
-      },
+      config,
       i18n: translations
     });
   });
@@ -153,6 +147,10 @@ electron.ipcMain.on("get-initial-config", (event) => {
       i18n: currentTranslations
     });
   }
+});
+electron.ipcMain.handle("get-cursor-position", () => {
+  const point = electron.screen.getCursorScreenPoint();
+  return point;
 });
 electron.app.on("window-all-closed", () => {
   if (process.platform !== "darwin") electron.app.quit();
@@ -216,27 +214,38 @@ function connectMQTT() {
       const data = JSON.parse(message.toString());
       if (data && data.print) {
         const p = data.print;
-        if (p.bed_temper !== void 0)
-          printerData.currentTemp = Math.round(p.bed_temper);
-        if (p.bed_target_temper !== void 0)
-          printerData.targetTemp = Math.round(p.bed_target_temper);
+        if (p.bed_temper !== void 0) printerData.currentTemp = Math.round(p.bed_temper);
+        if (p.bed_target_temper !== void 0) printerData.targetTemp = Math.round(p.bed_target_temper);
         if (p.mc_percent !== void 0) printerData.percent = p.mc_percent;
         if (p.gcode_state) printerData.status = p.gcode_state;
-        if (printerData.currentTemp >= 50 && printerData.status === "RUNNING") {
-          printerData.readyToCool = true;
+        const profiles = config.materials?.profiles || [];
+        const activeProfileId = config.materials?.activeProfileId;
+        const activeProfile = profiles.find((p2) => p2.id === activeProfileId);
+        if (!activeProfile && printerData.status === "RUNNING") {
+          if (!printerData.isDoorOpen) {
+            console.log("[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt! Tür-Automatik ist deaktiviert.");
+            printerData.isDoorOpen = true;
+          }
+        } else if (activeProfile) {
+          const currentTargetOpenTemp = activeProfile.openTemp;
+          const isNearEnd = printerData.percent > 80;
+          const isSafeTemp = printerData.currentTemp <= currentTargetOpenTemp;
+          if (isSafeTemp && isNearEnd && !printerData.isDoorOpen) {
+            console.log(`[Auto] 80% erreicht & Temperatur OK (${printerData.currentTemp}°C <= ${currentTargetOpenTemp}°C | Profil: ${activeProfile.name}) -> Öffne Tür!`);
+            sendToBambi("OPEN");
+            printerData.isDoorOpen = true;
+          }
         }
-        if (printerData.readyToCool && printerData.targetTemp < 85 && printerData.currentTemp <= config.printer.targetOpenTemp && printerData.percent > 80) {
-          if (printerData.bambiState !== "OFFEN") sendToBambi("OPEN");
-        }
-        if (printerData.readyToCool && (printerData.status === "FINISH" || printerData.status === "COMPLETED") && !printerData.isWaitingToClose) {
+        if ((printerData.status === "FINISH" || printerData.status === "COMPLETED") && !printerData.isWaitingToClose) {
           printerData.isWaitingToClose = true;
           setTimeout(() => {
             sendToBambi("CLOSE");
-            printerData.readyToCool = false;
             printerData.isWaitingToClose = false;
+            printerData.isDoorOpen = false;
             setTimeout(() => {
-              if (printerData.status === "FINISH" || printerData.status === "IDLE")
+              if (printerData.status === "FINISH" || printerData.status === "IDLE") {
                 startNewSpool();
+              }
             }, 6e4);
           }, config.bot.closeDelayMs || 2e4);
         }
@@ -250,17 +259,21 @@ function clickAt(x, y) {
   const clickCmd = `powershell -command "Add-Type -AssemblyName System.Windows.Forms; [Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${x},${y}); $type = Add-Type -name nativeMethods -namespace Win32 -PassThru -MemberDefinition '[DllImport(\\"user32.dll\\")] public static extern void mouse_event(int d, int x, int y, int c, int e);'; $type::mouse_event(2, 0, 0, 0, 0); $type::mouse_event(4, 0, 0, 0, 0);"`;
   child_process.exec(clickCmd);
 }
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 async function startNewSpool() {
-  const coords = {
-    taskbar: config.bot.posTaskbar.split(","),
-    print: config.bot.posPrint.split(",")
-  };
-  clickAt(coords.taskbar[0], coords.taskbar[1]);
-  await new Promise((r) => setTimeout(r, 2e3));
-  child_process.exec(
-    `powershell -command "$wshell = New-Object -ComObject WScript.Shell; $wshell.AppActivate('Bambu Studio')"`
-  );
-  printerData.spoolsDone++;
+  const sequence = config.bot.sequence;
+  if (!sequence || sequence.length === 0) {
+    console.log("[Bot] Keine Klick-Sequenz gespeichert. Bot bricht ab.");
+    return;
+  }
+  console.log(`[Bot] Starte Klick-Sequenz mit ${sequence.length} Schritten...`);
+  for (const step of sequence) {
+    console.log(`[Bot] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
+    clickAt(step.x, step.y);
+    await delay(step.delaySeconds * 1e3);
+  }
+  console.log("[Bot] Sequenz abgeschlossen.");
+  printerData.printedParts++;
   updateDashboard();
 }
 function updateDashboard() {
@@ -271,15 +284,28 @@ function updateDashboard() {
 electron.ipcMain.on("serial-command", (_event, cmd) => {
   sendToBambi(cmd);
 });
-electron.ipcMain.on("save-config", (_event, newValues) => {
-  config.servo.open = parseInt(newValues.servoOpen);
-  config.servo.close = parseInt(newValues.servoClose);
-  fs__namespace.writeFileSync(configPath, JSON.stringify(config, null, 2));
-  sendToBambi(`SAVE:${newValues.servoOpen}:${newValues.servoClose}`);
+electron.ipcMain.on("save-config", (event, newConfig) => {
+  try {
+    config = newConfig;
+    fs__namespace.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    sendToBambi(`SAVE:${config.servo.open}:${config.servo.close}`);
+    console.log("[Settings] Config erfolgreich aktualisiert!");
+  } catch (error) {
+    console.error("[Settings] Fehler beim Speichern:", error);
+  }
 });
-electron.ipcMain.on("start-bot", (_event, data) => {
-  config.bot.clickDelayMs = parseInt(data.delay);
-  config.bot.posTaskbar = data.posTaskbar;
-  config.bot.posPrint = data.posPrint;
+electron.ipcMain.on("save-bot-sequence", (event, sequence) => {
+  try {
+    config.bot.sequence = sequence;
+    fs__namespace.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    console.log("[Bot] Erfolgreich in config.json gespeichert:", sequence.length, "Klicks");
+  } catch (error) {
+    console.error("[Bot] Fehler beim Speichern der config.json:", error);
+  }
+});
+electron.ipcMain.on("quit-app", () => {
+  electron.app.quit();
+});
+electron.ipcMain.on("start-bot", () => {
   startNewSpool();
 });

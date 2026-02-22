@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, screen } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import * as mqtt from "mqtt";
@@ -6,22 +6,34 @@ import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { exec } from "child_process";
 
-// --- INTERFACES (Löscht die TS-Fehler) ---
+// --- INTERFACES ---
+interface MaterialProfile {
+  id: string;
+  name: string;
+  openTemp: number;
+}
+
 interface Config {
   printer: {
     ip: string;
     accessCode: string;
     serial: string;
-    targetOpenTemp: number;
   };
   serial: { port: string; baudRate: number };
   servo: { open: number; close: number };
   bot: {
-    clickDelayMs: number;
     closeDelayMs: number;
-    posTaskbar: string;
-    posPrint: string;
-    [key: string]: any;
+    sequence: Array<{
+      id: string;
+      name: string;
+      x: number;
+      y: number;
+      delaySeconds: number;
+    }>;
+  };
+  materials: {
+    activeProfileId: string;
+    profiles: MaterialProfile[];
   };
   language: string;
 }
@@ -32,9 +44,9 @@ interface PrinterData {
   percent: number;
   status: string;
   bambiState: string;
-  readyToCool: boolean;
   isWaitingToClose: boolean;
-  spoolsDone: number;
+  isDoorOpen: boolean;
+  printedParts: number;
 }
 
 // --- GLOBALE VARIABLEN ---
@@ -44,7 +56,6 @@ let parser: ReadlineParser | null = null;
 let currentTranslations: any = {};
 
 // --- KONFIGURATION LADEN ---
-// Da wir in src/main/main.ts sind, müssen wir zwei Ebenen hoch zur config.json
 const configPath = path.join(app.getAppPath(), "config.json");
 let config: Config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
@@ -58,9 +69,9 @@ let printerData: PrinterData = {
   percent: 0,
   status: "Offline",
   bambiState: "Unbekannt",
-  readyToCool: false,
   isWaitingToClose: false,
-  spoolsDone: 0,
+  isDoorOpen: false,
+  printedParts: 0,
 };
 
 // --- ELECTRON WINDOW ---
@@ -75,24 +86,16 @@ function createWindow(): void {
     },
   });
 
-  // Pfad zur index.html im dist-Ordner oder dev-server
   const indexPath = path.join(__dirname, "../renderer/index.html");
   if (fs.existsSync(indexPath)) {
     mainWindow.loadFile(indexPath);
   } else {
-    // Falls du npm run dev nutzt
     mainWindow.loadURL("http://localhost:3000");
   }
 
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow?.webContents.send("init-app", {
-      config: {
-        servoOpen: config.servo.open,
-        servoClose: config.servo.close,
-        clickDelay: config.bot.clickDelayMs,
-        posTaskbar: config.bot.posTaskbar,
-        posPrint: config.bot.posPrint,
-      },
+      config: config,
       i18n: translations,
     });
   });
@@ -105,13 +108,17 @@ app.whenReady().then(() => {
 });
 
 ipcMain.on('get-initial-config', (event) => {
-  // Wir schicken die Config einfach nochmal los
   if (mainWindow) {
     mainWindow.webContents.send('init-app', { 
       config: config, 
       i18n: currentTranslations 
     });
   }
+});
+
+ipcMain.handle('get-cursor-position', () => {
+  const point = screen.getCursorScreenPoint();
+  return point; 
 });
 
 app.on("window-all-closed", () => {
@@ -141,12 +148,10 @@ function connectSerial(): void {
       try {
         const json = JSON.parse(data);
         if (json.bambi === "moving") {
-          printerData.bambiState =
-            json.target === "open" ? "ÖFFNET..." : "SCHLIEẞT...";
+          printerData.bambiState = json.target === "open" ? "ÖFFNET..." : "SCHLIEẞT...";
         }
         if (json.status === "detached_soft") {
-          printerData.bambiState =
-            printerData.bambiState === "ÖFFNET..." ? "OFFEN" : "GESCHLOSSEN";
+          printerData.bambiState = printerData.bambiState === "ÖFFNET..." ? "OFFEN" : "GESCHLOSSEN";
         }
         updateDashboard();
       } catch (e) {
@@ -189,43 +194,54 @@ function connectMQTT(): void {
       const data = JSON.parse(message.toString());
       if (data && data.print) {
         const p = data.print;
-        if (p.bed_temper !== undefined)
-          printerData.currentTemp = Math.round(p.bed_temper);
-        if (p.bed_target_temper !== undefined)
-          printerData.targetTemp = Math.round(p.bed_target_temper);
+        if (p.bed_temper !== undefined) printerData.currentTemp = Math.round(p.bed_temper);
+        if (p.bed_target_temper !== undefined) printerData.targetTemp = Math.round(p.bed_target_temper);
         if (p.mc_percent !== undefined) printerData.percent = p.mc_percent;
         if (p.gcode_state) printerData.status = p.gcode_state;
 
-        if (printerData.currentTemp >= 50 && printerData.status === "RUNNING") {
-          printerData.readyToCool = true;
+
+        // --- Die smarte Tür-Steuerung (mit Profilen) ---
+        const profiles = config.materials?.profiles || [];
+        const activeProfileId = config.materials?.activeProfileId;
+        const activeProfile = profiles.find((p: any) => p.id === activeProfileId);
+
+        if (!activeProfile && printerData.status === "RUNNING") {
+            // Nur einmal warnen, nicht spammen
+            if (!printerData.isDoorOpen) {
+                console.log('[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt! Tür-Automatik ist deaktiviert.');
+                printerData.isDoorOpen = true; // Missbraucht als Flag, um Spam zu verhindern
+            }
+        } else if (activeProfile) {
+            const currentTargetOpenTemp = activeProfile.openTemp;
+            const isNearEnd = printerData.percent > 80;         
+            const isSafeTemp = printerData.currentTemp <= currentTargetOpenTemp;
+
+            if ( 
+                isSafeTemp &&              
+                isNearEnd &&               
+                !printerData.isDoorOpen    
+            ) {
+                console.log(`[Auto] 80% erreicht & Temperatur OK (${printerData.currentTemp}°C <= ${currentTargetOpenTemp}°C | Profil: ${activeProfile.name}) -> Öffne Tür!`);
+                sendToBambi("OPEN");
+                printerData.isDoorOpen = true; 
+            }
         }
 
+        // --- Finish Logik ---
         if (
-          printerData.readyToCool &&
-          printerData.targetTemp < 85 &&
-          printerData.currentTemp <= config.printer.targetOpenTemp &&
-          printerData.percent > 80
-        ) {
-          if (printerData.bambiState !== "OFFEN") sendToBambi("OPEN");
-        }
-
-        if (
-          printerData.readyToCool &&
-          (printerData.status === "FINISH" ||
-            printerData.status === "COMPLETED") &&
+          (printerData.status === "FINISH" || printerData.status === "COMPLETED") &&
           !printerData.isWaitingToClose
         ) {
           printerData.isWaitingToClose = true;
           setTimeout(() => {
             sendToBambi("CLOSE");
-            printerData.readyToCool = false;
             printerData.isWaitingToClose = false;
+            printerData.isDoorOpen = false; // Reset für den nächsten Druck
+            
             setTimeout(() => {
-              if (
-                printerData.status === "FINISH" ||
-                printerData.status === "IDLE"
-              )
+              if (printerData.status === "FINISH" || printerData.status === "IDLE") {
                 startNewSpool();
+              }
             }, 60000);
           }, config.bot.closeDelayMs || 20000);
         }
@@ -241,19 +257,32 @@ function clickAt(x: number | string, y: number | string): void {
   exec(clickCmd);
 }
 
+// Wartet eine bestimmte Anzahl an Millisekunden
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
 async function startNewSpool(): Promise<void> {
-  const coords = {
-    taskbar: config.bot.posTaskbar.split(","),
-    print: config.bot.posPrint.split(","),
-  };
+  const sequence = config.bot.sequence;
+  
+  if (!sequence || sequence.length === 0) {
+      console.log("[Bot] Keine Klick-Sequenz gespeichert. Bot bricht ab.");
+      return;
+  }
 
-  clickAt(coords.taskbar[0], coords.taskbar[1]);
-  await new Promise((r) => setTimeout(r, 2000));
-  exec(
-    `powershell -command "$wshell = New-Object -ComObject WScript.Shell; $wshell.AppActivate('Bambu Studio')"`,
-  );
+  console.log(`[Bot] Starte Klick-Sequenz mit ${sequence.length} Schritten...`);
 
-  printerData.spoolsDone++;
+  
+
+  // Abarbeiten der dynamischen Liste
+  for (const step of sequence) {
+      console.log(`[Bot] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
+      clickAt(step.x, step.y);
+      
+      // Delay in Millisekunden umrechnen
+      await delay(step.delaySeconds * 1000);
+  }
+
+  console.log("[Bot] Sequenz abgeschlossen.");
+printerData.printedParts++;
   updateDashboard();
 }
 
@@ -268,16 +297,32 @@ ipcMain.on("serial-command", (_event, cmd: string) => {
   sendToBambi(cmd);
 });
 
-ipcMain.on("save-config", (_event, newValues: any) => {
-  config.servo.open = parseInt(newValues.servoOpen);
-  config.servo.close = parseInt(newValues.servoClose);
-  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-  sendToBambi(`SAVE:${newValues.servoOpen}:${newValues.servoClose}`);
+ipcMain.on("save-config", (event, newConfig) => {
+  try {
+    config = newConfig;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    sendToBambi(`SAVE:${config.servo.open}:${config.servo.close}`);
+    console.log('[Settings] Config erfolgreich aktualisiert!');
+  } catch (error) {
+    console.error('[Settings] Fehler beim Speichern:', error);
+  }
 });
 
-ipcMain.on("start-bot", (_event, data: any) => {
-  config.bot.clickDelayMs = parseInt(data.delay);
-  config.bot.posTaskbar = data.posTaskbar;
-  config.bot.posPrint = data.posPrint;
+ipcMain.on('save-bot-sequence', (event, sequence) => {
+  try {
+    config.bot.sequence = sequence; 
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    console.log('[Bot] Erfolgreich in config.json gespeichert:', sequence.length, 'Klicks');
+  } catch (error) {
+    console.error('[Bot] Fehler beim Speichern der config.json:', error);
+  }
+});
+
+ipcMain.on('quit-app', () => {
+  app.quit();
+});
+
+// Kann jetzt manuell aus dem UI oder automatisch vom MQTT getriggert werden
+ipcMain.on("start-bot", () => {
   startNewSpool();
 });
