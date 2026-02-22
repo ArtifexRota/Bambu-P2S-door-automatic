@@ -1,20 +1,123 @@
 {
   "title": "Bambi P2S Steuerung",
-  "monitor": {
-    "printer": "Drucker",
-    "temp": "Temp",
-    "spools": "Spulen"
+  "dashboard": {
+    "title": "Dashboard",
+    "settings": "Einstellungen",
+    "bot": "Bot Setup",
+    "gcode": "Gcode Gen",
+    "status": {
+      "waiting": "💤 Warte auf Druck...",
+      "waiting_80": "⏳ Warte auf 80% Fortschritt...",
+      "cooling": "🌡️ 80% erreicht. Warte auf Abkühlung...",
+      "door_open": "✅ Tür ist offen!",
+      "finished": "🔄 Druck beendet. Bot übernimmt..."
+    },
+    "printer_status": "Drucker Status",
+    "current_material": "Aktuelles Material",
+    "door_opens_at": "Tür öffnet bei",
+    "door_control": "Bambi P2S Tür",
+    "open": "Öffnen",
+    "close": "Schließen",
+    "stats": "Session Statistik",
+    "parts_printed": "Gedruckte Teile"
   },
-  "servo": {
-    "title": "ESP32 Servo Einstellungen",
-    "open": "Öffnungswinkel (°)",
-    "close": "Schließwinkel (°)",
-    "test": "Winkel testen",
-    "save": "Im ESP32 speichern"
+  "settings": {
+    "title": "Systemeinstellungen",
+    "description": "Konfiguriere hier die Verbindung zum Drucker, die Hardware-Ports und deine Material-Profile.",
+    "connection": {
+      "title": "Verbindung",
+      "ip": "Drucker IP-Adresse",
+      "access_code": "Access Code",
+      "serial": "Seriennummer",
+      "com_port": "ESP32 COM-Port"
+    },
+    "servo": {
+      "title": "Servo Kalibrierung",
+      "open_angle": "Winkel: Offen (0-180)",
+      "close_angle": "Winkel: Geschlossen (0-180)",
+      "test_open": "Test Öffnen",
+      "test_close": "Test Schließen"
+    },
+    "materials": {
+      "title": "Material Profile (Auto-Öffnen)",
+      "name": "Material Name",
+      "open_temp": "Tür auf ab (°C)",
+      "new_profile": "Neues Profil",
+      "add": "+ Neues Profil"
+    },
+    "save_all": "Alles Speichern",
+    "success": "Einstellungen erfolgreich gespeichert!"
   },
   "bot": {
-    "title": "Bot & Klick-Konfiguration",
-    "delay": "Verzögerung (ms)",
-    "run": "Bot Testlauf"
+    "title": "Bot Klick-Sequenz",
+    "description": "Lege beliebig viele Klicks an. Drücke auf \"Erfassen\" und bewege die Maus innerhalb von 3 Sekunden an die gewünschte Stelle auf dem Bildschirm.",
+    "click_name": "Klick Name",
+    "capture": "Position erfassen",
+    "waiting": "Warte",
+    "delay": "Warten (Sek)",
+    "add_click": "+ Neuen Klick hinzufügen",
+    "save_sequence": "Sequenz Speichern",
+    "test_sequence": "Sequenz testen",
+    "success": "Sequenz gespeichert!",
+    "running": "Bot Testlauf gestartet..."
+  },
+  "gcode": {
+    "title": "End-Gcode Generator",
+    "description": "Generiere den Code zum automatischen Auswerfen. Füge ihn im Slicer in den Maschinen-End-G-code ein.",
+    "temps": {
+      "title": "Temperaturen",
+      "door_temp": "Tür öffnet bei (°C)",
+      "warning_sound": "Warn-Sound Temperatur",
+      "auto_calc": "(Automatisch -4°C berechnet wegen 5°C Druckertoleranz)",
+      "push_temp": "Push-Temperatur (°C)",
+      "why_no_buffer": "Warum kein Puffer?",
+      "why_no_buffer_text": "Hier wird kein 5°C-Puffer benötigt, da direkt im Anschluss der mechanische Schiebe-Befehl ausgeführt wird. Stelle genau die Temperatur ein, bei der sich das Material verlässlich löst."
+    },
+    "position": {
+      "title": "Schiebe-Position",
+      "start_x": "Startpunkt X-Achse (mm)",
+      "center_info": "Die gewichtliche Mitte",
+      "center_text": "Ziele genau auf die gewichtliche Mitte deines Bauteils. Das verhindert, dass sich der Druck beim Schieben dreht oder verkantet. (Mitte des Druckbetts = 128)",
+      "push_z": "Schiebe-Höhe Z-Achse (mm)",
+      "plastic_info": "Nutze das Plastik, nicht die Nozzle",
+      "plastic_text": "Dies ist der Abstand zwischen Nozzle-Spitze und Druckbett. Wähle die Höhe so, dass idealerweise das massive Plastikgehäuse des Druckkopfs das Teil wegschiebt, nicht die empfindliche Nozzle selbst!"
+    },
+    "instruction": {
+      "title": "Wo muss der Code hin?",
+      "text": "Füge den unten generierten Code exakt vor folgendem Block im Maschinen-End-G-code ein:"
+    },
+    "preview": "Vorschau",
+    "copy": "Kopieren",
+    "copied": "G-Code kopiert!"
+  },
+  "eula": {
+    "title": "Lizenzvereinbarung & Haftungsausschluss",
+    "software_name": "Belling Software - Freeware Lizenzvereinbarung",
+    "copyright": "© 2026 Nils Belling. Alle Rechte vorbehalten.",
+    "rights": {
+      "title": "1. Nutzungsrecht",
+      "text": "Diese Software wird als Freeware kostenlos zur Verfügung gestellt. Du darfst die Software herunterladen, installieren und zeitlich unbegrenzt nutzen. Die Nutzung für private sowie ausdrücklich auch für kommerzielle Zwecke (z. B. in kommerziellen 3D-Druckfarmen) ist gestattet."
+    },
+    "restrictions": {
+      "title": "2. Einschränkungen",
+      "no_sale": "Kein Verkauf: Du darfst diese Software (weder im Ganzen noch in Teilen) nicht verkaufen, vermieten, verleasen oder in irgendeiner Form gegen eine Gebühr anbieten.",
+      "no_mod": "Keine Modifikation: Es ist untersagt, die Software oder den zugrundeliegenden Quellcode zu verändern, zu übersetzen, zu dekompilieren oder davon abgeleitete Werke zu erstellen.",
+      "no_commercial": "Keine kommerzielle Aneignung: Du darfst diesen Code nicht in eine eigene, kommerzielle Software einbauen."
+    },
+    "distribution": {
+      "title": "3. Weitergabe",
+      "text": "Du darfst diese Software frei kopieren und weitergeben, vorausgesetzt, dies geschieht kostenlos, die Software bleibt unverändert und dieser Lizenzhinweis bleibt erhalten."
+    },
+    "liability": {
+      "title": "4. Haftungsausschluss",
+      "text": "DIESE SOFTWARE WIRD \"WIE BESEHEN\" (AS IS) BEREITGESTELLT. Der Autor (Nils Belling) übernimmt keinerlei Haftung für direkte oder indirekte Schäden, Datenverluste, Hardware-Defekte oder Produktionsausfälle, die durch die Nutzung dieser Software entstehen. Die Nutzung der Software zur Steuerung von Hardware erfolgt ausdrücklich auf eigene Gefahr."
+    },
+    "privacy": {
+      "title": "5. Datenschutz",
+      "text": "Diese Anwendung arbeitet zu 100 % lokal. Es werden keine personenbezogenen Daten oder Telemetriedaten gesammelt oder an das Internet übertragen."
+    },
+    "decline": "Ablehnen & Beenden",
+    "accept": "Ich habe verstanden & akzeptiere",
+    "accepted_toast": "Lizenz akzeptiert. Willkommen!"
   }
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from '../hooks/useTranslation';
 
 const inputStyle = {
   background: '#2a2a2e',
@@ -37,6 +38,7 @@ const summaryStyle = {
 };
 
 const GcodeGen: React.FC = () => {
+  const { t } = useTranslation();
   const [doorOpenTemp, setDoorOpenTemp] = useState(80);
 const warningTemp = doorOpenTemp - 4;
   const [tempWait2, setTempWait2] = useState(60);
@@ -89,14 +91,14 @@ M106 P3 S0
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generateGcode());
-    toast.success('G-Code kopiert!');
+    toast.success(t("gcode.copied"));
   };
 
   return (
     <div className="card full-width" style={{ paddingBottom: '40px' }}>
-      <h2>📄 End-Gcode Generator</h2>
+      <h2>📄 {t("gcode.title")}</h2>
       <p style={{ color: '#888', marginBottom: '30px' }}>
-        Generiere den Code zum automatischen Auswerfen. Füge ihn im Slicer in den <strong>Maschinen-End-G-code</strong> ein.
+        {t("gcode.description")}
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
@@ -105,10 +107,10 @@ M106 P3 S0
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#fff' }}>🌡️ Temperaturen</h3>
+            <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#fff' }}>🌡️ {t("gcode.temps.title")}</h3>
             
             <div style={{ marginBottom: '20px' }}>
-  <label style={labelStyle}>Tür öffnet bei (°C)</label>
+  <label style={labelStyle}>{t("gcode.temps.door_temp")}</label>
   <input 
     type="number" 
     value={doorOpenTemp} 
@@ -119,47 +121,47 @@ M106 P3 S0
   {/* Hier ist die transparente Magie: */}
   <div style={{ background: '#333', padding: '10px', borderRadius: '4px', marginTop: '8px', borderLeft: '3px solid #e6a800' }}>
     <p style={{ margin: 0, color: '#e6a800', fontSize: '0.85rem', fontWeight: 'bold' }}>
-      Warn-Sound Temperatur: {warningTemp}°C
+      {t("gcode.temps.warning_sound")}: {warningTemp}°C
     </p>
     <p style={{ margin: '5px 0 0 0', color: '#bbb', fontSize: '0.8rem' }}>
-      (Automatisch -4°C berechnet wegen 5°C Druckertoleranz)
+      {t("gcode.temps.auto_calc")}
     </p>
   </div>
 </div>
 
             <div>
-              <label style={labelStyle}>Push-Temperatur (°C)</label>
+              <label style={labelStyle}>{t("gcode.temps.push_temp")}</label>
               <input type="number" value={tempWait2} onChange={(e) => setTempWait2(Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
-                <summary style={summaryStyle}>ℹ️ Warum kein Puffer?</summary>
+                <summary style={summaryStyle}>ℹ️ {t("gcode.temps.why_no_buffer")}</summary>
                 <p style={{ margin: '8px 0 0 0' }}>
-                  Hier wird kein 5°C-Puffer benötigt, da direkt im Anschluss der mechanische Schiebe-Befehl ausgeführt wird. Stelle genau die Temperatur ein, bei der sich das Material verlässlich löst.
+                  {t("gcode.temps.why_no_buffer_text")}
                 </p>
               </details>
             </div>
           </div>
 
           <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#fff' }}>🎯 Schiebe-Position</h3>
+            <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#fff' }}>🎯 {t("gcode.position.title")}</h3>
             
             <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>Startpunkt X-Achse (mm)</label>
+              <label style={labelStyle}>{t("gcode.position.start_x")}</label>
               <input type="number" value={pushX} onChange={(e) => setPushX(Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
-                <summary style={summaryStyle}>ℹ️ Die gewichtliche Mitte</summary>
+                <summary style={summaryStyle}>ℹ️ {t("gcode.position.center_info")}</summary>
                 <p style={{ margin: '8px 0 0 0' }}>
-                  Ziele genau auf die <strong>gewichtliche Mitte</strong> deines Bauteils. Das verhindert, dass sich der Druck beim Schieben dreht oder verkantet. (Mitte des Druckbetts = 128)
+                  {t("gcode.position.center_text")}
                 </p>
               </details>
             </div>
 
             <div>
-              <label style={labelStyle}>Schiebe-Höhe Z-Achse (mm)</label>
+              <label style={labelStyle}>{t("gcode.position.push_z")}</label>
               <input type="number" value={pushZ} onChange={(e) => setPushZ(Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
-                <summary style={summaryStyle}>ℹ️ Nutze das Plastik, nicht die Nozzle</summary>
+                <summary style={summaryStyle}>ℹ️ {t("gcode.position.plastic_info")}</summary>
                 <p style={{ margin: '8px 0 0 0' }}>
-                  Dies ist der Abstand zwischen Nozzle-Spitze und Druckbett. Wähle die Höhe so, dass idealerweise das <strong>massive Plastikgehäuse des Druckkopfs</strong> das Teil wegschiebt, nicht die empfindliche Nozzle selbst!
+                  {t("gcode.position.plastic_text")}
                 </p>
               </details>
             </div>
@@ -171,9 +173,9 @@ M106 P3 S0
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           
           <div style={{ background: '#333', borderLeft: '4px solid #e6a800', padding: '15px', borderRadius: '4px' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#fff' }}>⚠️ Wo muss der Code hin?</h4>
+            <h4 style={{ margin: '0 0 10px 0', color: '#fff' }}>⚠️ {t("gcode.instruction.title")}</h4>
             <p style={{ margin: 0, color: '#bbb', fontSize: '0.9rem', lineHeight: '1.4' }}>
-              Füge den unten generierten Code exakt <strong>vor</strong> folgendem Block im Maschinen-End-G-code ein:<br/>
+              {t("gcode.instruction.text")}<br/>
               <code style={{ color: '#e6a800', background: '#222', padding: '2px 6px', borderRadius: '3px', marginTop: '8px', display: 'inline-block' }}>
                 ;=====printer finish  sound=========
               </code>
@@ -182,12 +184,12 @@ M106 P3 S0
 
           <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px', display: 'flex', flexDirection: 'column', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-              <h3 style={{ margin: 0, color: '#fff' }}>Vorschau</h3>
+              <h3 style={{ margin: 0, color: '#fff' }}>{t("gcode.preview")}</h3>
               <button 
                 onClick={copyToClipboard}
                 style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
               >
-                📋 Kopieren
+                📋 {t("gcode.copy")}
               </button>
             </div>
             

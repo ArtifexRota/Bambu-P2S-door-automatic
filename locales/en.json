@@ -1,20 +1,123 @@
 {
   "title": "Bambi P2S Control",
-  "monitor": {
-    "printer": "Printer",
-    "temp": "Temp",
-    "spools": "Spools"
+  "dashboard": {
+    "title": "Dashboard",
+    "settings": "Settings",
+    "bot": "Bot Setup",
+    "gcode": "Gcode Gen",
+    "status": {
+      "waiting": "💤 Waiting for print...",
+      "waiting_80": "⏳ Waiting for 80% progress...",
+      "cooling": "🌡️ 80% reached. Waiting for cooldown...",
+      "door_open": "✅ Door is open!",
+      "finished": "🔄 Print finished. Bot taking over..."
+    },
+    "printer_status": "Printer Status",
+    "current_material": "Current Material",
+    "door_opens_at": "Door opens at",
+    "door_control": "Bambi P2S Door",
+    "open": "Open",
+    "close": "Close",
+    "stats": "Session Statistics",
+    "parts_printed": "Printed Parts"
   },
-  "servo": {
-    "title": "ESP32 Servo Settings",
-    "open": "Open Angle (°)",
-    "close": "Close Angle (°)",
-    "test": "Test Angle",
-    "save": "Save to ESP32"
+  "settings": {
+    "title": "System Settings",
+    "description": "Configure printer connection, hardware ports, and material profiles here.",
+    "connection": {
+      "title": "Connection",
+      "ip": "Printer IP Address",
+      "access_code": "Access Code",
+      "serial": "Serial Number",
+      "com_port": "ESP32 COM Port"
+    },
+    "servo": {
+      "title": "Servo Calibration",
+      "open_angle": "Angle: Open (0-180)",
+      "close_angle": "Angle: Closed (0-180)",
+      "test_open": "Test Open",
+      "test_close": "Test Close"
+    },
+    "materials": {
+      "title": "Material Profiles (Auto-Open)",
+      "name": "Material Name",
+      "open_temp": "Door open at (°C)",
+      "new_profile": "New Material",
+      "add": "+ New Profile"
+    },
+    "save_all": "Save All",
+    "success": "Settings saved successfully!"
   },
   "bot": {
-    "title": "Bot & Click Configuration",
-    "delay": "Delay (ms)",
-    "run": "Run Bot Test"
+    "title": "Bot Click Sequence",
+    "description": "Create as many clicks as needed. Press \"Capture\" and move the mouse to the desired screen position within 3 seconds.",
+    "click_name": "Click Name",
+    "capture": "Capture Position",
+    "waiting": "Wait",
+    "delay": "Delay (Sec)",
+    "add_click": "+ Add New Click",
+    "save_sequence": "Save Sequence",
+    "test_sequence": "Test Sequence",
+    "success": "Sequence saved!",
+    "running": "Bot test run started..."
+  },
+  "gcode": {
+    "title": "End-Gcode Generator",
+    "description": "Generate the code for automatic ejection. Paste it into the slicer's Machine End G-code.",
+    "temps": {
+      "title": "Temperatures",
+      "door_temp": "Door opens at (°C)",
+      "warning_sound": "Warning Sound Temp",
+      "auto_calc": "(Calculated -4°C automatically due to 5°C printer tolerance)",
+      "push_temp": "Push Temperature (°C)",
+      "why_no_buffer": "Why no buffer?",
+      "why_no_buffer_text": "No 5°C buffer is needed here, as the mechanical push command follows immediately. Set the exact temperature at which the material releases reliably."
+    },
+    "position": {
+      "title": "Push Position",
+      "start_x": "Start Point X-Axis (mm)",
+      "center_info": "Center of Gravity",
+      "center_text": "Aim exactly for the center of gravity of your part. This prevents the print from rotating or jamming while pushing. (Bed center = 128)",
+      "push_z": "Push Height Z-Axis (mm)",
+      "plastic_info": "Use the plastic, not the nozzle",
+      "plastic_text": "This is the distance between the nozzle tip and the print bed. Choose a height so that ideally the solid plastic housing of the print head pushes the part, not the delicate nozzle itself!"
+    },
+    "instruction": {
+      "title": "Where does the code go?",
+      "text": "Insert the generated code exactly before the following block in the Machine End G-code:"
+    },
+    "preview": "Preview",
+    "copy": "Copy",
+    "copied": "G-Code copied!"
+  },
+  "eula": {
+    "title": "License Agreement & Disclaimer",
+    "software_name": "Belling Software - Freeware License Agreement",
+    "copyright": "© 2026 Nils Belling. All rights reserved.",
+    "rights": {
+      "title": "1. Usage Rights",
+      "text": "This software is provided as freeware free of charge. You may download, install, and use the software indefinitely. Use for private as well as expressly for commercial purposes (e.g., in commercial 3D print farms) is permitted."
+    },
+    "restrictions": {
+      "title": "2. Restrictions",
+      "no_sale": "No Sale: You may not sell, rent, lease, or offer this software (in whole or in part) for a fee in any form.",
+      "no_mod": "No Modification: Modifying, translating, decompiling, or creating derivative works from the software or underlying source code is prohibited.",
+      "no_commercial": "No Commercial Appropriation: You may not incorporate this code into your own commercial software."
+    },
+    "distribution": {
+      "title": "3. Distribution",
+      "text": "You may freely copy and distribute this software, provided it is done free of charge, the software remains unmodified, and this license notice is retained."
+    },
+    "liability": {
+      "title": "4. Disclaimer",
+      "text": "THIS SOFTWARE IS PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. The author (Nils Belling) assumes no liability for direct or indirect damages, data loss, hardware defects, or production downtimes resulting from the use of this software. Use of the software to control hardware is expressly at your own risk."
+    },
+    "privacy": {
+      "title": "5. Privacy",
+      "text": "This application works 100% locally. No personal data or telemetry data is collected or transmitted to the internet."
+    },
+    "decline": "Decline & Exit",
+    "accept": "I understand & accept",
+    "accepted_toast": "License accepted. Welcome!"
   }
 }

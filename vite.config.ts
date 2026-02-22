@@ -5,6 +5,7 @@ import path from "path";
 
 export default defineConfig({
   root: path.join(__dirname, "src/renderer"),
+  base: "./",
   plugins: [
     react(),
     electron([

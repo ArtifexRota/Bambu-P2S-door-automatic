@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./App.css"; 
-import Settings from "./components/Settings"; // Achte auf Groß-/Kleinschreibung bei Datei-Imports!
+import Settings from "./components/Settings";
 import BotConfig from './components/BotConfig';
 import { Toaster } from 'react-hot-toast';
 import GcodeGen from './components/GcodeGen';
 import EulaModal from './components/EulaModal';
 import toast from "react-hot-toast";
+import { useTranslation } from './hooks/useTranslation';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"dashboard" | "settings" | "gcode" | 'bot'>('dashboard');
   
   const [printerData, setPrinterData] = useState<any>({
     currentTemp: 0,
     targetTemp: 0,
     percent: 0,
-    status: "Lade...",
+    status: t("dashboard.status.waiting"),
     bambiState: "Unbekannt",
     printedParts: 0,
   });
@@ -23,18 +25,15 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (window.electronAPI) {
-      // 1. ZUHÖREN: Wenn Daten kommen, speichern wir sie
       window.electronAPI.onInitConfigs((data: any) => {
         console.log("Config empfangen:", data); 
         setConfig(data.config || data); 
       });
 
-      // (Der doppelte useEffect wurde hier sauber zusammengefasst)
       window.electronAPI.onPrinterUpdate((data: any) => {
         setPrinterData(data);
       });
 
-      // 2. RUFEN: Initiale Config anfordern
       window.electronAPI.requestConfig(); 
     }
   }, []);
@@ -49,30 +48,30 @@ const App: React.FC = () => {
   const profileName = activeProfile ? activeProfile.name : "Kein Profil";
   const openTemp = activeProfile ? activeProfile.openTemp : "--";
 
-let autoStatusText = "💤 Warte auf Druck...";
+  let autoStatusText = t("dashboard.status.waiting");
   let autoStatusColor = "#888";
   let autoStatusBg = "rgba(255, 255, 255, 0.05)";
   let autoStatusBorder = "1px solid #444";
 
   if (printerData.status === "RUNNING") {
       if (printerData.percent < 80) {
-          autoStatusText = "⏳ Warte auf 80% Fortschritt...";
+          autoStatusText = t("dashboard.status.waiting_80");
           autoStatusColor = "#e6a800"; // Gelb
           autoStatusBorder = "1px solid #e6a800";
           autoStatusBg = "rgba(230, 168, 0, 0.1)";
       } else if (!printerData.isDoorOpen) {
-          autoStatusText = "🌡️ 80% erreicht. Warte auf Abkühlung...";
+          autoStatusText = t("dashboard.status.cooling");
           autoStatusColor = "#2196f3"; // Blau
           autoStatusBorder = "1px solid #2196f3";
           autoStatusBg = "rgba(33, 150, 243, 0.1)";
       } else {
-          autoStatusText = "✅ Tür ist offen!";
+          autoStatusText = t("dashboard.status.door_open");
           autoStatusColor = "#4caf50"; // Grün
           autoStatusBorder = "1px solid #4caf50";
           autoStatusBg = "rgba(76, 175, 80, 0.1)";
       }
   } else if (printerData.status === "FINISH" || printerData.status === "COMPLETED") {
-      autoStatusText = "🔄 Druck beendet. Bot übernimmt...";
+      autoStatusText = t("dashboard.status.finished");
       autoStatusColor = "#9c27b0"; // Lila
       autoStatusBorder = "1px solid #9c27b0";
       autoStatusBg = "rgba(156, 39, 176, 0.1)";
@@ -83,7 +82,7 @@ const handleAcceptEula = () => {
     setConfig(updatedConfig);
     if (window.electronAPI && window.electronAPI.saveConfig) {
       window.electronAPI.saveConfig(updatedConfig);
-      toast.success("Lizenz akzeptiert. Willkommen!");
+      toast.success(t("eula.accepted_toast"));
     }
   };
 
@@ -124,27 +123,27 @@ const handleAcceptEula = () => {
             className={activeTab === "dashboard" ? "active" : ""}
             onClick={() => setActiveTab("dashboard")}
           >
-            📊 Dashboard
+            📊 {t("dashboard.title")}
           </button>
           <button
             className={activeTab === "settings" ? "active" : ""}
             onClick={() => setActiveTab("settings")}
           >
-            ⚙️ Settings
+            ⚙️ {t("dashboard.settings")}
           </button>
           
           <button
             className={activeTab === "bot" ? "active" : ""}
             onClick={() => setActiveTab("bot")}
           >
-            🤖 Bot Setup
+            🤖 {t("dashboard.bot")}
           </button>
 
           <button
             className={activeTab === "gcode" ? "active" : ""}
             onClick={() => setActiveTab("gcode")}
           >
-            📄 Gcode Gen
+            📄 {t("dashboard.gcode")}
           </button>
         </nav>
         
@@ -157,7 +156,7 @@ const handleAcceptEula = () => {
             
             {/* 1. Drucker Status Card */}
             <div className="card status-card">
-              <h3>Drucker Status</h3>
+              <h3>{t("dashboard.printer_status")}</h3>
               <div className="status-badge">{printerData.status}</div>
               <div className="temp-display">
                 <span className="current">{printerData.currentTemp}°C</span>
@@ -174,12 +173,12 @@ const handleAcceptEula = () => {
 
             {/* 2. NEU: Aktuelles Material Card */}
             <div className="card profile-card">
-              <h3>Aktuelles Material</h3>
+              <h3>{t("dashboard.current_material")}</h3>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2196f3', margin: '15px 0 5px 0' }}>
                 {profileName}
               </div>
               <div style={{ color: '#bbb', fontSize: '1.1rem' }}>
-                Tür öffnet bei: <strong>{openTemp}°C</strong>
+                {t("dashboard.door_opens_at")}: <strong>{openTemp}°C</strong>
               </div>
               
               {/* Smarter Automatik-Status */}
@@ -200,7 +199,7 @@ const handleAcceptEula = () => {
 
             {/* 3. Bambi Tür-Status Card */}
             <div className="card bambi-card">
-              <h3>Bambi P2S Tür</h3>
+              <h3>{t("dashboard.door_control")}</h3>
               <div
                 className={`bambi-badge ${printerData.bambiState === "OFFEN" ? "open" : "closed"}`}
               >
@@ -211,22 +210,22 @@ const handleAcceptEula = () => {
                   onClick={() => window.electronAPI.sendSerial("OPEN")}
                   style={{ flex: 1, padding: '10px', background: '#2a2a2e', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}
                 >
-                  🔓 Öffnen
+                  🔓 {t("dashboard.open")}
                 </button>
                 <button 
                   onClick={() => window.electronAPI.sendSerial("CLOSE")}
                   style={{ flex: 1, padding: '10px', background: '#2a2a2e', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}
                 >
-                  🔒 Schließen
+                  🔒 {t("dashboard.close")}
                 </button>
               </div>
             </div>
 
             {/* 4. Statistik Card */}
             <div className="card stats-card">
-              <h3>Session Statistik</h3>
+              <h3>{t("dashboard.stats")}</h3>
               <div className="stat-value">{printerData.printedParts}</div>
-              <div className="stat-label">Gedruckte Teile</div>
+              <div className="stat-label">{t("dashboard.parts_printed")}</div>
             </div>
 
           </div>
