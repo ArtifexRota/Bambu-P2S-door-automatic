@@ -36,6 +36,7 @@ interface Config {
     profiles: MaterialProfile[];
   };
   language: string;
+  eulaAccepted: boolean;
 }
 
 interface PrinterData {
@@ -54,39 +55,6 @@ let mainWindow: BrowserWindow | null = null;
 let port: SerialPort | null = null;
 let parser: ReadlineParser | null = null;
 let currentTranslations: any = {};
-
-// --- INTERFACES (Aktualisiert mit eulaAccepted) ---
-interface MaterialProfile {
-  id: string;
-  name: string;
-  openTemp: number;
-}
-
-interface Config {
-  printer: {
-    ip: string;
-    accessCode: string;
-    serial: string;
-  };
-  serial: { port: string; baudRate: number };
-  servo: { open: number; close: number };
-  bot: {
-    closeDelayMs: number;
-    sequence: Array<{
-      id: string;
-      name: string;
-      x: number;
-      y: number;
-      delaySeconds: number;
-    }>;
-  };
-  materials: {
-    activeProfileId: string;
-    profiles: MaterialProfile[];
-  };
-  language: string;
-  eulaAccepted: boolean;
-}
 
 // --- STANDARD KONFIGURATION (Hardcoded im Code) ---
 const defaultConfig: Config = {
@@ -148,11 +116,24 @@ try {
   config = defaultConfig;
 }
 
-
-// (Die locales können im getAppPath bleiben, da wir sie nur lesen, nicht überschreiben)
+// --- TRANSLATIONS LADEN (Robust) ---
 const lang = config.language || "de";
 const localesPath = path.join(app.getAppPath(), "locales", `${lang}.json`);
-const translations = JSON.parse(fs.readFileSync(localesPath, "utf-8"));
+let translations: any = {};
+
+try {
+  console.log(`[Main] Lade Übersetzungen von: ${localesPath}`);
+  if (fs.existsSync(localesPath)) {
+    translations = JSON.parse(fs.readFileSync(localesPath, "utf-8"));
+    currentTranslations = translations;
+    console.log("[Main] Übersetzungen erfolgreich geladen.");
+  } else {
+    console.error(`[Main] FEHLER: Übersetzungsdatei nicht gefunden! Pfad: ${localesPath}`);
+    // Optional: Fallback auf de.json versuchen oder leeres Objekt lassen
+  }
+} catch (error: any) {
+  console.error(`[Main] CRITICAL: Fehler beim Laden der Übersetzungen: ${error.message}`);
+}
 
 let printerData: PrinterData = {
   currentTemp: 0,
@@ -167,40 +148,54 @@ let printerData: PrinterData = {
 
 // --- ELECTRON WINDOW ---
 function createWindow(): void {
+  const preloadPath = path.join(app.getAppPath(), "dist", "preload", "preload.js");
+  console.log(`[Main] Preload Pfad: ${preloadPath}`);
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 900,
     webPreferences: {
       // Nutzt den absoluten Pfad zur preload.js
-      preload: path.join(app.getAppPath(), "dist", "preload", "preload.js"),
+      preload: preloadPath,
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
 
+  // DEVTOOLS ERZWINGEN FÜR DEBUGGING
+  mainWindow.webContents.openDevTools();
+
   if (app.isPackaged) {
     // In der Produktion: Pfad direkt ab App-Root
     const indexPath = path.join(app.getAppPath(), "dist", "renderer", "index.html");
+    console.log(`[Main] Lade Index (Packaged): ${indexPath}`);
     
     if (fs.existsSync(indexPath)) {
       mainWindow.loadFile(indexPath);
     } else {
-      console.error("Index nicht gefunden an:", indexPath);
+      console.error(`[Main] CRITICAL: Index nicht gefunden an: ${indexPath}`);
     }
   } else {
     // Im Entwicklungsmodus
+    console.log("[Main] Lade Dev Server URL");
     mainWindow.loadURL("http://localhost:3000");
   }
 
   mainWindow.webContents.on("did-finish-load", () => {
+    console.log("[Main] Renderer fertig geladen. Sende init-app...");
     mainWindow?.webContents.send("init-app", {
       config: config,
       i18n: translations,
     });
   });
+
+  mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
+    console.error(`[Main] ERROR: Renderer failed to load: ${errorCode} - ${errorDescription}`);
+  });
 }
 
 app.whenReady().then(() => {
+  console.log("[Main] App is Ready.");
   createWindow();
   connectSerial();
   connectMQTT();
@@ -227,6 +222,7 @@ app.on("window-all-closed", () => {
 // --- SERIELLE VERBINDUNG ---
 function connectSerial(): void {
   try {
+    console.log(`[Serial] Versuche Verbindung zu ${config.serial.port}...`);
     port = new SerialPort({
       path: config.serial.port,
       baudRate: config.serial.baudRate,
@@ -235,7 +231,7 @@ function connectSerial(): void {
 
     port.open((err) => {
       if (err) {
-        console.log(`[Serial] Port ${config.serial.port} nicht gefunden.`);
+        console.log(`[Serial] Port ${config.serial.port} nicht gefunden oder Fehler: ${err.message}`);
       } else {
         console.log(`[Serial] Verbunden mit ${config.serial.port}`);
       }
@@ -272,6 +268,7 @@ function sendToBambi(command: string): void {
 let client: mqtt.MqttClient;
 
 function connectMQTT(): void {
+  console.log(`[MQTT] Versuche Verbindung zu ${config.printer.ip}...`);
   client = mqtt.connect(`mqtts://${config.printer.ip}:8883`, {
     username: "bblp",
     password: config.printer.accessCode,
@@ -279,6 +276,7 @@ function connectMQTT(): void {
   });
 
   client.on("connect", () => {
+    console.log("[MQTT] Verbunden!");
     printerData.status = "Verbunden";
     client.subscribe(`device/${config.printer.serial}/report`);
     client.publish(
@@ -286,6 +284,10 @@ function connectMQTT(): void {
       JSON.stringify({ pushing: { sequenceId: "1", command: "pushing" } }),
     );
     updateDashboard();
+  });
+
+  client.on("error", (err) => {
+    console.error(`[MQTT] Fehler: ${err.message}`);
   });
 
   client.on("message", (topic: string, message: Buffer) => {
