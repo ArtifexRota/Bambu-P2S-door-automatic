@@ -1,17 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// Wir nutzen die Typisierung aus electron.d.ts, aber hier einfach 'any' für Flexibilität
-// oder definieren ein Interface für Translations, wenn wir strikter sein wollen.
-
 export const useTranslation = () => {
   const [translations, setTranslations] = useState<any>({});
 
   useEffect(() => {
     // 1. Initial Config + Translations laden
     if (window.electronAPI && window.electronAPI.onInitConfigs) {
-      window.electronAPI.onInitConfigs((_config: any, i18n: any) => {
-        console.log("i18n geladen:", i18n);
-        setTranslations(i18n);
+      // FIX: Wir nehmen 'data' als einziges Argument an und entpacken es
+      window.electronAPI.onInitConfigs((data: any) => {
+        console.log("i18n geladen:", data?.i18n);
+        
+        if (data && data.i18n) {
+          setTranslations(data.i18n);
+        }
       });
       // Trigger den Request, falls die Komponente später mountet
       window.electronAPI.requestConfig();
@@ -20,7 +21,8 @@ export const useTranslation = () => {
 
   // Die t-Funktion: t('monitor.printer') -> "Drucker"
   const t = useCallback((key: string): string => {
-    if (!translations) return key;
+    // Wenn noch keine Übersetzungen da sind, Key zurückgeben
+    if (!translations || Object.keys(translations).length === 0) return key;
 
     const keys = key.split('.');
     let result = translations;

@@ -5,7 +5,7 @@ import path from "path";
 
 export default defineConfig({
   root: path.join(__dirname, "src/renderer"),
-  base: "./",
+  base: "./", // Perfekt! Das fixt die relativen Pfade für Electron
   plugins: [
     react(),
     electron([
@@ -37,6 +37,8 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    outDir: "dist/renderer",
+    // DIES IST DER FIX: Ein absoluter Pfad vom Projekt-Hauptordner aus
+    outDir: path.join(__dirname, "dist/renderer"),
+    emptyOutDir: true, // Sorgt dafür, dass Vite den Ordner vor jedem Build sauber macht
   },
 });

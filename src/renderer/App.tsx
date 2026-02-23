@@ -16,7 +16,7 @@ const App: React.FC = () => {
     currentTemp: 0,
     targetTemp: 0,
     percent: 0,
-    status: t("dashboard.status.waiting"),
+    status: "offline",
     bambiState: "Unbekannt",
     printedParts: 0,
   });

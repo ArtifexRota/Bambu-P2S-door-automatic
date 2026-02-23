@@ -261,6 +261,14 @@ app.on("window-all-closed", () => {
 // --- SERIELLE VERBINDUNG ---
 function connectSerial(): void {
   try {
+    // NEU: Alte Verbindung schließen, falls vorhanden
+    if (port && port.isOpen) {
+      port.close();
+      logToFile("[Serial] Alte Verbindung geschlossen.");
+    }
+
+    if (!config.serial.port) return;
+
     logToFile(`[Serial] Versuche Verbindung zu ${config.serial.port}...`);
     port = new SerialPort({
       path: config.serial.port,
@@ -290,7 +298,6 @@ function connectSerial(): void {
         updateDashboard();
       } catch (e) {
         // Zu viel Spam im Log vermeiden
-        // logToFile("[Serial Data Error]");
       }
     });
   } catch (error: any) {
@@ -308,6 +315,16 @@ function sendToBambi(command: string): void {
 let client: mqtt.MqttClient;
 
 function connectMQTT(): void {
+  if (client) {
+    client.end(true); 
+    logToFile("[MQTT] Alte Verbindung getrennt.");
+  }
+
+  // NEU: Gar nicht erst versuchen, wenn noch die Platzhalter-IP drinsteht
+  if (!config.printer.ip || config.printer.ip.includes("X.X")) {
+    logToFile("[MQTT] Keine gültige IP hinterlegt. Warte auf Benutzereingabe.");
+    return;
+  }
   logToFile(`[MQTT] Versuche Verbindung zu ${config.printer.ip}...`);
   client = mqtt.connect(`mqtts://${config.printer.ip}:8883`, {
     username: "bblp",
@@ -444,6 +461,8 @@ ipcMain.on("save-config", (event, newConfig) => {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     sendToBambi(`SAVE:${config.servo.open}:${config.servo.close}`);
     logToFile('[Settings] Config erfolgreich aktualisiert!');
+    connectSerial();
+    connectMQTT();
   } catch (error: any) {
     logToFile(`[Settings] Fehler beim Speichern: ${error.message}`);
   }

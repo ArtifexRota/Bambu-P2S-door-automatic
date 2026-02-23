@@ -59,7 +59,12 @@
     "save_sequence": "Sequenz Speichern",
     "test_sequence": "Sequenz testen",
     "success": "Sequenz gespeichert!",
-    "running": "Bot Testlauf gestartet..."
+    "running": "Bot Testlauf gestartet...",
+    "info_title": "Wichtige Hinweise zur Zuverlässigkeit",
+"info_fullscreen": "Bambu Studio sollte immer im Vollbildmodus auf deinem Hauptmonitor geöffnet sein.",
+"info_taskbar": "Das Bambu Studio Icon muss sich immer an der exakt gleichen Stelle in deiner Taskleiste befinden.",
+"info_scaling": "Wenn du den Monitor wechselst oder die Windows-Skalierung (Textgröße) änderst, musst du die Klick-Positionen einmalig neu anlernen.",
+"info_taskbar_hide": "Die Windows-Taskleiste darf nicht auf 'Automatisch ausblenden' stehen, da dies die Klick-Positionen verschiebt."
   },
   "gcode": {
     "title": "End-Gcode Generator",

@@ -48,7 +48,7 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialSequence = [] }) => {
   };
 
   // Aktualisiert einen bestimmten Wert eines Klicks
-const updateTask = (id: string, field: keyof ClickTask, value: any) => {
+  const updateTask = (id: string, field: keyof ClickTask, value: any) => {
     setTasks(prevTasks => prevTasks.map(t => t.id === id ? { ...t, [field]: value } : t));
   };
 
@@ -80,36 +80,67 @@ const updateTask = (id: string, field: keyof ClickTask, value: any) => {
   return (
     <div className="card full-width">
       <h2>🤖 {t("bot.title")}</h2>
-      <p style={{ color: '#888', marginBottom: '20px' }}>
+      <p style={{ color: '#888', marginBottom: '15px' }}>
         {t("bot.description")}
       </p>
+
+      {/* NEU: Ausklappbarer Info-Kasten */}
+      <details style={{ 
+        background: '#1e1e24', 
+        padding: '12px 15px', 
+        borderRadius: '8px', 
+        marginBottom: '20px', 
+        border: '1px solid #333',
+        transition: 'all 0.3s ease'
+      }}>
+        <summary style={{ 
+          cursor: 'pointer', 
+          fontWeight: 'bold', 
+          color: '#2196f3', 
+          outline: 'none',
+          userSelect: 'none'
+        }}>
+          {t("bot.info_title")}
+        </summary>
+        <ul style={{ 
+          marginTop: '12px', 
+          color: '#bbb', 
+          lineHeight: '1.6', 
+          paddingLeft: '20px',
+          fontSize: '0.95rem'
+        }}>
+          <li>{t("bot.info_fullscreen")}</li>
+          <li>{t("bot.info_taskbar")}</li>
+          <li>{t("bot.info_taskbar_hide")}</li>
+          <li>{t("bot.info_scaling")}</li>
+        </ul>
+      </details>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {tasks.map((task) => (
           <div key={task.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#1e1e24', padding: '15px', borderRadius: '8px' }}>
             
             <input 
-  type="text" 
-  value={task.name} 
-  onChange={(e) => updateTask(task.id, 'name', e.target.value)}
-  style={{ width: '120px', background: '#2a2a2e', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }}
-/>
+              type="text" 
+              value={task.name} 
+              onChange={(e) => updateTask(task.id, 'name', e.target.value)}
+              style={{ width: '120px', background: '#2a2a2e', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }}
+            />
 
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
               <span>X:</span>
               <input 
-  type="number" 
-  value={task.x} 
-  readOnly 
-  style={{ width: '70px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }} 
-/>
-
-<input 
-  type="number" 
-  value={task.y} 
-  readOnly 
-  style={{ width: '70px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }} 
-/>
+                type="number" 
+                value={task.x} 
+                readOnly 
+                style={{ width: '70px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }} 
+              />
+              <input 
+                type="number" 
+                value={task.y} 
+                readOnly 
+                style={{ width: '70px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }} 
+              />
             </div>
 
             <button 
@@ -123,13 +154,13 @@ const updateTask = (id: string, field: keyof ClickTask, value: any) => {
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginLeft: 'auto' }}>
               <span>{t("bot.delay")}:</span>
               <input 
-  type="number" 
-  value={task.delaySeconds} 
-  onChange={(e) => updateTask(task.id, 'delaySeconds', Number(e.target.value))}
-  min="0"
-  step="0.5"
-  style={{ width: '70px', background: '#2a2a2e', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }}
-/>
+                type="number" 
+                value={task.delaySeconds} 
+                onChange={(e) => updateTask(task.id, 'delaySeconds', Number(e.target.value))}
+                min="0"
+                step="0.5"
+                style={{ width: '70px', background: '#2a2a2e', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px' }}
+              />
             </div>
 
             <button onClick={() => removeTask(task.id)} style={{ background: '#d32f2f', padding: '8px 12px' }}>
@@ -145,17 +176,17 @@ const updateTask = (id: string, field: keyof ClickTask, value: any) => {
         </button>
 
         <button 
-  onClick={() => {
-    if (window.electronAPI && window.electronAPI.saveBotSequence) {
-      window.electronAPI.saveBotSequence(tasks);
-      toast.success(t("bot.success"));
-    }
-  }} 
-  style={{ padding: '10px 20px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
->
-  💾 {t("bot.save_sequence")}
-</button>
-<button 
+          onClick={() => {
+            if (window.electronAPI && window.electronAPI.saveBotSequence) {
+              window.electronAPI.saveBotSequence(tasks);
+              toast.success(t("bot.success"));
+            }
+          }} 
+          style={{ padding: '10px 20px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          💾 {t("bot.save_sequence")}
+        </button>
+        <button 
           onClick={() => {
             if (window.electronAPI && window.electronAPI.startBot) {
               toast(t("bot.running"), { icon: '🤖' });

@@ -59,7 +59,12 @@
     "save_sequence": "Save Sequence",
     "test_sequence": "Test Sequence",
     "success": "Sequence saved!",
-    "running": "Bot test run started..."
+    "running": "Bot test run started...",
+    "info_title": "Important Reliability Notes",
+"info_fullscreen": "Bambu Studio should always be opened in fullscreen mode on your primary monitor.",
+"info_taskbar": "The Bambu Studio icon must always remain in the exact same position on your taskbar.",
+"info_scaling": "If you change your monitor or adjust the Windows display scaling (text size), you must re-learn the click positions.",
+"info_taskbar_hide": "The Windows taskbar must not be set to 'Auto-hide', as this will shift the click positions."
   },
   "gcode": {
     "title": "End-Gcode Generator",
