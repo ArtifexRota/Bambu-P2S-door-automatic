@@ -50,6 +50,22 @@ interface PrinterData {
   printedParts: number;
 }
 
+// --- LOGGING ---
+const logPath = path.join(app.getPath("userData"), "error.log");
+
+function logToFile(message: string) {
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] ${message}\n`;
+  try {
+    fs.appendFileSync(logPath, logMessage);
+  } catch (err) {
+    console.error("Logging failed:", err);
+  }
+}
+
+// Initial Log
+logToFile("App gestartet. Version: " + app.getVersion());
+
 // --- GLOBALE VARIABLEN ---
 let mainWindow: BrowserWindow | null = null;
 let port: SerialPort | null = null;
@@ -105,34 +121,47 @@ try {
     // Datei ist da -> Laden
     const rawData = fs.readFileSync(configPath, "utf-8");
     config = JSON.parse(rawData);
+    logToFile("Config geladen.");
   } else {
     // Datei fehlt -> Standardwerte nehmen und SPEICHERN
-    console.log("Erstelle neue config.json...");
+    logToFile("Erstelle neue config.json...");
     config = defaultConfig;
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
   }
-} catch (error) {
-  console.error("Config defekt, nutze Defaults:", error);
+} catch (error: any) {
+  logToFile(`Config defekt, nutze Defaults: ${error.message}`);
   config = defaultConfig;
 }
 
 // --- TRANSLATIONS LADEN (Robust) ---
 const lang = config.language || "de";
-const localesPath = path.join(app.getAppPath(), "locales", `${lang}.json`);
+// Fix: Use __dirname for relative path resolution within ASAR
+const localesPath = app.isPackaged
+  ? path.join(process.resourcesPath, 'locales', `${lang}.json`) // Often safer for external resources
+  : path.join(app.getAppPath(), "locales", `${lang}.json`);
+
 let translations: any = {};
 
 try {
-  console.log(`[Main] Lade Übersetzungen von: ${localesPath}`);
+  logToFile(`[Main] Lade Übersetzungen von: ${localesPath}`);
   if (fs.existsSync(localesPath)) {
     translations = JSON.parse(fs.readFileSync(localesPath, "utf-8"));
     currentTranslations = translations;
-    console.log("[Main] Übersetzungen erfolgreich geladen.");
+    logToFile("[Main] Übersetzungen erfolgreich geladen.");
   } else {
-    console.error(`[Main] FEHLER: Übersetzungsdatei nicht gefunden! Pfad: ${localesPath}`);
-    // Optional: Fallback auf de.json versuchen oder leeres Objekt lassen
+    // Fallback: Try standard path if resourcesPath fails
+    const fallbackPath = path.join(app.getAppPath(), "locales", `${lang}.json`);
+    logToFile(`[Main] FEHLER: Übersetzungsdatei nicht gefunden! Versuche Fallback: ${fallbackPath}`);
+    if (fs.existsSync(fallbackPath)) {
+        translations = JSON.parse(fs.readFileSync(fallbackPath, "utf-8"));
+        currentTranslations = translations;
+        logToFile("[Main] Übersetzungen (Fallback) erfolgreich geladen.");
+    } else {
+        logToFile(`[Main] CRITICAL: Auch Fallback fehlgeschlagen.`);
+    }
   }
 } catch (error: any) {
-  console.error(`[Main] CRITICAL: Fehler beim Laden der Übersetzungen: ${error.message}`);
+  logToFile(`[Main] CRITICAL: Fehler beim Laden der Übersetzungen: ${error.message}`);
 }
 
 let printerData: PrinterData = {
@@ -148,8 +177,13 @@ let printerData: PrinterData = {
 
 // --- ELECTRON WINDOW ---
 function createWindow(): void {
-  const preloadPath = path.join(app.getAppPath(), "dist", "preload", "preload.js");
-  console.log(`[Main] Preload Pfad: ${preloadPath}`);
+  // Fix: Use __dirname based path for preload script
+  const preloadPath = path.join(__dirname, "../preload/preload.js");
+  logToFile(`[Main] Preload Pfad (__dirname basierend): ${preloadPath}`);
+
+  if (!fs.existsSync(preloadPath)) {
+      logToFile(`[Main] WARNUNG: Preload Script nicht gefunden!`);
+  }
 
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -166,23 +200,24 @@ function createWindow(): void {
   mainWindow.webContents.openDevTools();
 
   if (app.isPackaged) {
-    // In der Produktion: Pfad direkt ab App-Root
-    const indexPath = path.join(app.getAppPath(), "dist", "renderer", "index.html");
-    console.log(`[Main] Lade Index (Packaged): ${indexPath}`);
+    // In der Produktion: Pfad direkt ab __dirname (sicherer im ASAR)
+    // Struktur: dist/main/main.js -> dist/renderer/index.html
+    const indexPath = path.join(__dirname, "../renderer/index.html");
+    logToFile(`[Main] Lade Index (Packaged): ${indexPath}`);
     
     if (fs.existsSync(indexPath)) {
-      mainWindow.loadFile(indexPath);
+      mainWindow.loadFile(indexPath).catch(e => logToFile(`[Main] LoadFile Error: ${e.message}`));
     } else {
-      console.error(`[Main] CRITICAL: Index nicht gefunden an: ${indexPath}`);
+      logToFile(`[Main] CRITICAL: Index nicht gefunden an: ${indexPath}`);
     }
   } else {
     // Im Entwicklungsmodus
-    console.log("[Main] Lade Dev Server URL");
+    logToFile("[Main] Lade Dev Server URL");
     mainWindow.loadURL("http://localhost:3000");
   }
 
   mainWindow.webContents.on("did-finish-load", () => {
-    console.log("[Main] Renderer fertig geladen. Sende init-app...");
+    logToFile("[Main] Renderer fertig geladen. Sende init-app...");
     mainWindow?.webContents.send("init-app", {
       config: config,
       i18n: translations,
@@ -190,12 +225,16 @@ function createWindow(): void {
   });
 
   mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
-    console.error(`[Main] ERROR: Renderer failed to load: ${errorCode} - ${errorDescription}`);
+    logToFile(`[Main] ERROR: Renderer failed to load: ${errorCode} - ${errorDescription}`);
+  });
+
+  mainWindow.webContents.on("crashed", (event, killed) => {
+    logToFile(`[Main] CRITICAL: Renderer Process CRASHED! Killed: ${killed}`);
   });
 }
 
 app.whenReady().then(() => {
-  console.log("[Main] App is Ready.");
+  logToFile("[Main] App is Ready.");
   createWindow();
   connectSerial();
   connectMQTT();
@@ -222,7 +261,7 @@ app.on("window-all-closed", () => {
 // --- SERIELLE VERBINDUNG ---
 function connectSerial(): void {
   try {
-    console.log(`[Serial] Versuche Verbindung zu ${config.serial.port}...`);
+    logToFile(`[Serial] Versuche Verbindung zu ${config.serial.port}...`);
     port = new SerialPort({
       path: config.serial.port,
       baudRate: config.serial.baudRate,
@@ -231,9 +270,9 @@ function connectSerial(): void {
 
     port.open((err) => {
       if (err) {
-        console.log(`[Serial] Port ${config.serial.port} nicht gefunden oder Fehler: ${err.message}`);
+        logToFile(`[Serial] Port ${config.serial.port} nicht gefunden oder Fehler: ${err.message}`);
       } else {
-        console.log(`[Serial] Verbunden mit ${config.serial.port}`);
+        logToFile(`[Serial] Verbunden mit ${config.serial.port}`);
       }
     });
 
@@ -250,11 +289,12 @@ function connectSerial(): void {
         }
         updateDashboard();
       } catch (e) {
-        console.log("[Serial Data Error]");
+        // Zu viel Spam im Log vermeiden
+        // logToFile("[Serial Data Error]");
       }
     });
   } catch (error: any) {
-    console.error("SerialPort Fehler:", error.message);
+    logToFile(`SerialPort Fehler: ${error.message}`);
   }
 }
 
@@ -268,7 +308,7 @@ function sendToBambi(command: string): void {
 let client: mqtt.MqttClient;
 
 function connectMQTT(): void {
-  console.log(`[MQTT] Versuche Verbindung zu ${config.printer.ip}...`);
+  logToFile(`[MQTT] Versuche Verbindung zu ${config.printer.ip}...`);
   client = mqtt.connect(`mqtts://${config.printer.ip}:8883`, {
     username: "bblp",
     password: config.printer.accessCode,
@@ -276,7 +316,7 @@ function connectMQTT(): void {
   });
 
   client.on("connect", () => {
-    console.log("[MQTT] Verbunden!");
+    logToFile("[MQTT] Verbunden!");
     printerData.status = "Verbunden";
     client.subscribe(`device/${config.printer.serial}/report`);
     client.publish(
@@ -287,7 +327,7 @@ function connectMQTT(): void {
   });
 
   client.on("error", (err) => {
-    console.error(`[MQTT] Fehler: ${err.message}`);
+    logToFile(`[MQTT] Fehler: ${err.message}`);
   });
 
   client.on("message", (topic: string, message: Buffer) => {
@@ -309,7 +349,7 @@ function connectMQTT(): void {
         if (!activeProfile && printerData.status === "RUNNING") {
             // Nur einmal warnen, nicht spammen
             if (!printerData.isDoorOpen) {
-                console.log('[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt! Tür-Automatik ist deaktiviert.');
+                logToFile('[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt! Tür-Automatik ist deaktiviert.');
                 printerData.isDoorOpen = true; // Missbraucht als Flag, um Spam zu verhindern
             }
         } else if (activeProfile) {
@@ -322,7 +362,7 @@ function connectMQTT(): void {
                 isNearEnd &&               
                 !printerData.isDoorOpen    
             ) {
-                console.log(`[Auto] 80% erreicht & Temperatur OK (${printerData.currentTemp}°C <= ${currentTargetOpenTemp}°C | Profil: ${activeProfile.name}) -> Öffne Tür!`);
+                logToFile(`[Auto] 80% erreicht & Temperatur OK (${printerData.currentTemp}°C <= ${currentTargetOpenTemp}°C | Profil: ${activeProfile.name}) -> Öffne Tür!`);
                 sendToBambi("OPEN");
                 printerData.isDoorOpen = true; 
             }
@@ -365,24 +405,24 @@ async function startNewSpool(): Promise<void> {
   const sequence = config.bot.sequence;
   
   if (!sequence || sequence.length === 0) {
-      console.log("[Bot] Keine Klick-Sequenz gespeichert. Bot bricht ab.");
+      logToFile("[Bot] Keine Klick-Sequenz gespeichert. Bot bricht ab.");
       return;
   }
 
-  console.log(`[Bot] Starte Klick-Sequenz mit ${sequence.length} Schritten...`);
+  logToFile(`[Bot] Starte Klick-Sequenz mit ${sequence.length} Schritten...`);
 
   
 
   // Abarbeiten der dynamischen Liste
   for (const step of sequence) {
-      console.log(`[Bot] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
+      logToFile(`[Bot] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
       clickAt(step.x, step.y);
       
       // Delay in Millisekunden umrechnen
       await delay(step.delaySeconds * 1000);
   }
 
-  console.log("[Bot] Sequenz abgeschlossen.");
+  logToFile("[Bot] Sequenz abgeschlossen.");
 printerData.printedParts++;
   updateDashboard();
 }
@@ -403,9 +443,9 @@ ipcMain.on("save-config", (event, newConfig) => {
     config = newConfig;
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
     sendToBambi(`SAVE:${config.servo.open}:${config.servo.close}`);
-    console.log('[Settings] Config erfolgreich aktualisiert!');
-  } catch (error) {
-    console.error('[Settings] Fehler beim Speichern:', error);
+    logToFile('[Settings] Config erfolgreich aktualisiert!');
+  } catch (error: any) {
+    logToFile(`[Settings] Fehler beim Speichern: ${error.message}`);
   }
 });
 
@@ -413,9 +453,9 @@ ipcMain.on('save-bot-sequence', (event, sequence) => {
   try {
     config.bot.sequence = sequence; 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    console.log('[Bot] Erfolgreich in config.json gespeichert:', sequence.length, 'Klicks');
-  } catch (error) {
-    console.error('[Bot] Fehler beim Speichern der config.json:', error);
+    logToFile(`[Bot] Erfolgreich in config.json gespeichert: ${sequence.length} Klicks`);
+  } catch (error: any) {
+    logToFile(`[Bot] Fehler beim Speichern der config.json: ${error.message}`);
   }
 });
 
