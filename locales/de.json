@@ -12,6 +12,13 @@
       "door_open": "✅ Tür ist offen!",
       "finished": "🔄 Druck beendet. Bot übernimmt..."
     },
+    "auto_mode": {
+  "activated_toast": "Automatik AKTIVIERT 🤖",
+  "deactivated_toast": "Automatik DEAKTIVIERT ⏸️",
+  "status_on": "🤖 Automatik ist AN",
+  "status_off": "⏸️ Automatik ist AUS",
+  "description": "Aktiviert die automatische Türsteuerung und den Klick-Bot am Ende des Drucks."
+},
     "printer_status": "Drucker Status",
     "current_material": "Aktuelles Material",
     "door_opens_at": "Tür öffnet bei",

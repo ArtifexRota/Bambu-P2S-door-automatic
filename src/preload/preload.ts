@@ -1,6 +1,8 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electronAPI", {
+  captureCursorWithHotkey: () => ipcRenderer.invoke("capture-cursor-hotkey"),
+  changeLanguage: (lang: string) => ipcRenderer.send("change-language", lang),
   saveBotSequence: (sequence: any) => ipcRenderer.send('save-bot-sequence', sequence),
   quitApp: () => ipcRenderer.send('quit-app'),
   getCursorPosition: () => ipcRenderer.invoke('get-cursor-position'),

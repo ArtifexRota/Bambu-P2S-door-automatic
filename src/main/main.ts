@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, screen } from "electron";
+import { app, BrowserWindow, ipcMain, screen, globalShortcut } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import * as mqtt from "mqtt";
@@ -71,6 +71,7 @@ let mainWindow: BrowserWindow | null = null;
 let port: SerialPort | null = null;
 let parser: ReadlineParser | null = null;
 let currentTranslations: any = {};
+let printFinishedHandled = false;
 
 // --- STANDARD KONFIGURATION (Hardcoded im Code) ---
 const defaultConfig: Config = {
@@ -357,47 +358,59 @@ function connectMQTT(): void {
         if (p.mc_percent !== undefined) printerData.percent = p.mc_percent;
         if (p.gcode_state) printerData.status = p.gcode_state;
 
+        // Sobald ein NEUER Druck startet, setzen wir die Sperre zurück!
+        if (printerData.status === "RUNNING") {
+            printFinishedHandled = false;
+        }
 
-        // --- Die smarte Tür-Steuerung (mit Profilen) ---
+        // --- Die smarte Tür-Steuerung ---
+        const autoModeEnabled = config.bot?.autoMode === true; // Prüft, ob Automatik AN ist
         const profiles = config.materials?.profiles || [];
         const activeProfileId = config.materials?.activeProfileId;
         const activeProfile = profiles.find((p: any) => p.id === activeProfileId);
 
-        if (!activeProfile && printerData.status === "RUNNING") {
-            // Nur einmal warnen, nicht spammen
-            if (!printerData.isDoorOpen) {
-                logToFile('[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt! Tür-Automatik ist deaktiviert.');
-                printerData.isDoorOpen = true; // Missbraucht als Flag, um Spam zu verhindern
-            }
-        } else if (activeProfile) {
-            const currentTargetOpenTemp = activeProfile.openTemp;
-            const isNearEnd = printerData.percent > 80;         
-            const isSafeTemp = printerData.currentTemp <= currentTargetOpenTemp;
+        // Führt die Logik nur aus, wenn die Automatik im Dashboard aktiviert wurde
+        if (autoModeEnabled) {
+            if (!activeProfile && printerData.status === "RUNNING") {
+                if (!printerData.isDoorOpen) {
+                    logToFile('[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt!');
+                    printerData.isDoorOpen = true; 
+                }
+            } else if (activeProfile) {
+                const currentTargetOpenTemp = activeProfile.openTemp;
+                const isNearEnd = printerData.percent > 80;        
+                const isSafeTemp = printerData.currentTemp <= currentTargetOpenTemp;
 
-            if ( 
-                isSafeTemp &&              
-                isNearEnd &&               
-                !printerData.isDoorOpen    
-            ) {
-                logToFile(`[Auto] 80% erreicht & Temperatur OK (${printerData.currentTemp}°C <= ${currentTargetOpenTemp}°C | Profil: ${activeProfile.name}) -> Öffne Tür!`);
-                sendToBambi("OPEN");
-                printerData.isDoorOpen = true; 
+                if ( 
+                    isSafeTemp &&              
+                    isNearEnd &&               
+                    !printerData.isDoorOpen && 
+                    !printFinishedHandled // WICHTIG: Nicht öffnen, wenn der Druck bereits fertig ist!
+                ) {
+                    logToFile(`[Auto] 80% erreicht & Temperatur OK -> Öffne Tür!`);
+                    sendToBambi("OPEN");
+                    printerData.isDoorOpen = true; 
+                }
             }
         }
 
         // --- Finish Logik ---
         if (
           (printerData.status === "FINISH" || printerData.status === "COMPLETED") &&
-          !printerData.isWaitingToClose
+          !printFinishedHandled && // 🛑 DIE SPERRE: Verhindert die Endlosschleife!
+          autoModeEnabled          // Nur wenn Automatik AN ist
         ) {
+          printFinishedHandled = true; // Sperre sofort aktivieren (wird erst beim nächsten Druck resettet)
           printerData.isWaitingToClose = true;
+          
           setTimeout(() => {
             sendToBambi("CLOSE");
             printerData.isWaitingToClose = false;
-            printerData.isDoorOpen = false; // Reset für den nächsten Druck
+            printerData.isDoorOpen = false; 
             
             setTimeout(() => {
-              if (printerData.status === "FINISH" || printerData.status === "IDLE") {
+              // Bevor der Bot startet, prüfen wir zur Sicherheit nochmal, ob die Automatik noch an ist
+              if ((printerData.status === "FINISH" || printerData.status === "IDLE") && config.bot?.autoMode === true) {
                 startNewSpool();
               }
             }, 60000);
@@ -407,8 +420,6 @@ function connectMQTT(): void {
       updateDashboard();
     } catch (e) {}
   });
-}
-
 // --- BOT FUNKTIONEN ---
 function clickAt(x: number | string, y: number | string): void {
   const clickCmd = `powershell -command "Add-Type -AssemblyName System.Windows.Forms; [Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${x},${y}); $type = Add-Type -name nativeMethods -namespace Win32 -PassThru -MemberDefinition '[DllImport(\\"user32.dll\\")] public static extern void mouse_event(int d, int x, int y, int c, int e);'; $type::mouse_event(2, 0, 0, 0, 0); $type::mouse_event(4, 0, 0, 0, 0);"`;
@@ -480,6 +491,44 @@ ipcMain.on('save-bot-sequence', (event, sequence) => {
 
 ipcMain.on('quit-app', () => {
   app.quit();
+});
+
+const startCapture = async (id: string) => {
+    setCapturingId(id);
+    toast(t("bot.capture_instruction"), { icon: '⌨️', duration: 4000 });
+
+    if (window.electronAPI && window.electronAPI.captureCursorWithHotkey) {
+      const pos = await window.electronAPI.captureCursorWithHotkey();
+      
+      updateTask(id, 'x', pos.x);
+      updateTask(id, 'y', pos.y);
+      setCapturingId(null);
+      toast.success(t("bot.capture_success"));
+    } else {
+      // NEU: Wenn die Brücke fehlt, gibt es jetzt eine dicke rote Fehlermeldung!
+      toast.error("FEHLER: captureCursorWithHotkey fehlt in der preload.ts!");
+      console.error("Aktuelle electronAPI:", window.electronAPI);
+      setCapturingId(null);
+    }
+  };
+
+ipcMain.on("change-language", (event, lang) => {
+  try {
+    config.language = lang;
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+
+    const localesPath = path.join(app.getAppPath(), "locales", `${lang}.json`);
+    if (fs.existsSync(localesPath)) {
+      const newTranslations = JSON.parse(fs.readFileSync(localesPath, "utf-8"));
+      currentTranslations = newTranslations;
+      logToFile(`[Main] Sprache gewechselt zu: ${lang}`);
+      
+      // Schickt die frischen Übersetzungen sofort an das Frontend zurück!
+      event.reply("init-app", { config: config, i18n: currentTranslations });
+    }
+  } catch (error: any) {
+    logToFile(`[Main] Fehler beim Sprachwechsel: ${error.message}`);
+  }
 });
 
 // Kann jetzt manuell aus dem UI oder automatisch vom MQTT getriggert werden

@@ -12,6 +12,13 @@
       "door_open": "✅ Door is open!",
       "finished": "🔄 Print finished. Bot taking over..."
     },
+    "auto_mode": {
+  "activated_toast": "Auto-mode ENABLED 🤖",
+  "deactivated_toast": "Auto-mode DISABLED ⏸️",
+  "status_on": "🤖 Auto-mode is ON",
+  "status_off": "⏸️ Auto-mode is OFF",
+  "description": "Enables automatic door control and the click-bot at the end of the print."
+},
     "printer_status": "Printer Status",
     "current_material": "Current Material",
     "door_opens_at": "Door opens at",

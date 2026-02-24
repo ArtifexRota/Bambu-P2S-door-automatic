@@ -195,6 +195,42 @@ const handleAcceptEula = () => {
               }}>
                 {autoStatusText}
               </div>
+              <div style={{ 
+                marginTop: '20px', 
+                padding: '15px', 
+                background: 'rgba(0,0,0,0.2)', 
+                borderRadius: '8px', 
+                border: '1px solid #333' 
+              }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox"
+                    checked={config.bot?.autoMode || false}
+                    onChange={(e) => {
+                      const updatedConfig = { 
+                        ...config, 
+                        bot: { ...config.bot, autoMode: e.target.checked } 
+                      };
+                      setConfig(updatedConfig);
+                      if (window.electronAPI && window.electronAPI.saveConfig) {
+                        window.electronAPI.saveConfig(updatedConfig);
+                        toast.success(
+                          e.target.checked 
+                            ? t("dashboard.auto_mode.activated_toast") 
+                            : t("dashboard.auto_mode.deactivated_toast")
+                        );
+                      }
+                    }}
+                    style={{ width: '22px', height: '22px', cursor: 'pointer', accentColor: '#4caf50' }}
+                  />
+                  <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: config.bot?.autoMode ? '#4caf50' : '#888' }}>
+                    {config.bot?.autoMode ? t("dashboard.auto_mode.status_on") : t("dashboard.auto_mode.status_off")}
+                  </span>
+                </label>
+                <p style={{ margin: '5px 0 0 32px', fontSize: '0.85rem', color: '#666' }}>
+                  {t("dashboard.auto_mode.description")}
+                </p>
+              </div>
             </div>
 
             {/* 3. Bambi Tür-Status Card */}

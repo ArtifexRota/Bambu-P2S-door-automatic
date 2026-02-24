@@ -53,28 +53,21 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialSequence = [] }) => {
   };
 
   // Die Countdown-Logik zum Erfassen der Maus
-  const startCapture = (id: string) => {
+  const startCapture = async (id: string) => {
     setCapturingId(id);
-    let timeLeft = 3;
-    setCountdown(timeLeft);
+    
+    // Kurze Info für den Nutzer
+    toast(t("bot.capture_instruction"), { icon: '⌨️', duration: 4000 });
 
-    const interval = setInterval(() => {
-      timeLeft -= 1;
-      setCountdown(timeLeft);
-
-      if (timeLeft === 0) {
-        clearInterval(interval);
-        setCapturingId(null);
-        
-        // Globale Position über Electron abfragen
-        if (window.electronAPI && window.electronAPI.getCursorPosition) {
-          window.electronAPI.getCursorPosition().then((pos: {x: number, y: number}) => {
-            updateTask(id, 'x', pos.x);
-            updateTask(id, 'y', pos.y);
-          });
-        }
-      }
-    }, 1000);
+    if (window.electronAPI && window.electronAPI.captureCursorWithHotkey) {
+      // Die App pausiert hier quasi und wartet, bis der Nutzer F8 drückt!
+      const pos = await window.electronAPI.captureCursorWithHotkey();
+      
+      updateTask(id, 'x', pos.x);
+      updateTask(id, 'y', pos.y);
+      setCapturingId(null); // Button wieder normal machen
+      toast.success(t("bot.capture_success"));
+    }
   };
 
   return (
@@ -148,7 +141,7 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialSequence = [] }) => {
               disabled={capturingId !== null}
               style={{ background: capturingId === task.id ? '#e6a800' : '#4caf50', cursor: 'pointer' }}
             >
-              {capturingId === task.id ? `${t("bot.waiting")} ${countdown}s...` : `📍 ${t("bot.capture")}`}
+              {capturingId === task.id ? `⏳ ${t("bot.waiting_for_hotkey")}` : `📍 ${t("bot.capture")}`}
             </button>
 
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginLeft: 'auto' }}>
