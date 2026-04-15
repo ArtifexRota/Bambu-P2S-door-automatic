@@ -1,10 +1,15 @@
-import { app, BrowserWindow, ipcMain, screen, globalShortcut } from "electron";
+import { app, BrowserWindow, ipcMain, screen, globalShortcut, Notification } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import * as mqtt from "mqtt";
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { exec } from "child_process";
+
+app.name = "Bambi P2S Control";
+if (process.platform === 'win32') {
+  app.setAppUserModelId("Bambi P2S Control");
+}
 
 // --- INTERFACES ---
 interface MaterialProfile {
@@ -197,8 +202,6 @@ function createWindow(): void {
     },
   });
 
-  // DEVTOOLS ERZWINGEN FÜR DEBUGGING
-  mainWindow.webContents.openDevTools();
 
   if (app.isPackaged) {
     // In der Produktion: Pfad direkt ab __dirname (sicherer im ASAR)
@@ -229,8 +232,8 @@ function createWindow(): void {
     logToFile(`[Main] ERROR: Renderer failed to load: ${errorCode} - ${errorDescription}`);
   });
 
-  mainWindow.webContents.on("crashed", (event, killed) => {
-    logToFile(`[Main] CRITICAL: Renderer Process CRASHED! Killed: ${killed}`);
+  mainWindow.webContents.on("render-process-gone", (_event, details) => {
+    logToFile(`[Main] CRITICAL: Renderer Process CRASHED! Reason: ${details.reason}`);
   });
 }
 
@@ -420,9 +423,24 @@ function connectMQTT(): void {
       updateDashboard();
     } catch (e) {}
   });
+} // <--- HIER IST DIE FEHLENDE KLAMMER FÜR connectMQTT()
+
 // --- BOT FUNKTIONEN ---
 function clickAt(x: number | string, y: number | string): void {
-  const clickCmd = `powershell -command "Add-Type -AssemblyName System.Windows.Forms; [Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${x},${y}); $type = Add-Type -name nativeMethods -namespace Win32 -PassThru -MemberDefinition '[DllImport(\\"user32.dll\\")] public static extern void mouse_event(int d, int x, int y, int c, int e);'; $type::mouse_event(2, 0, 0, 0, 0); $type::mouse_event(4, 0, 0, 0, 0);"`;
+  // 1. Finde heraus, auf welchem Monitor sich die Koordinaten befinden
+  const display = screen.getDisplayNearestPoint({ x: Number(x), y: Number(y) });
+  
+  // 2. Lese den Windows-Zoomfaktor aus (z.B. 1.25 für 125%)
+  const scale = display.scaleFactor; 
+
+  // 3. Berechne die echten Hardware-Pixel für die PowerShell
+  const realX = Math.round(Number(x) * scale);
+  const realY = Math.round(Number(y) * scale);
+
+  logToFile(`[Bot] Klicke auf logisch (${x},${y}) -> skaliert für Windows (${realX},${realY})`);
+
+  // 4. Feuer den Befehl mit den skalierten Koordinaten ab
+  const clickCmd = `powershell -command "Add-Type -AssemblyName System.Windows.Forms; [Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${realX},${realY}); $type = Add-Type -name nativeMethods -namespace Win32 -PassThru -MemberDefinition '[DllImport(\\"user32.dll\\")] public static extern void mouse_event(int d, int x, int y, int c, int e);'; $type::mouse_event(2, 0, 0, 0, 0); $type::mouse_event(4, 0, 0, 0, 0);"`;
   exec(clickCmd);
 }
 
@@ -439,8 +457,6 @@ async function startNewSpool(): Promise<void> {
 
   logToFile(`[Bot] Starte Klick-Sequenz mit ${sequence.length} Schritten...`);
 
-  
-
   // Abarbeiten der dynamischen Liste
   for (const step of sequence) {
       logToFile(`[Bot] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
@@ -451,7 +467,7 @@ async function startNewSpool(): Promise<void> {
   }
 
   logToFile("[Bot] Sequenz abgeschlossen.");
-printerData.printedParts++;
+  printerData.printedParts++;
   updateDashboard();
 }
 
@@ -493,25 +509,6 @@ ipcMain.on('quit-app', () => {
   app.quit();
 });
 
-const startCapture = async (id: string) => {
-    setCapturingId(id);
-    toast(t("bot.capture_instruction"), { icon: '⌨️', duration: 4000 });
-
-    if (window.electronAPI && window.electronAPI.captureCursorWithHotkey) {
-      const pos = await window.electronAPI.captureCursorWithHotkey();
-      
-      updateTask(id, 'x', pos.x);
-      updateTask(id, 'y', pos.y);
-      setCapturingId(null);
-      toast.success(t("bot.capture_success"));
-    } else {
-      // NEU: Wenn die Brücke fehlt, gibt es jetzt eine dicke rote Fehlermeldung!
-      toast.error("FEHLER: captureCursorWithHotkey fehlt in der preload.ts!");
-      console.error("Aktuelle electronAPI:", window.electronAPI);
-      setCapturingId(null);
-    }
-  };
-
 ipcMain.on("change-language", (event, lang) => {
   try {
     config.language = lang;
@@ -523,7 +520,6 @@ ipcMain.on("change-language", (event, lang) => {
       currentTranslations = newTranslations;
       logToFile(`[Main] Sprache gewechselt zu: ${lang}`);
       
-      // Schickt die frischen Übersetzungen sofort an das Frontend zurück!
       event.reply("init-app", { config: config, i18n: currentTranslations });
     }
   } catch (error: any) {
@@ -531,7 +527,42 @@ ipcMain.on("change-language", (event, lang) => {
   }
 });
 
-// Kann jetzt manuell aus dem UI oder automatisch vom MQTT getriggert werden
 ipcMain.on("start-bot", () => {
   startNewSpool();
+});
+
+// --- HOTKEY LOGIK (Richtiger Backend Code) ---
+ipcMain.handle('capture-cursor-hotkey', () => {
+  return new Promise((resolve) => {
+    const hotkey = 'F8'; 
+    
+    globalShortcut.unregister(hotkey);
+    logToFile(`[Bot] Versuche Hotkey (${hotkey}) bei Windows anzumelden...`);
+
+    const success = globalShortcut.register(hotkey, () => {
+      const point = screen.getCursorScreenPoint();
+      logToFile(`[Bot] ${hotkey} gedrückt! Position erfasst: X:${point.x} Y:${point.y}`);
+      
+      globalShortcut.unregister(hotkey);
+
+      // NEU: Echte Windows-Benachrichtigung anzeigen!
+      // Wir holen uns die Texte aus deinen geladenen Sprachdateien (mit Fallback)
+      const title = currentTranslations?.bot?.capture_success_title || "Gespeichert!";
+      const body = currentTranslations?.bot?.capture_success_body || "Koordinaten übernommen.";
+      
+      new Notification({ title: title, body: body }).show();
+
+      resolve(point);
+    });
+
+    if (!success) {
+      logToFile(`[Bot] ❌ FEHLER: Windows blockiert ${hotkey}! Wird die Taste von einer anderen App genutzt?`);
+    } else {
+      logToFile(`[Bot] ✅ Hotkey ${hotkey} ist scharfgeschaltet. Warte auf Eingabe...`);
+    }
+  });
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
 });
