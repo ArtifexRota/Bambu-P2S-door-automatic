@@ -138,5 +138,24 @@
     "decline": "Decline & Exit",
     "accept": "I understand & accept",
     "accepted_toast": "License accepted. Welcome!"
+  },
+  "sidebar": {
+    "language": "Language"
+  },
+  "states": {
+    "printer": {
+      "offline": "Offline",
+      "idle": "Idle",
+      "running": "Running",
+      "finish": "Finished",
+      "completed": "Completed"
+    },
+    "door": {
+      "unknown": "Unknown",
+      "opening": "Opening...",
+      "open": "OPEN",
+      "closing": "Closing...",
+      "closed": "CLOSED"
+    }
   }
 }

@@ -77,7 +77,7 @@ const App: React.FC = () => {
       autoStatusBg = "rgba(156, 39, 176, 0.1)";
   }
 
-const handleAcceptEula = () => {
+  const handleAcceptEula = () => {
     const updatedConfig = { ...config, eulaAccepted: true };
     setConfig(updatedConfig);
     if (window.electronAPI && window.electronAPI.saveConfig) {
@@ -92,9 +92,43 @@ const handleAcceptEula = () => {
     }
   };
 
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLang = e.target.value;
+    if (window.electronAPI) {
+      if (window.electronAPI.changeLanguage) {
+        window.electronAPI.changeLanguage(newLang);
+      } else if (window.electronAPI.send) {
+        window.electronAPI.send("change-language", newLang);
+      }
+    }
+  };
+
+  // --- NEU: Hilfsfunktionen für die Status-Übersetzungen ---
+  const getPrinterStateText = (status: string) => {
+    if (!status) return "";
+    const key = `states.printer.${status.toLowerCase()}`;
+    const translated = t(key);
+    // Wenn der Key zurückgegeben wird (weil keine Übersetzung existiert), nutze den Original-Status als Fallback
+    return translated === key ? status : translated;
+  };
+
+  const getDoorStateText = (state: string) => {
+    // Mappt die fest eincodierten deutschen Backend-Werte auf die i18n Keys
+    let stateKey = "unknown";
+    switch(state) {
+      case "Unbekannt": stateKey = "unknown"; break;
+      case "ÖFFNET...": stateKey = "opening"; break;
+      case "OFFEN": stateKey = "open"; break;
+      case "SCHLIEẞT...": stateKey = "closing"; break;
+      case "GESCHLOSSEN": stateKey = "closed"; break;
+      default: stateKey = "unknown";
+    }
+    return t(`states.door.${stateKey}`);
+  };
+
   return (
     <div className="app-layout">
-      {/* DER TÜRSTEHER: Zeigt das Modal an, wenn eulaAccepted false oder nicht vorhanden ist */}
+      {/* DER TÜRSTEHER */}
       {!config.eulaAccepted && (
         <EulaModal onAccept={handleAcceptEula} onDecline={handleDeclineEula} />
       )}
@@ -116,8 +150,7 @@ const handleAcceptEula = () => {
       />
       
       {/* Sidebar / Navigation */}
-      <aside className="sidebar">
-        
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
         <nav>
           <button
             className={activeTab === "dashboard" ? "active" : ""}
@@ -147,6 +180,37 @@ const handleAcceptEula = () => {
           </button>
         </nav>
         
+        {/* Sprachauswahl */}
+        <div className="language-selector" style={{ marginTop: 'auto', padding: '20px', borderTop: '1px solid #333' }}>
+          <label style={{ display: 'block', marginBottom: '8px', color: '#888', fontSize: '0.85rem', fontWeight: 'bold' }}>
+            🌍 {t("sidebar.language")}
+          </label>
+          <select
+            value={config.language || "en"}
+            onChange={handleLanguageChange}
+            style={{ 
+              width: '100%', 
+              padding: '8px', 
+              background: '#1e1e24', 
+              color: '#fff', 
+              border: '1px solid #444', 
+              borderRadius: '4px',
+              cursor: 'pointer',
+              outline: 'none'
+            }}
+          >
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="it">Italiano</option>
+            <option value="pt">Português</option>
+            <option value="zh">中文 (简体)</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="ru">Русский</option>
+          </select>
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -157,7 +221,8 @@ const handleAcceptEula = () => {
             {/* 1. Drucker Status Card */}
             <div className="card status-card">
               <h3>{t("dashboard.printer_status")}</h3>
-              <div className="status-badge">{printerData.status}</div>
+              {/* NEU: Nutzen der Übersetzungs-Funktion */}
+              <div className="status-badge">{getPrinterStateText(printerData.status)}</div>
               <div className="temp-display">
                 <span className="current">{printerData.currentTemp}°C</span>
                 <span className="target"> / {printerData.targetTemp}°C</span>
@@ -171,7 +236,7 @@ const handleAcceptEula = () => {
               <p>{printerData.percent}% abgeschlossen</p>
             </div>
 
-            {/* 2. NEU: Aktuelles Material Card */}
+            {/* 2. Aktuelles Material Card */}
             <div className="card profile-card">
               <h3>{t("dashboard.current_material")}</h3>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2196f3', margin: '15px 0 5px 0' }}>
@@ -181,7 +246,6 @@ const handleAcceptEula = () => {
                 {t("dashboard.door_opens_at")}: <strong>{openTemp}°C</strong>
               </div>
               
-              {/* Smarter Automatik-Status */}
               <div style={{ 
                 marginTop: '25px', 
                 padding: '10px', 
@@ -239,7 +303,8 @@ const handleAcceptEula = () => {
               <div
                 className={`bambi-badge ${printerData.bambiState === "OFFEN" ? "open" : "closed"}`}
               >
-                {printerData.bambiState}
+                {/* NEU: Nutzen der Übersetzungs-Funktion */}
+                {getDoorStateText(printerData.bambiState)}
               </div>
               <div className="actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
                 <button 

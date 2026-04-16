@@ -94,7 +94,7 @@ const defaultConfig: Config = {
     close: 175
   },
   bot: {
-    closeDelayMs: 20000,
+    closeDelayMs: 3000,
     sequence: []
   },
   materials: {
@@ -416,14 +416,14 @@ function connectMQTT(): void {
               if ((printerData.status === "FINISH" || printerData.status === "IDLE") && config.bot?.autoMode === true) {
                 startNewSpool();
               }
-            }, 60000);
-          }, config.bot.closeDelayMs || 20000);
+            }, 3000);
+          }, config.bot.closeDelayMs || 3000);
         }
       }
       updateDashboard();
     } catch (e) {}
   });
-} // <--- HIER IST DIE FEHLENDE KLAMMER FÜR connectMQTT()
+}
 
 // --- BOT FUNKTIONEN ---
 function clickAt(x: number | string, y: number | string): void {

@@ -1,0 +1,161 @@
+{
+  "title": "Bambi P2S Control",
+  "dashboard": {
+    "title": "Cruscotto",
+    "settings": "Impostazioni",
+    "bot": "Configurazione Bot",
+    "gcode": "Generatore Gcode",
+    "status": {
+      "waiting": "💤 In attesa della stampa...",
+      "waiting_80": "⏳ In attesa dell'80%...",
+      "cooling": "🌡️ 80% raggiunto. In attesa del raffreddamento...",
+      "door_open": "✅ La porta è aperta!",
+      "finished": "🔄 Stampa terminata. Il Bot prende il controllo..."
+    },
+    "auto_mode": {
+      "activated_toast": "Modalità Automatica ATTIVATA 🤖",
+      "deactivated_toast": "Modalità Automatica DISATTIVATA ⏸️",
+      "status_on": "🤖 Modalità automatica ON",
+      "status_off": "⏸️ Modalità automatica OFF",
+      "description": "Abilita il controllo automatico della porta e il bot dei clic a fine stampa."
+    },
+    "printer_status": "Stato Stampante",
+    "current_material": "Materiale Attuale",
+    "door_opens_at": "La porta si apre a",
+    "door_control": "Porta Bambi P2S",
+    "open": "Apri",
+    "close": "Chiudi",
+    "stats": "Statistiche Sessione",
+    "parts_printed": "Pezzi Stampati"
+  },
+  "settings": {
+    "title": "Impostazioni di Sistema",
+    "description": "Configura qui la connessione della stampante, le porte hardware e i profili dei materiali.",
+    "connection": {
+      "title": "Connessione",
+      "ip": "Indirizzo IP Stampante",
+      "access_code": "Codice di Accesso",
+      "serial": "Numero di Serie",
+      "com_port": "Porta COM ESP32"
+    },
+    "servo": {
+      "title": "Calibrazione Servo",
+      "open_angle": "Angolo: Aperto (0-180)",
+      "close_angle": "Angolo: Chiuso (0-180)",
+      "test_open": "Test Apertura",
+      "test_close": "Test Chiusura"
+    },
+    "materials": {
+      "title": "Profili Materiali (Auto-Apertura)",
+      "name": "Nome Materiale",
+      "open_temp": "Apri porta a (°C)",
+      "new_profile": "Nuovo Materiale",
+      "add": "+ Nuovo Profilo"
+    },
+    "save_all": "Salva Tutto",
+    "success": "Impostazioni salvate con successo!"
+  },
+  "bot": {
+    "title": "Sequenza di Clic del Bot",
+    "description": "Crea tutti i clic necessari. Premi \"Cattura\" e sposta il mouse nella posizione desiderata entro 3 secondi.",
+    "click_name": "Nome Clic",
+    "capture": "Cattura Posizione",
+    "waiting": "Attendi",
+    "delay": "Ritardo (Sec)",
+    "add_click": "+ Aggiungi Clic",
+    "save_sequence": "Salva Sequenza",
+    "test_sequence": "Testa Sequenza",
+    "success": "Sequenza salvata!",
+    "running": "Test del bot avviato...",
+    "info_title": "Note Importanti per l'Affidabilità",
+    "capture_success_title": "Posizione salvata! 🎯",
+    "capture_instruction": "Passa a Bambu Studio, posiziona il mouse e premi F8",
+    "capture_success": "Posizione salvata! 🎯",
+    "waiting_for_hotkey": "In attesa di F8...",
+    "notification_title": "Posizione Catturata",
+    "notification_body": "Le coordinate del clic sono state salvate.",
+    "capture_success_body": "Le coordinate sono state applicate con successo.",
+    "info_fullscreen": "Bambu Studio deve essere sempre aperto a schermo intero sul monitor principale.",
+    "info_taskbar": "L'icona di Bambu Studio deve rimanere sempre nella stessa posizione sulla barra delle applicazioni.",
+    "info_scaling": "Se cambi monitor o modifichi il ridimensionamento di Windows, devi catturare nuovamente i clic.",
+    "info_taskbar_hide": "La barra delle applicazioni di Windows non deve essere impostata su 'Nascondi automaticamente'."
+  },
+  "gcode": {
+    "title": "Generatore G-code Finale",
+    "description": "Genera il codice per l'espulsione. Incollalo nel G-code finale della macchina nello slicer.",
+    "temps": {
+      "title": "Temperature",
+      "door_temp": "La porta si apre a (°C)",
+      "warning_sound": "Temperatura Suono di Avviso",
+      "auto_calc": "(Calcolato -4°C in automatico per tolleranza di 5°C della stampante)",
+      "push_temp": "Temperatura di Spinta (°C)",
+      "why_no_buffer": "Perché nessun margine?",
+      "why_no_buffer_text": "Non serve un margine di 5°C qui. Imposta la temperatura esatta a cui il materiale si stacca dal piatto."
+    },
+    "position": {
+      "title": "Posizione di Spinta",
+      "start_x": "Punto di Partenza Asse X (mm)",
+      "center_info": "Centro di Gravità",
+      "center_text": "Punta esattamente al centro di gravità del pezzo per evitare rotazioni. (Centro del piatto = 128)",
+      "push_z": "Altezza Spinta Asse Z (mm)",
+      "plastic_info": "Usa la plastica, non l'ugello",
+      "plastic_text": "Scegli un'altezza in modo che sia la scocca in plastica della testina a spingere il pezzo, non l'ugello!"
+    },
+    "instruction": {
+      "title": "Dove va inserito il codice?",
+      "text": "Inserisci il codice generato esattamente prima di questo blocco nel G-code finale:"
+    },
+    "preview": "Anteprima",
+    "copy": "Copia",
+    "copied": "G-Code copiato!"
+  },
+  "eula": {
+    "title": "Accordo di Licenza & Disclaimer",
+    "software_name": "Belling Software - Licenza Freeware",
+    "copyright": "© 2026 Nils Belling. Tutti i diritti riservati.",
+    "rights": {
+      "title": "1. Diritti d'Uso",
+      "text": "Questo software è freeware. L'uso privato e commerciale (es. farm di stampa 3D) è consentito."
+    },
+    "restrictions": {
+      "title": "2. Restrizioni",
+      "no_sale": "Nessuna Vendita: Non è possibile vendere o affittare questo software.",
+      "no_mod": "Nessuna Modifica: Vietato decompilare o modificare il codice sorgente.",
+      "no_commercial": "Nessuna Appropriazione: Non puoi integrare questo codice in software commerciali propri."
+    },
+    "distribution": {
+      "title": "3. Distribuzione",
+      "text": "Puoi distribuire liberamente il software, purché avvenga gratuitamente e senza modifiche."
+    },
+    "liability": {
+      "title": "4. Disclaimer",
+      "text": "IL SOFTWARE È FORNITO \"COSÌ COM'È\". L'autore (Nils Belling) non si assume alcuna responsabilità per danni hardware, perdite di dati o fermi di produzione."
+    },
+    "privacy": {
+      "title": "5. Privacy",
+      "text": "Questa app funziona 100% in locale. Nessun dato viene trasmesso a internet."
+    },
+    "decline": "Rifiuta ed Esci",
+    "accept": "Ho capito e accetto",
+    "accepted_toast": "Licenza accettata. Benvenuto!"
+  },
+  "sidebar": {
+    "language": "Lingua"
+  },
+  "states": {
+    "printer": {
+      "offline": "Offline",
+      "idle": "In attesa",
+      "running": "In stampa",
+      "finish": "Finito",
+      "completed": "Completato"
+    },
+    "door": {
+      "unknown": "Sconosciuto",
+      "opening": "Apertura...",
+      "open": "APERTA",
+      "closing": "Chiusura...",
+      "closed": "CHIUSA"
+    }
+  }
+}

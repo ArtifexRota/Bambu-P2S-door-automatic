@@ -1,0 +1,161 @@
+{
+  "title": "Bambi P2S Control",
+  "dashboard": {
+    "title": "仪表板",
+    "settings": "设置",
+    "bot": "机器人设置",
+    "gcode": "G代码生成",
+    "status": {
+      "waiting": "💤 等待打印...",
+      "waiting_80": "⏳ 等待 80% 进度...",
+      "cooling": "🌡️ 已达到 80%。等待冷却...",
+      "door_open": "✅ 门已打开！",
+      "finished": "🔄 打印完成。机器人接管..."
+    },
+    "auto_mode": {
+      "activated_toast": "自动模式已启用 🤖",
+      "deactivated_toast": "自动模式已停用 ⏸️",
+      "status_on": "🤖 自动模式开启",
+      "status_off": "⏸️ 自动模式关闭",
+      "description": "在打印结束时启用自动门控制和点击机器人。"
+    },
+    "printer_status": "打印机状态",
+    "current_material": "当前材料",
+    "door_opens_at": "开门温度",
+    "door_control": "Bambi P2S 门",
+    "open": "打开",
+    "close": "关闭",
+    "stats": "会话统计",
+    "parts_printed": "已打印部件"
+  },
+  "settings": {
+    "title": "系统设置",
+    "description": "在此配置打印机连接、硬件端口和材料配置文件。",
+    "connection": {
+      "title": "连接",
+      "ip": "打印机 IP 地址",
+      "access_code": "访问代码",
+      "serial": "序列号",
+      "com_port": "ESP32 COM 端口"
+    },
+    "servo": {
+      "title": "舵机校准",
+      "open_angle": "角度：打开 (0-180)",
+      "close_angle": "角度：关闭 (0-180)",
+      "test_open": "测试打开",
+      "test_close": "测试关闭"
+    },
+    "materials": {
+      "title": "材料配置 (自动开启)",
+      "name": "材料名称",
+      "open_temp": "开门温度 (°C)",
+      "new_profile": "新材料",
+      "add": "+ 新建配置"
+    },
+    "save_all": "全部保存",
+    "success": "设置保存成功！"
+  },
+  "bot": {
+    "title": "机器人点击序列",
+    "description": "根据需要创建点击动作。点击“捕获”，并在3秒内将鼠标移动到屏幕上所需的位置。",
+    "click_name": "点击名称",
+    "capture": "捕获位置",
+    "waiting": "等待",
+    "delay": "延迟 (秒)",
+    "add_click": "+ 添加新点击",
+    "save_sequence": "保存序列",
+    "test_sequence": "测试序列",
+    "success": "序列已保存！",
+    "running": "机器人测试运行已开始...",
+    "info_title": "重要的可靠性说明",
+    "capture_success_title": "位置已保存！ 🎯",
+    "capture_instruction": "切换到 Bambu Studio，定位鼠标并按 F8",
+    "capture_success": "位置已保存！ 🎯",
+    "waiting_for_hotkey": "等待 F8...",
+    "notification_title": "位置已捕获",
+    "notification_body": "点击坐标已成功保存。",
+    "capture_success_body": "坐标已成功应用。",
+    "info_fullscreen": "Bambu Studio 必须始终在主显示器上全屏打开。",
+    "info_taskbar": "Bambu Studio 图标必须始终保持在任务栏上的完全相同位置。",
+    "info_scaling": "如果更换显示器或调整 Windows 显示缩放（文本大小），则必须重新捕获点击位置。",
+    "info_taskbar_hide": "Windows 任务栏不能设置为“自动隐藏”，因为这会改变点击位置。"
+  },
+  "gcode": {
+    "title": "结束 G代码生成器",
+    "description": "生成自动顶出代码。将其粘贴到切片软件的“机器结束 G代码”中。",
+    "temps": {
+      "title": "温度",
+      "door_temp": "开门温度 (°C)",
+      "warning_sound": "警告音温度",
+      "auto_calc": "(由于打印机有 5°C 的容差，已自动计算为 -4°C)",
+      "push_temp": "顶出温度 (°C)",
+      "why_no_buffer": "为什么没有缓冲？",
+      "why_no_buffer_text": "这里不需要 5°C 的缓冲，因为随后会立即执行机械顶出命令。请设置材料能可靠脱离的准确温度。"
+    },
+    "position": {
+      "title": "顶出位置",
+      "start_x": "起点 X轴 (mm)",
+      "center_info": "重心",
+      "center_text": "瞄准打印件的重心。这可以防止打印件在被推动时旋转或卡住。（热床中心 = 128）",
+      "push_z": "顶出高度 Z轴 (mm)",
+      "plastic_info": "使用塑料外壳，而不是喷嘴",
+      "plastic_text": "这是喷嘴尖端与打印床之间的距离。选择一个高度，理想情况下由打印头坚固的塑料外壳推动部件，而不是脆弱的喷嘴本身！"
+    },
+    "instruction": {
+      "title": "代码放在哪里？",
+      "text": "将生成的代码准确地插入到“机器结束 G代码”中的以下代码块之前："
+    },
+    "preview": "预览",
+    "copy": "复制",
+    "copied": "G代码已复制！"
+  },
+  "eula": {
+    "title": "许可协议与免责声明",
+    "software_name": "Belling Software - 免费软件许可协议",
+    "copyright": "© 2026 Nils Belling. 保留所有权利。",
+    "rights": {
+      "title": "1. 使用权",
+      "text": "本软件作为免费软件（Freeware）提供。您可以无限期地下载、安装和使用本软件。允许用于私人目的以及明确用于商业目的（例如，在商业 3D 打印农场中）。"
+    },
+    "restrictions": {
+      "title": "2. 限制条款",
+      "no_sale": "禁止销售：您不得以任何形式有偿出售、出租、租赁或提供本软件（整体或部分）。",
+      "no_mod": "禁止修改：禁止对本软件或底层源代码进行修改、翻译、反编译或创建衍生作品。",
+      "no_commercial": "禁止商业挪用：您不得将此代码整合到您自己的商业软件中。"
+    },
+    "distribution": {
+      "title": "3. 分发",
+      "text": "您可以自由复制和分发本软件，前提是必须免费进行，软件保持未修改状态，并保留此许可声明。"
+    },
+    "liability": {
+      "title": "4. 免责声明",
+      "text": "本软件按“原样”提供，不提供任何形式的保证。作者（Nils Belling）对因使用本软件而导致的直接或间接损坏、数据丢失、硬件故障或生产停机不承担任何责任。使用本软件控制硬件的风险明确由您自行承担。"
+    },
+    "privacy": {
+      "title": "5. 隐私权",
+      "text": "此应用程序 100% 在本地运行。不收集或向互联网传输任何个人数据或遥测数据。"
+    },
+    "decline": "拒绝并退出",
+    "accept": "我理解并接受",
+    "accepted_toast": "已接受许可。欢迎使用！"
+  },
+  "sidebar": {
+    "language": "语言"
+  },
+  "states": {
+    "printer": {
+      "offline": "离线",
+      "idle": "空闲",
+      "running": "打印中",
+      "finish": "已结束",
+      "completed": "已完成"
+    },
+    "door": {
+      "unknown": "未知",
+      "opening": "正在打开...",
+      "open": "已打开",
+      "closing": "正在关闭...",
+      "closed": "已关闭"
+    }
+  }
+}

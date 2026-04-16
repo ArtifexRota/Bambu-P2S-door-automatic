@@ -1,0 +1,161 @@
+{
+  "title": "Bambi P2S Control",
+  "dashboard": {
+    "title": "대시보드",
+    "settings": "설정",
+    "bot": "봇 설정",
+    "gcode": "G코드 생성",
+    "status": {
+      "waiting": "💤 인쇄 대기 중...",
+      "waiting_80": "⏳ 진행률 80% 대기 중...",
+      "cooling": "🌡️ 80% 도달. 냉각 대기 중...",
+      "door_open": "✅ 문이 열렸습니다!",
+      "finished": "🔄 인쇄 완료. 봇 제어 시작..."
+    },
+    "auto_mode": {
+      "activated_toast": "자동 모드 활성화됨 🤖",
+      "deactivated_toast": "자동 모드 비활성화됨 ⏸️",
+      "status_on": "🤖 자동 모드 ON",
+      "status_off": "⏸️ 자동 모드 OFF",
+      "description": "인쇄 종료 시 자동 문 제어 및 클릭 봇을 활성화합니다."
+    },
+    "printer_status": "프린터 상태",
+    "current_material": "현재 재료",
+    "door_opens_at": "문 개방 온도",
+    "door_control": "Bambi P2S 문",
+    "open": "열기",
+    "close": "닫기",
+    "stats": "세션 통계",
+    "parts_printed": "인쇄된 부품"
+  },
+  "settings": {
+    "title": "시스템 설정",
+    "description": "여기에서 프린터 연결, 하드웨어 포트 및 재료 프로필을 구성하십시오.",
+    "connection": {
+      "title": "연결",
+      "ip": "프린터 IP 주소",
+      "access_code": "액세스 코드",
+      "serial": "일련 번호",
+      "com_port": "ESP32 COM 포트"
+    },
+    "servo": {
+      "title": "서보 보정",
+      "open_angle": "각도: 열림 (0-180)",
+      "close_angle": "각도: 닫힘 (0-180)",
+      "test_open": "열기 테스트",
+      "test_close": "닫기 테스트"
+    },
+    "materials": {
+      "title": "재료 프로필 (자동 개방)",
+      "name": "재료 이름",
+      "open_temp": "문 개방 온도 (°C)",
+      "new_profile": "새 재료",
+      "add": "+ 새 프로필"
+    },
+    "save_all": "모두 저장",
+    "success": "설정이 성공적으로 저장되었습니다!"
+  },
+  "bot": {
+    "title": "봇 클릭 시퀀스",
+    "description": "필요한 만큼 클릭을 생성하십시오. \"캡처\"를 누르고 3초 이내에 화면의 원하는 위치로 마우스를 이동하십시오.",
+    "click_name": "클릭 이름",
+    "capture": "위치 캡처",
+    "waiting": "대기",
+    "delay": "지연 (초)",
+    "add_click": "+ 새 클릭 추가",
+    "save_sequence": "시퀀스 저장",
+    "test_sequence": "시퀀스 테스트",
+    "success": "시퀀스가 저장되었습니다!",
+    "running": "봇 테스트 실행이 시작되었습니다...",
+    "info_title": "안정성에 대한 중요 참고 사항",
+    "capture_success_title": "위치가 저장되었습니다! 🎯",
+    "capture_instruction": "Bambu Studio로 전환하고 마우스를 위치시킨 후 F8을 누르십시오",
+    "capture_success": "위치가 저장되었습니다! 🎯",
+    "waiting_for_hotkey": "F8 대기 중...",
+    "notification_title": "위치 캡처됨",
+    "notification_body": "클릭 좌표가 성공적으로 저장되었습니다.",
+    "capture_success_body": "좌표가 성공적으로 적용되었습니다.",
+    "info_fullscreen": "Bambu Studio는 항상 기본 모니터에서 전체 화면 모드로 열려 있어야 합니다.",
+    "info_taskbar": "Bambu Studio 아이콘은 작업 표시줄에서 항상 같은 위치에 있어야 합니다.",
+    "info_scaling": "모니터를 변경하거나 Windows 디스플레이 크기(텍스트 크기)를 조정하는 경우 클릭 위치를 다시 캡처해야 합니다.",
+    "info_taskbar_hide": "Windows 작업 표시줄을 '자동 숨기기'로 설정해서는 안 됩니다."
+  },
+  "gcode": {
+    "title": "종료 G-code 생성기",
+    "description": "자동 배출 코드를 생성합니다. 슬라이서의 머신 종료 G-code에 붙여넣습니다.",
+    "temps": {
+      "title": "온도",
+      "door_temp": "문 개방 온도 (°C)",
+      "warning_sound": "경고음 온도",
+      "auto_calc": "(프린터의 5°C 허용 오차로 인해 자동으로 -4°C 계산됨)",
+      "push_temp": "배출 온도 (°C)",
+      "why_no_buffer": "버퍼가 없는 이유는 무엇입니까?",
+      "why_no_buffer_text": "기계적 푸시 명령이 바로 이어지므로 여기에 5°C 버퍼가 필요하지 않습니다."
+    },
+    "position": {
+      "title": "배출 위치",
+      "start_x": "시작점 X축 (mm)",
+      "center_info": "무게 중심",
+      "center_text": "부품의 무게 중심을 정확히 겨냥하십시오. (베드 중심 = 128)",
+      "push_z": "배출 높이 Z축 (mm)",
+      "plastic_info": "노즐이 아닌 플라스틱 사용",
+      "plastic_text": "섬세한 노즐 자체가 아니라 프린트 헤드의 단단한 플라스틱 하우징이 부품을 밀도록 높이를 선택하십시오!"
+    },
+    "instruction": {
+      "title": "코드는 어디에 입력합니까?",
+      "text": "생성된 코드를 머신 종료 G-code의 다음 블록 바로 앞에 삽입하십시오:"
+    },
+    "preview": "미리보기",
+    "copy": "복사",
+    "copied": "G-Code가 복사되었습니다!"
+  },
+  "eula": {
+    "title": "라이센스 계약 및 면책 조항",
+    "software_name": "Belling Software - 프리웨어 라이센스 계약",
+    "copyright": "© 2026 Nils Belling. 판권 소유.",
+    "rights": {
+      "title": "1. 사용 권한",
+      "text": "이 소프트웨어는 프리웨어입니다. 개인 및 상업적 사용(예: 상업용 3D 프린트 팜)이 허용됩니다."
+    },
+    "restrictions": {
+      "title": "2. 제한 사항",
+      "no_sale": "판매 금지: 이 소프트웨어를 판매하거나 임대할 수 없습니다.",
+      "no_mod": "수정 금지: 소스 코드의 디컴파일 또는 수정은 금지됩니다.",
+      "no_commercial": "상업적 도용 금지: 이 코드를 자체 상업용 소프트웨어에 통합할 수 없습니다."
+    },
+    "distribution": {
+      "title": "3. 배포",
+      "text": "소프트웨어가 수정되지 않고 무료인 경우에 한해 자유롭게 배포할 수 있습니다."
+    },
+    "liability": {
+      "title": "4. 면책 조항",
+      "text": "저자는 이 소프트웨어의 사용으로 인해 발생하는 하드웨어 손상이나 생산 중단에 대해 어떠한 책임도 지지 않습니다."
+    },
+    "privacy": {
+      "title": "5. 개인 정보 보호",
+      "text": "이 앱은 100% 로컬에서 작동합니다. 개인 데이터는 인터넷으로 전송되지 않습니다."
+    },
+    "decline": "거절 및 종료",
+    "accept": "이해하고 동의합니다",
+    "accepted_toast": "라이센스가 승인되었습니다. 환영합니다!"
+  },
+  "sidebar": {
+    "language": "언어"
+  },
+  "states": {
+    "printer": {
+      "offline": "오프라인",
+      "idle": "대기",
+      "running": "인쇄 중",
+      "finish": "종료",
+      "completed": "완료"
+    },
+    "door": {
+      "unknown": "알 수 없음",
+      "opening": "열리는 중...",
+      "open": "열림",
+      "closing": "닫히는 중...",
+      "closed": "닫힘"
+    }
+  }
+}

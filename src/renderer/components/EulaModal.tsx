@@ -11,6 +11,20 @@ const EulaModal: React.FC<EulaModalProps> = ({ onAccept, onDecline }) => {
   const [step, setStep] = useState(1);
   const [selectedLang, setSelectedLang] = useState<string | null>(null);
 
+  // Array mit allen 10 unterstützten Sprachen
+  const supportedLanguages = [
+    { code: 'de', label: '🇩🇪 Deutsch' },
+    { code: 'en', label: '🇬🇧 English' },
+    { code: 'es', label: '🇪🇸 Español' },
+    { code: 'fr', label: '🇫🇷 Français' },
+    { code: 'it', label: '🇮🇹 Italiano' },
+    { code: 'pt', label: '🇧🇷 Português' },
+    { code: 'zh', label: '🇨🇳 中文' },
+    { code: 'ja', label: '🇯🇵 日本語' },
+    { code: 'ko', label: '🇰🇷 한국어' },
+    { code: 'ru', label: '🇷🇺 Русский' }
+  ];
+
   const setLanguage = (lang: string) => {
     setSelectedLang(lang);
     if (window.electronAPI && window.electronAPI.changeLanguage) {
@@ -21,44 +35,36 @@ const EulaModal: React.FC<EulaModalProps> = ({ onAccept, onDecline }) => {
   if (step === 1) {
     return (
       <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-        <div className="modal-content" style={{ background: '#1e1e24', padding: '40px', borderRadius: '12px', textAlign: 'center', border: '1px solid #444', maxWidth: '500px', width: '100%' }}>
-          <h2>Select Language</h2>
+        <div className="modal-content" style={{ background: '#1e1e24', padding: '40px', borderRadius: '12px', textAlign: 'center', border: '1px solid #444', maxWidth: '600px', width: '100%' }}>
+          <h2>Select Language / Sprache wählen</h2>
           
-          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', margin: '30px 0' }}>
-            <button 
-              onClick={() => setLanguage('de')} 
-              style={{ 
-                padding: '15px 30px', 
-                fontSize: '1.2rem', 
-                background: selectedLang === 'de' ? '#2a2a2e' : '#1e1e24', 
-                color: 'white', 
-                border: `2px solid ${selectedLang === 'de' ? '#2196f3' : '#555'}`, 
-                boxShadow: selectedLang === 'de' ? '0 0 15px rgba(33, 150, 243, 0.4)' : 'none',
-                borderRadius: '8px', 
-                cursor: 'pointer', 
-                transition: 'all 0.2s ease',
-                transform: selectedLang === 'de' ? 'scale(1.05)' : 'scale(1)'
-              }}
-            >
-              Deutsch
-            </button>
-            <button 
-              onClick={() => setLanguage('en')} 
-              style={{ 
-                padding: '15px 30px', 
-                fontSize: '1.2rem', 
-                background: selectedLang === 'en' ? '#2a2a2e' : '#1e1e24', 
-                color: 'white', 
-                border: `2px solid ${selectedLang === 'en' ? '#2196f3' : '#555'}`, 
-                boxShadow: selectedLang === 'en' ? '0 0 15px rgba(33, 150, 243, 0.4)' : 'none',
-                borderRadius: '8px', 
-                cursor: 'pointer', 
-                transition: 'all 0.2s ease',
-                transform: selectedLang === 'en' ? 'scale(1.05)' : 'scale(1)'
-              }}
-            >
-              English
-            </button>
+          {/* Grid-Layout für die 10 Sprachen */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
+            gap: '15px', 
+            margin: '30px 0' 
+          }}>
+            {supportedLanguages.map((lang) => (
+              <button 
+                key={lang.code}
+                onClick={() => setLanguage(lang.code)} 
+                style={{ 
+                  padding: '12px 15px', 
+                  fontSize: '1.1rem', 
+                  background: selectedLang === lang.code ? '#2a2a2e' : '#1e1e24', 
+                  color: 'white', 
+                  border: `2px solid ${selectedLang === lang.code ? '#2196f3' : '#555'}`, 
+                  boxShadow: selectedLang === lang.code ? '0 0 15px rgba(33, 150, 243, 0.4)' : 'none',
+                  borderRadius: '8px', 
+                  cursor: 'pointer', 
+                  transition: 'all 0.2s ease',
+                  transform: selectedLang === lang.code ? 'scale(1.05)' : 'scale(1)'
+                }}
+              >
+                {lang.label}
+              </button>
+            ))}
           </div>
 
           <button 
@@ -83,7 +89,7 @@ const EulaModal: React.FC<EulaModalProps> = ({ onAccept, onDecline }) => {
     );
   }
 
-  // Seite 2: Die formatierte EULA (abgestimmt auf deine neue JSON-Struktur)
+  // Seite 2: Die formatierte EULA
   return (
     <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
       <div className="modal-content" style={{ background: '#1e1e24', padding: '30px', borderRadius: '12px', border: '1px solid #444', maxWidth: '750px', width: '100%' }}>

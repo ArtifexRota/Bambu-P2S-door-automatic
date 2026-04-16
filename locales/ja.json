@@ -1,0 +1,161 @@
+{
+  "title": "Bambi P2S Control",
+  "dashboard": {
+    "title": "ダッシュボード",
+    "settings": "設定",
+    "bot": "ボット設定",
+    "gcode": "Gコード生成",
+    "status": {
+      "waiting": "💤 印刷を待機中...",
+      "waiting_80": "⏳ 進捗80%を待機中...",
+      "cooling": "🌡️ 80%に到達しました。冷却を待機中...",
+      "door_open": "✅ ドアが開いています！",
+      "finished": "🔄 印刷完了。ボットが引き継ぎます..."
+    },
+    "auto_mode": {
+      "activated_toast": "自動モード有効 🤖",
+      "deactivated_toast": "自動モード無効 ⏸️",
+      "status_on": "🤖 自動モード ON",
+      "status_off": "⏸️ 自動モード OFF",
+      "description": "印刷終了時の自動ドア制御とクリックボットを有効にします。"
+    },
+    "printer_status": "プリンターの状態",
+    "current_material": "現在の材料",
+    "door_opens_at": "ドアを開ける温度",
+    "door_control": "Bambi P2S ドア",
+    "open": "開く",
+    "close": "閉じる",
+    "stats": "セッション統計",
+    "parts_printed": "印刷されたパーツ"
+  },
+  "settings": {
+    "title": "システム設定",
+    "description": "プリンターの接続、ハードウェアポート、材料プロファイルをここで設定します。",
+    "connection": {
+      "title": "接続",
+      "ip": "プリンターのIPアドレス",
+      "access_code": "アクセスコード",
+      "serial": "シリアル番号",
+      "com_port": "ESP32 COMポート"
+    },
+    "servo": {
+      "title": "サーボのキャリブレーション",
+      "open_angle": "角度：開く (0-180)",
+      "close_angle": "角度：閉じる (0-180)",
+      "test_open": "開くテスト",
+      "test_close": "閉じるテスト"
+    },
+    "materials": {
+      "title": "材料プロファイル (自動オープン)",
+      "name": "材料名",
+      "open_temp": "ドアを開ける温度 (°C)",
+      "new_profile": "新しい材料",
+      "add": "+ 新しいプロファイル"
+    },
+    "save_all": "すべて保存",
+    "success": "設定が正常に保存されました！"
+  },
+  "bot": {
+    "title": "ボットのクリックシーケンス",
+    "description": "必要なだけクリックを作成します。「キャプチャ」を押し、3秒以内に画面の目的の位置にマウスを移動します。",
+    "click_name": "クリック名",
+    "capture": "位置をキャプチャ",
+    "waiting": "待機",
+    "delay": "遅延 (秒)",
+    "add_click": "+ 新しいクリックを追加",
+    "save_sequence": "シーケンスを保存",
+    "test_sequence": "シーケンスをテスト",
+    "success": "シーケンスが保存されました！",
+    "running": "ボットのテスト実行を開始しました...",
+    "info_title": "信頼性に関する重要な注意事項",
+    "capture_success_title": "位置が保存されました！ 🎯",
+    "capture_instruction": "Bambu Studioに切り替え、マウスを配置してF8キーを押します",
+    "capture_success": "位置が保存されました！ 🎯",
+    "waiting_for_hotkey": "F8を待機中...",
+    "notification_title": "位置をキャプチャしました",
+    "notification_body": "クリックの座標が正常に保存されました。",
+    "capture_success_body": "座標が正常に適用されました。",
+    "info_fullscreen": "Bambu Studioは、メインモニターで常に全画面表示で開く必要があります。",
+    "info_taskbar": "Bambu Studioのアイコンは、タスクバーの常に同じ位置にある必要があります。",
+    "info_scaling": "モニターを変更したり、Windowsの表示スケールを変更した場合は、クリック位置を再学習させる必要があります。",
+    "info_taskbar_hide": "Windowsのタスクバーを「自動的に隠す」に設定しないでください。"
+  },
+  "gcode": {
+    "title": "終了Gコードジェネレーター",
+    "description": "自動排出用のコードを生成します。スライサーの「マシン終了Gコード」に貼り付けます。",
+    "temps": {
+      "title": "温度",
+      "door_temp": "ドアを開ける温度 (°C)",
+      "warning_sound": "警告音の温度",
+      "auto_calc": "(プリンターの5°Cの許容誤差のため、自動的に-4°Cで計算されています)",
+      "push_temp": "排出温度 (°C)",
+      "why_no_buffer": "なぜバッファーがないのですか？",
+      "why_no_buffer_text": "機械的なプッシュコマンドが直後に続くため、ここで5°Cのバッファーは必要ありません。"
+    },
+    "position": {
+      "title": "排出位置",
+      "start_x": "開始ポイントX軸 (mm)",
+      "center_info": "重心",
+      "center_text": "パーツの重心を正確に狙ってください。(ベッドの中心 = 128)",
+      "push_z": "排出高さZ軸 (mm)",
+      "plastic_info": "ノズルではなくプラスチックを使用する",
+      "plastic_text": "繊細なノズル自体ではなく、プリントヘッドの頑丈なプラスチックハウジングがパーツを押すように高さを選択してください！"
+    },
+    "instruction": {
+      "title": "コードはどこに配置しますか？",
+      "text": "生成されたコードを、マシン終了Gコードの次のブロックの直前に挿入します："
+    },
+    "preview": "プレビュー",
+    "copy": "コピー",
+    "copied": "Gコードがコピーされました！"
+  },
+  "eula": {
+    "title": "ライセンス契約と免責事項",
+    "software_name": "Belling Software - フリーウェアライセンス契約",
+    "copyright": "© 2026 Nils Belling. 無断複写・転載を禁じます。",
+    "rights": {
+      "title": "1. 使用権",
+      "text": "このソフトウェアはフリーウェアです。私的および商業的（例：3Dプリントファーム）な使用が許可されています。"
+    },
+    "restrictions": {
+      "title": "2. 制限事項",
+      "no_sale": "販売の禁止：このソフトウェアを販売またはレンタルすることはできません。",
+      "no_mod": "変更の禁止：ソースコードの逆コンパイルや変更は禁止されています。",
+      "no_commercial": "商業的流用：このコードを独自の商用ソフトウェアに組み込むことはできません。"
+    },
+    "distribution": {
+      "title": "3. 配布",
+      "text": "ソフトウェアが未変更であり、無料である場合に限り、自由に配布できます。"
+    },
+    "liability": {
+      "title": "4. 免責事項",
+      "text": "著者は、このソフトウェアの使用に起因するハードウェアの損傷や生産のダウンタイムについて、一切の責任を負いません。"
+    },
+    "privacy": {
+      "title": "5. プライバシー",
+      "text": "このアプリは100%ローカルで動作します。個人データはインターネットに送信されません。"
+    },
+    "decline": "拒否して終了",
+    "accept": "理解し、同意します",
+    "accepted_toast": "ライセンスが承認されました。ようこそ！"
+  },
+  "sidebar": {
+    "language": "言語"
+  },
+  "states": {
+    "printer": {
+      "offline": "オフライン",
+      "idle": "アイドル",
+      "running": "印刷中",
+      "finish": "終了",
+      "completed": "完了"
+    },
+    "door": {
+      "unknown": "不明",
+      "opening": "開いています...",
+      "open": "開",
+      "closing": "閉じています...",
+      "closed": "閉"
+    }
+  }
+}

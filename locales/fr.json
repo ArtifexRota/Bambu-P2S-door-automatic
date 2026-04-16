@@ -1,0 +1,161 @@
+{
+  "title": "Bambi P2S Control",
+  "dashboard": {
+    "title": "Tableau de Bord",
+    "settings": "Paramètres",
+    "bot": "Configuration du Bot",
+    "gcode": "Générateur Gcode",
+    "status": {
+      "waiting": "💤 En attente de l'impression...",
+      "waiting_80": "⏳ En attente de 80% de progression...",
+      "cooling": "🌡️ 80% atteint. En attente de refroidissement...",
+      "door_open": "✅ La porte est ouverte !",
+      "finished": "🔄 Impression terminée. Le Bot prend le relais..."
+    },
+    "auto_mode": {
+      "activated_toast": "Mode automatique ACTIVÉ 🤖",
+      "deactivated_toast": "Mode automatique DÉSACTIVÉ ⏸️",
+      "status_on": "🤖 Le mode automatique est ACTIVÉ",
+      "status_off": "⏸️ Le mode automatique est DÉSACTIVÉ",
+      "description": "Active le contrôle automatique de la porte et le bot de clic à la fin de l'impression."
+    },
+    "printer_status": "État de l'imprimante",
+    "current_material": "Matériau actuel",
+    "door_opens_at": "La porte s'ouvre à",
+    "door_control": "Porte Bambi P2S",
+    "open": "Ouvrir",
+    "close": "Fermer",
+    "stats": "Statistiques de la session",
+    "parts_printed": "Pièces imprimées"
+  },
+  "settings": {
+    "title": "Paramètres du Système",
+    "description": "Configurez ici la connexion de l'imprimante, les ports matériels et les profils de matériaux.",
+    "connection": {
+      "title": "Connexion",
+      "ip": "Adresse IP de l'imprimante",
+      "access_code": "Code d'accès",
+      "serial": "Numéro de série",
+      "com_port": "Port COM ESP32"
+    },
+    "servo": {
+      "title": "Calibration du Servo",
+      "open_angle": "Angle : Ouvert (0-180)",
+      "close_angle": "Angle : Fermé (0-180)",
+      "test_open": "Tester l'ouverture",
+      "test_close": "Tester la fermeture"
+    },
+    "materials": {
+      "title": "Profils de Matériaux (Ouverture Auto)",
+      "name": "Nom du matériau",
+      "open_temp": "Ouvrir la porte à (°C)",
+      "new_profile": "Nouveau matériau",
+      "add": "+ Nouveau profil"
+    },
+    "save_all": "Tout enregistrer",
+    "success": "Paramètres enregistrés avec succès !"
+  },
+  "bot": {
+    "title": "Séquence de Clic du Bot",
+    "description": "Créez autant de clics que nécessaire. Appuyez sur \"Capturer\" et déplacez la souris vers la position souhaitée sur l'écran dans les 3 secondes.",
+    "click_name": "Nom du clic",
+    "capture": "Capturer la position",
+    "waiting": "Attendre",
+    "delay": "Délai (Sec)",
+    "add_click": "+ Ajouter un nouveau clic",
+    "save_sequence": "Enregistrer la séquence",
+    "test_sequence": "Tester la séquence",
+    "success": "Séquence enregistrée !",
+    "running": "Test du bot lancé...",
+    "info_title": "Notes importantes de fiabilité",
+    "capture_success_title": "Position enregistrée ! 🎯",
+    "capture_instruction": "Basculez sur Bambu Studio, positionnez votre souris et appuyez sur F8",
+    "capture_success": "Position enregistrée ! 🎯",
+    "waiting_for_hotkey": "En attente de F8...",
+    "notification_title": "Position Capturée",
+    "notification_body": "Les coordonnées du clic ont été enregistrées avec succès.",
+    "capture_success_body": "Les coordonnées ont été appliquées avec succès.",
+    "info_fullscreen": "Bambu Studio doit toujours être ouvert en plein écran sur votre moniteur principal.",
+    "info_taskbar": "L'icône de Bambu Studio doit toujours rester exactement à la même position dans votre barre des tâches.",
+    "info_scaling": "Si vous changez de moniteur ou modifiez l'échelle d'affichage de Windows (taille du texte), vous devez réapprendre les positions de clic.",
+    "info_taskbar_hide": "La barre des tâches de Windows ne doit pas être réglée sur 'Masquer automatiquement', car cela décalera les positions de clic."
+  },
+  "gcode": {
+    "title": "Générateur de G-code de fin",
+    "description": "Générez le code pour l'éjection automatique. Collez-le dans le G-code de fin de la machine de votre trancheur.",
+    "temps": {
+      "title": "Températures",
+      "door_temp": "La porte s'ouvre à (°C)",
+      "warning_sound": "Température du son d'avertissement",
+      "auto_calc": "(Calculé à -4°C automatiquement en raison de la tolérance de 5°C de l'imprimante)",
+      "push_temp": "Température de poussée (°C)",
+      "why_no_buffer": "Pourquoi pas de marge ?",
+      "why_no_buffer_text": "Aucune marge de 5°C n'est nécessaire ici, car la commande mécanique de poussée suit immédiatement. Réglez la température exacte à laquelle le matériau se détache de manière fiable."
+    },
+    "position": {
+      "title": "Position de poussée",
+      "start_x": "Point de départ Axe X (mm)",
+      "center_info": "Centre de gravité",
+      "center_text": "Visez exactement le centre de gravité de votre pièce. Cela évite que l'impression ne tourne ou ne se coince lors de la poussée. (Centre du plateau = 128)",
+      "push_z": "Hauteur de poussée Axe Z (mm)",
+      "plastic_info": "Utilisez le plastique, pas la buse",
+      "plastic_text": "C'est la distance entre la pointe de la buse et le plateau d'impression. Choisissez une hauteur pour qu'idéalement le boîtier en plastique solide de la tête d'impression pousse la pièce, et non la buse délicate elle-même !"
+    },
+    "instruction": {
+      "title": "Où va ce code ?",
+      "text": "Insérez le code généré exactement avant le bloc suivant dans le G-code de fin de la machine :"
+    },
+    "preview": "Aperçu",
+    "copy": "Copier",
+    "copied": "G-Code copié !"
+  },
+  "eula": {
+    "title": "Contrat de Licence & Clause de non-responsabilité",
+    "software_name": "Belling Software - Contrat de Licence Freeware",
+    "copyright": "© 2026 Nils Belling. Tous droits réservés.",
+    "rights": {
+      "title": "1. Droits d'utilisation",
+      "text": "Ce logiciel est fourni gratuitement en tant que freeware. Vous pouvez télécharger, installer et utiliser le logiciel indéfiniment. L'utilisation à des fins privées ainsi qu'expressément à des fins commerciales (par ex., dans des fermes d'impression 3D commerciales) est autorisée."
+    },
+    "restrictions": {
+      "title": "2. Restrictions",
+      "no_sale": "Aucune Vente : Vous ne pouvez pas vendre, louer, céder à bail ou proposer ce logiciel (en tout ou en partie) moyennant des frais sous quelque forme que ce soit.",
+      "no_mod": "Aucune Modification : La modification, la traduction, la décompilation ou la création d'œuvres dérivées du logiciel ou du code source sous-jacent sont interdites.",
+      "no_commercial": "Aucune Appropriation Commerciale : Vous ne pouvez pas incorporer ce code dans votre propre logiciel commercial."
+    },
+    "distribution": {
+      "title": "3. Distribution",
+      "text": "Vous pouvez librement copier et distribuer ce logiciel, à condition que cela soit fait gratuitement, que le logiciel reste non modifié et que cet avis de licence soit conservé."
+    },
+    "liability": {
+      "title": "4. Clause de non-responsabilité",
+      "text": "CE LOGICIEL EST FOURNI \"TEL QUEL\" SANS GARANTIE D'AUCUNE SORTE. L'auteur (Nils Belling) décline toute responsabilité pour les dommages directs ou indirects, les pertes de données, les défauts matériels ou les arrêts de production résultant de l'utilisation de ce logiciel. L'utilisation du logiciel pour contrôler du matériel se fait expressément à vos propres risques."
+    },
+    "privacy": {
+      "title": "5. Confidentialité",
+      "text": "Cette application fonctionne à 100 % localement. Aucune donnée personnelle ni donnée de télémétrie n'est collectée ou transmise sur internet."
+    },
+    "decline": "Refuser & Quitter",
+    "accept": "Je comprends et j'accepte",
+    "accepted_toast": "Licence acceptée. Bienvenue !"
+  },
+  "sidebar": {
+    "language": "Langue"
+  },
+  "states": {
+    "printer": {
+      "offline": "Hors ligne",
+      "idle": "Prêt",
+      "running": "En cours",
+      "finish": "Terminé",
+      "completed": "Achevé"
+    },
+    "door": {
+      "unknown": "Inconnu",
+      "opening": "Ouverture...",
+      "open": "OUVERTE",
+      "closing": "Fermeture...",
+      "closed": "FERMÉE"
+    }
+  }
+}

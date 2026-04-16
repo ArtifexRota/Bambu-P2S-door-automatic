@@ -1,0 +1,161 @@
+{
+  "title": "Bambi P2S Control",
+  "dashboard": {
+    "title": "Painel de Controle",
+    "settings": "Configurações",
+    "bot": "Configuração do Bot",
+    "gcode": "Gerador Gcode",
+    "status": {
+      "waiting": "💤 Aguardando impressão...",
+      "waiting_80": "⏳ Aguardando 80% do progresso...",
+      "cooling": "🌡️ 80% alcançado. Aguardando resfriamento...",
+      "door_open": "✅ A porta está aberta!",
+      "finished": "🔄 Impressão concluída. Bot assumindo o controle..."
+    },
+    "auto_mode": {
+      "activated_toast": "Modo automático ATIVADO 🤖",
+      "deactivated_toast": "Modo automático DESATIVADO ⏸️",
+      "status_on": "🤖 Modo automático ON",
+      "status_off": "⏸️ Modo automático OFF",
+      "description": "Ativa o controle automático da porta e o bot de cliques no final da impressão."
+    },
+    "printer_status": "Status da Impressora",
+    "current_material": "Material Atual",
+    "door_opens_at": "A porta abre a",
+    "door_control": "Porta Bambi P2S",
+    "open": "Abrir",
+    "close": "Fechar",
+    "stats": "Estatísticas da Sessão",
+    "parts_printed": "Peças Impressas"
+  },
+  "settings": {
+    "title": "Configurações do Sistema",
+    "description": "Configure aqui a conexão da impressora, portas de hardware e perfis de material.",
+    "connection": {
+      "title": "Conexão",
+      "ip": "Endereço IP da Impressora",
+      "access_code": "Código de Acesso",
+      "serial": "Número de Série",
+      "com_port": "Porta COM do ESP32"
+    },
+    "servo": {
+      "title": "Calibração do Servo",
+      "open_angle": "Ângulo: Aberto (0-180)",
+      "close_angle": "Ângulo: Fechado (0-180)",
+      "test_open": "Testar Abertura",
+      "test_close": "Testar Fechamento"
+    },
+    "materials": {
+      "title": "Perfis de Material (Abertura Auto)",
+      "name": "Nome do Material",
+      "open_temp": "Abrir porta a (°C)",
+      "new_profile": "Novo Material",
+      "add": "+ Novo Perfil"
+    },
+    "save_all": "Salvar Tudo",
+    "success": "Configurações salvas com sucesso!"
+  },
+  "bot": {
+    "title": "Sequência de Cliques do Bot",
+    "description": "Crie os cliques necessários. Pressione \"Capturar\" e mova o mouse para a posição desejada em 3 segundos.",
+    "click_name": "Nome do Clique",
+    "capture": "Capturar Posição",
+    "waiting": "Aguardar",
+    "delay": "Atraso (Seg)",
+    "add_click": "+ Adicionar Clique",
+    "save_sequence": "Salvar Sequência",
+    "test_sequence": "Testar Sequência",
+    "success": "Sequência salva!",
+    "running": "Teste do bot iniciado...",
+    "info_title": "Notas Importantes de Confiabilidade",
+    "capture_success_title": "Posição salva! 🎯",
+    "capture_instruction": "Mude para o Bambu Studio, posicione o mouse e pressione F8",
+    "capture_success": "Posição salva! 🎯",
+    "waiting_for_hotkey": "Aguardando F8...",
+    "notification_title": "Posição Capturada",
+    "notification_body": "As coordenadas do clique foram salvas.",
+    "capture_success_body": "As coordenadas foram aplicadas com sucesso.",
+    "info_fullscreen": "O Bambu Studio deve estar sempre aberto em tela cheia no seu monitor principal.",
+    "info_taskbar": "O ícone do Bambu Studio deve permanecer na mesma posição na barra de tarefas.",
+    "info_scaling": "Se você alterar o monitor ou a escala do Windows, deverá capturar os cliques novamente.",
+    "info_taskbar_hide": "A barra de tarefas do Windows não deve estar no modo 'Ocultar automaticamente'."
+  },
+  "gcode": {
+    "title": "Gerador de G-code Final",
+    "description": "Gere o código para ejeção automática. Cole-o no G-code final da máquina no fatiador.",
+    "temps": {
+      "title": "Temperaturas",
+      "door_temp": "A porta abre a (°C)",
+      "warning_sound": "Temperatura do Som de Aviso",
+      "auto_calc": "(Calculado -4°C automaticamente pela tolerância da impressora)",
+      "push_temp": "Temperatura de Empurrar (°C)",
+      "why_no_buffer": "Por que sem margem?",
+      "why_no_buffer_text": "Não é necessária uma margem de 5°C aqui. Defina a temperatura exata em que a peça se solta da mesa."
+    },
+    "position": {
+      "title": "Posição de Empurrar",
+      "start_x": "Ponto Inicial Eixo X (mm)",
+      "center_info": "Centro de Gravidade",
+      "center_text": "Aponte exatamente para o centro de gravidade da peça. (Centro da mesa = 128)",
+      "push_z": "Altura do Empurrão Eixo Z (mm)",
+      "plastic_info": "Use o plástico, não o bico",
+      "plastic_text": "Escolha uma altura para que a carcaça de plástico sólido do cabeçote empurre a peça, e não o bico delicado!"
+    },
+    "instruction": {
+      "title": "Onde vai este código?",
+      "text": "Insira o código gerado exatamente antes deste bloco no G-code final:"
+    },
+    "preview": "Pré-visualização",
+    "copy": "Copiar",
+    "copied": "G-Code copiado!"
+  },
+  "eula": {
+    "title": "Contrato de Licença & Isenção de Responsabilidade",
+    "software_name": "Belling Software - Licença Freeware",
+    "copyright": "© 2026 Nils Belling. Todos os direitos reservados.",
+    "rights": {
+      "title": "1. Direitos de Uso",
+      "text": "Este software é freeware. O uso privado e comercial é permitido."
+    },
+    "restrictions": {
+      "title": "2. Restrições",
+      "no_sale": "Sem Venda: Você não pode vender ou alugar este software.",
+      "no_mod": "Sem Modificação: É proibido descompilar ou modificar o código-fonte.",
+      "no_commercial": "Sem Apropriação: Você não pode incorporar este código em software comercial próprio."
+    },
+    "distribution": {
+      "title": "3. Distribuição",
+      "text": "Você pode distribuir este software livremente, desde que seja gratuito e não modificado."
+    },
+    "liability": {
+      "title": "4. Isenção de Responsabilidade",
+      "text": "ESTE SOFTWARE É FORNECIDO \"COMO ESTÁ\". O autor não assume qualquer responsabilidade por danos a hardware ou perdas de produção."
+    },
+    "privacy": {
+      "title": "5. Privacidade",
+      "text": "Este aplicativo funciona 100% offline. Nenhum dado é transmitido para a internet."
+    },
+    "decline": "Recusar e Sair",
+    "accept": "Eu entendo e aceito",
+    "accepted_toast": "Licença aceita. Bem-vindo!"
+  },
+  "sidebar": {
+    "language": "Idioma"
+  },
+  "states": {
+    "printer": {
+      "offline": "Offline",
+      "idle": "Ocioso",
+      "running": "Imprimindo",
+      "finish": "Finalizado",
+      "completed": "Concluído"
+    },
+    "door": {
+      "unknown": "Desconhecido",
+      "opening": "Abrindo...",
+      "open": "ABERTA",
+      "closing": "Fechando...",
+      "closed": "FECHADA"
+    }
+  }
+}

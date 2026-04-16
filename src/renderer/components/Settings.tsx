@@ -103,6 +103,15 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
     if (window.electronAPI && window.electronAPI.saveConfig) {
       window.electronAPI.saveConfig(updatedConfig);
       toast.success(t("settings.success"));
+
+      // NEU: Wir zwingen die App, sich die frischen Daten vom Backend zu holen!
+      // Ein kleines Delay gibt dem Backend Zeit, in Ruhe die Datei zu speichern 
+      // und den COM-Port / MQTT neu zu verbinden.
+      setTimeout(() => {
+        if (window.electronAPI.requestConfig) {
+          window.electronAPI.requestConfig();
+        }
+      }, 250); 
     }
   };
 
