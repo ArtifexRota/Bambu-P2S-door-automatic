@@ -129,7 +129,12 @@
       "z_down": {},
       "z_down_desc": {},
       "z_up": {},
-      "z_up_desc": {}
+      "z_up_desc": {},
+      "warning_title": {},
+      "warning_height_title": {},
+      "warning_height_desc": {},
+      "warning_startcode_title": {},
+      "warning_startcode_desc": {}
     }
   },
   "eula": {

@@ -204,6 +204,18 @@ M106 P3 S0
               
               {useHooks && (
                 <div style={{ marginTop: '15px' }}>
+                  <div style={{ background: '#333', borderLeft: '4px solid #ff9800', padding: '15px', borderRadius: '4px', marginBottom: '15px' }}>
+                    <h4 style={{ margin: '0 0 10px 0', color: '#fff' }}>⚠️ {t("gcode.hook.warning_title") || "Wichtig: Einstellungen anpassen!"}</h4>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: '#bbb', fontSize: '0.85rem' }}>
+                      <li style={{ marginBottom: '8px' }}>
+                        <strong>{t("gcode.hook.warning_height_title") || "Druckhöhe reduzieren:"}</strong> {t("gcode.hook.warning_height_desc") || "Verringere die maximale Druckhöhe (Printable height) in den Druckereinstellungen um die exakte Länge der montierten Haken."}
+                      </li>
+                      <li>
+                        <strong>{t("gcode.hook.warning_startcode_title") || "Start-Gcode prüfen:"}</strong> {t("gcode.hook.warning_startcode_desc") || "Achtung: Das Ändern der 'Printable height' ändert oft NICHT automatisch hartkodierte Werte im Start-Gcode! Prüfe den Machine Start G-code auf Z-Limit-Befehle (wie 'G28 Z P0 T...') und reduziere diese manuell um die Haken-Länge, sonst kracht das Bett beim Homing unten rein!"}
+                      </li>
+                    </ul>
+                  </div>
+
                   <label style={labelStyle}>{t("gcode.hook.z_down") || "Z-Höhe runter (Spannen)"}</label>
                   <input type="number" value={hookZ} onChange={(e) => setHookZ(Number(e.target.value))} style={inputStyle} />
                   <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '5px', marginBottom: '15px' }}>

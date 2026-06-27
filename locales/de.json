@@ -129,7 +129,12 @@
       "z_down": "Z-Höhe runter (Spannen)",
       "z_down_desc": "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen.",
       "z_up": "Z-Höhe hoch (Entspannen)",
-      "z_up_desc": "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen."
+      "z_up_desc": "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen.",
+      "warning_title": "Wichtig: Einstellungen anpassen!",
+      "warning_height_title": "Druckhöhe reduzieren:",
+      "warning_height_desc": "Verringere die maximale Druckhöhe (Printable height) in den Druckereinstellungen um die exakte Länge der montierten Haken.",
+      "warning_startcode_title": "Start-Gcode prüfen:",
+      "warning_startcode_desc": "Achtung: Das Ändern der 'Printable height' ändert oft NICHT automatisch hartkodierte Werte im Start-Gcode! Prüfe den Machine Start G-code auf Z-Limit-Befehle (wie 'G28 Z P0 T...') und reduziere diese manuell um die Haken-Länge, sonst kracht das Bett beim Homing unten rein!"
     }
   },
   "eula": {

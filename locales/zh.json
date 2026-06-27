@@ -129,7 +129,12 @@
       "z_down": "Z高度下降（张力）",
       "z_down_desc": "床降低的Z高度，以对印版建立压力。",
       "z_up": "Z高度上升（释放）",
-      "z_up_desc": "床升高的Z高度，以放松。"
+      "z_up_desc": "床升高的Z高度，以放松。",
+      "warning_title": "重要提示：调整设置！",
+      "warning_height_title": "降低打印高度：",
+      "warning_height_desc": "在打印机设置中，将最大打印高度减去安装挂钩的确切长度。",
+      "warning_startcode_title": "检查起始 G-code：",
+      "warning_startcode_desc": "警告：更改“可打印高度”通常不会自动更改起始 G-code 中的硬编码值！请检查机器起始 G-code 中的 Z 限制命令（如 'G28 Z P0 T...'），并根据挂钩长度手动减少它们，否则热床在回零时会发生碰撞！"
     }
   },
   "eula": {

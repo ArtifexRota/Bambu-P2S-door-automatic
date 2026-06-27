@@ -129,7 +129,12 @@
       "z_down": "Z 높이 내림 (장력)",
       "z_down_desc": "플레이트에 압력을 가하기 위해 베드를 내리는 Z 높이.",
       "z_up": "Z 높이 올림 (이완)",
-      "z_up_desc": "이완을 위해 베드를 올리는 Z 높이."
+      "z_up_desc": "이완을 위해 베드를 올리는 Z 높이.",
+      "warning_title": "중요: 설정 조정!",
+      "warning_height_title": "인쇄 높이 줄이기:",
+      "warning_height_desc": "프린터 설정에서 장착된 후크의 정확한 길이만큼 최대 인쇄 높이를 줄이십시오.",
+      "warning_startcode_title": "시작 G-code 확인:",
+      "warning_startcode_desc": "경고: '인쇄 가능 높이'를 변경해도 시작 G-code의 하드코딩된 값이 자동으로 변경되지 않는 경우가 많습니다! Z-제한 명령('G28 Z P0 T...'와 같은)에 대해 기계 시작 G-code를 확인하고 후크 길이만큼 수동으로 줄이십시오. 그렇지 않으면 호밍 중 베드가 충돌합니다!"
     }
   },
   "eula": {

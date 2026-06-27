@@ -129,7 +129,12 @@
       "z_down": "Z-Height Down (Tension)",
       "z_down_desc": "The Z-height the bed is lowered to build pressure on the plate.",
       "z_up": "Z-Height Up (Release)",
-      "z_up_desc": "The Z-height the bed is raised back to relax."
+      "z_up_desc": "The Z-height the bed is raised back to relax.",
+      "warning_title": "Important: Adjust Settings!",
+      "warning_height_title": "Reduce printable height:",
+      "warning_height_desc": "Decrease the maximum printable height in the printer settings by the exact length of the mounted hooks.",
+      "warning_startcode_title": "Check Start G-code:",
+      "warning_startcode_desc": "Warning: Changing the 'Printable height' often DOES NOT automatically change hardcoded values in the Start G-code! Check the Machine Start G-code for Z-limit commands (like 'G28 Z P0 T...') and reduce them manually by the hook length, otherwise the bed will crash during homing!"
     }
   },
   "eula": {

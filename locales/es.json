@@ -129,7 +129,12 @@
       "z_down": "Altura Z abajo (Tensión)",
       "z_down_desc": "La altura Z a la que baja la cama para acumular presión sobre la placa.",
       "z_up": "Altura Z arriba (Relajación)",
-      "z_up_desc": "La altura Z a la que vuelve a subir la cama para relajarse."
+      "z_up_desc": "La altura Z a la que vuelve a subir la cama para relajarse.",
+      "warning_title": "Importante: ¡Ajustar configuraciones!",
+      "warning_height_title": "Reducir altura de impresión:",
+      "warning_height_desc": "Disminuya la altura máxima de impresión en la configuración de la impresora por la longitud exacta de los ganchos montados.",
+      "warning_startcode_title": "Revisar G-code de inicio:",
+      "warning_startcode_desc": "Advertencia: ¡Cambiar la 'Printable height' a menudo NO cambia automáticamente los valores codificados en el G-code de inicio! Revise el G-code de inicio para los comandos de límite Z (como 'G28 Z P0 T...') y redúzcalos manualmente según la longitud del gancho, de lo contrario la cama chocará durante el homing."
     }
   },
   "eula": {

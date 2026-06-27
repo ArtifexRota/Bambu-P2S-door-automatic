@@ -129,7 +129,12 @@
       "z_down": "Altezza Z giù (Tensione)",
       "z_down_desc": "L'altezza Z a cui scende il piano per creare pressione sulla piastra.",
       "z_up": "Altezza Z su (Rilascio)",
-      "z_up_desc": "L'altezza Z a cui il piano viene rialzato per rilassarsi."
+      "z_up_desc": "L'altezza Z a cui il piano viene rialzato per rilassarsi.",
+      "warning_title": "Importante: Modifica le impostazioni!",
+      "warning_height_title": "Riduci l'altezza di stampa:",
+      "warning_height_desc": "Riduci l'altezza massima di stampa nelle impostazioni della stampante dell'esatta lunghezza dei ganci montati.",
+      "warning_startcode_title": "Controlla G-code di avvio:",
+      "warning_startcode_desc": "Attenzione: Modificare la 'Printable height' spesso NON cambia automaticamente i valori nel G-code di avvio! Controlla il G-code di avvio per i comandi limite Z (come 'G28 Z P0 T...') e riducili manualmente della lunghezza del gancio, altrimenti il letto si schianterà durante l'homing!"
     }
   },
   "eula": {
