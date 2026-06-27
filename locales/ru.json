@@ -26,7 +26,9 @@
     "open": "Открыть",
     "close": "Закрыть",
     "stats": "Статистика сессии",
-    "parts_printed": "Напечатано деталей"
+    "parts_printed": "Напечатано деталей",
+    "active_printer": {},
+    "percent_completed": {}
   },
   "settings": {
     "title": "Системные настройки",
@@ -53,7 +55,10 @@
       "add": "+ Новый профиль"
     },
     "save_all": "Сохранить все",
-    "success": "Настройки успешно сохранены!"
+    "success": "Настройки успешно сохранены!",
+    "device_name": {},
+    "add_printer": {},
+    "delete_printer": {}
   },
   "bot": {
     "title": "Последовательность кликов бота",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studio всегда должна быть открыта в полноэкранном режиме на основном мониторе.",
     "info_taskbar": "Иконка Bambu Studio всегда должна находиться в одном и том же месте на панели задач.",
     "info_scaling": "Если вы измените масштаб экрана Windows, вам придется заново обучить бота позициям.",
-    "info_taskbar_hide": "Панель задач Windows не должна быть настроена на автоматическое скрытие."
+    "info_taskbar_hide": "Панель задач Windows не должна быть настроена на автоматическое скрытие.",
+    "multi_seq_desc": {},
+    "after_last_seq": {},
+    "mode_stop": {},
+    "mode_loop": {},
+    "sequence": {},
+    "add_sequence": {},
+    "config_sequence": {},
+    "delete_sequence": {},
+    "empty_sequence": {},
+    "test_sequence_btn": {},
+    "seq_min_error": {}
   },
   "gcode": {
     "title": "Генератор конечного G-кода",
@@ -107,7 +123,14 @@
     },
     "preview": "Предпросмотр",
     "copy": "Копировать",
-    "copied": "G-Код скопирован!"
+    "copied": "G-Код скопирован!",
+    "hook": {
+      "toggle": {},
+      "z_down": {},
+      "z_down_desc": {},
+      "z_up": {},
+      "z_up_desc": {}
+    }
   },
   "eula": {
     "title": "Лицензионное соглашение и отказ от ответственности",

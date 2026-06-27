@@ -26,7 +26,9 @@
     "open": "打开",
     "close": "关闭",
     "stats": "会话统计",
-    "parts_printed": "已打印部件"
+    "parts_printed": "已打印部件",
+    "active_printer": "活动打印机",
+    "percent_completed": "已完成"
   },
   "settings": {
     "title": "系统设置",
@@ -53,7 +55,10 @@
       "add": "+ 新建配置"
     },
     "save_all": "全部保存",
-    "success": "设置保存成功！"
+    "success": "设置保存成功！",
+    "device_name": "打印机名称",
+    "add_printer": "添加新打印机",
+    "delete_printer": "删除打印机"
   },
   "bot": {
     "title": "机器人点击序列",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studio 必须始终在主显示器上全屏打开。",
     "info_taskbar": "Bambu Studio 图标必须始终保持在任务栏上的完全相同位置。",
     "info_scaling": "如果更换显示器或调整 Windows 显示缩放（文本大小），则必须重新捕获点击位置。",
-    "info_taskbar_hide": "Windows 任务栏不能设置为“自动隐藏”，因为这会改变点击位置。"
+    "info_taskbar_hide": "Windows 任务栏不能设置为“自动隐藏”，因为这会改变点击位置。",
+    "multi_seq_desc": "创建多个序列，机器人将为每个新打印执行这些序列。",
+    "after_last_seq": "在最后一个序列之后：",
+    "mode_stop": "停止机器人",
+    "mode_loop": "重新开始（循环）",
+    "sequence": "序列",
+    "add_sequence": "+ 新序列",
+    "config_sequence": "配置",
+    "delete_sequence": "删除序列",
+    "empty_sequence": "此序列中没有点击。",
+    "test_sequence_btn": "测试",
+    "seq_min_error": "至少必须存在一个序列！"
   },
   "gcode": {
     "title": "结束 G代码生成器",
@@ -107,7 +123,14 @@
     },
     "preview": "预览",
     "copy": "复制",
-    "copied": "G代码已复制！"
+    "copied": "G代码已复制！",
+    "hook": {
+      "toggle": "启用弯曲板 (Hook Bending)",
+      "z_down": "Z高度下降（张力）",
+      "z_down_desc": "床降低的Z高度，以对印版建立压力。",
+      "z_up": "Z高度上升（释放）",
+      "z_up_desc": "床升高的Z高度，以放松。"
+    }
   },
   "eula": {
     "title": "许可协议与免责声明",

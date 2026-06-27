@@ -13,12 +13,12 @@
       "finished": "🔄 Druck beendet. Bot übernimmt..."
     },
     "auto_mode": {
-  "activated_toast": "Automatik AKTIVIERT 🤖",
-  "deactivated_toast": "Automatik DEAKTIVIERT ⏸️",
-  "status_on": "🤖 Automatik ist AN",
-  "status_off": "⏸️ Automatik ist AUS",
-  "description": "Aktiviert die automatische Türsteuerung und den Klick-Bot am Ende des Drucks."
-},
+      "activated_toast": "Automatik AKTIVIERT 🤖",
+      "deactivated_toast": "Automatik DEAKTIVIERT ⏸️",
+      "status_on": "🤖 Automatik ist AN",
+      "status_off": "⏸️ Automatik ist AUS",
+      "description": "Aktiviert die automatische Türsteuerung und den Klick-Bot am Ende des Drucks."
+    },
     "printer_status": "Drucker Status",
     "current_material": "Aktuelles Material",
     "door_opens_at": "Tür öffnet bei",
@@ -26,7 +26,9 @@
     "open": "Öffnen",
     "close": "Schließen",
     "stats": "Session Statistik",
-    "parts_printed": "Gedruckte Teile"
+    "parts_printed": "Gedruckte Teile",
+    "active_printer": "Aktiver Drucker",
+    "percent_completed": "abgeschlossen"
   },
   "settings": {
     "title": "Systemeinstellungen",
@@ -53,7 +55,10 @@
       "add": "+ Neues Profil"
     },
     "save_all": "Alles Speichern",
-    "success": "Einstellungen erfolgreich gespeichert!"
+    "success": "Einstellungen erfolgreich gespeichert!",
+    "device_name": "Drucker Name",
+    "add_printer": "Neuen Drucker hinzufügen",
+    "delete_printer": "Drucker löschen"
   },
   "bot": {
     "title": "Bot Klick-Sequenz",
@@ -70,15 +75,26 @@
     "info_title": "Wichtige Hinweise zur Zuverlässigkeit",
     "capture_success_title": "Position gespeichert! 🎯",
     "capture_instruction": "Wechsle zu Bambu Studio, platziere die Maus und drücke F8",
-"capture_success": "Position gespeichert! 🎯",
-"waiting_for_hotkey": "Warte auf F8...",
-"notification_title": "Position erfasst",
-"notification_body": "Die Koordinaten für den Klick wurden erfolgreich gespeichert.",
-"capture_success_body": "Die Koordinaten wurden erfolgreich übernommen.",
-"info_fullscreen": "Bambu Studio sollte immer im Vollbildmodus auf deinem Hauptmonitor geöffnet sein.",
-"info_taskbar": "Das Bambu Studio Icon muss sich immer an der exakt gleichen Stelle in deiner Taskleiste befinden.",
-"info_scaling": "Wenn du den Monitor wechselst oder die Windows-Skalierung (Textgröße) änderst, musst du die Klick-Positionen einmalig neu anlernen.",
-"info_taskbar_hide": "Die Windows-Taskleiste darf nicht auf 'Automatisch ausblenden' stehen, da dies die Klick-Positionen verschiebt."
+    "capture_success": "Position gespeichert! 🎯",
+    "waiting_for_hotkey": "Warte auf F8...",
+    "notification_title": "Position erfasst",
+    "notification_body": "Die Koordinaten für den Klick wurden erfolgreich gespeichert.",
+    "capture_success_body": "Die Koordinaten wurden erfolgreich übernommen.",
+    "info_fullscreen": "Bambu Studio sollte immer im Vollbildmodus auf deinem Hauptmonitor geöffnet sein.",
+    "info_taskbar": "Das Bambu Studio Icon muss sich immer an der exakt gleichen Stelle in deiner Taskleiste befinden.",
+    "info_scaling": "Wenn du den Monitor wechselst oder die Windows-Skalierung (Textgröße) änderst, musst du die Klick-Positionen einmalig neu anlernen.",
+    "info_taskbar_hide": "Die Windows-Taskleiste darf nicht auf 'Automatisch ausblenden' stehen, da dies die Klick-Positionen verschiebt.",
+    "multi_seq_desc": "Hier kannst du mehrere Sequenzen anlegen, die der Bot für jeden neuen Druck nacheinander abarbeitet.",
+    "after_last_seq": "Nach der letzten Sequenz:",
+    "mode_stop": "Bot stoppen",
+    "mode_loop": "Von vorne beginnen (Loop)",
+    "sequence": "Sequenz",
+    "add_sequence": "+ Neue Sequenz",
+    "config_sequence": "konfigurieren",
+    "delete_sequence": "Sequenz löschen",
+    "empty_sequence": "Keine Klicks in dieser Sequenz.",
+    "test_sequence_btn": "testen",
+    "seq_min_error": "Es muss mindestens eine Sequenz existieren!"
   },
   "gcode": {
     "title": "End-Gcode Generator",
@@ -107,7 +123,14 @@
     },
     "preview": "Vorschau",
     "copy": "Kopieren",
-    "copied": "G-Code kopiert!"
+    "copied": "G-Code kopiert!",
+    "hook": {
+      "toggle": "Hook Bending aktivieren (Platte biegen)",
+      "z_down": "Z-Höhe runter (Spannen)",
+      "z_down_desc": "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen.",
+      "z_up": "Z-Höhe hoch (Entspannen)",
+      "z_up_desc": "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen."
+    }
   },
   "eula": {
     "title": "Lizenzvereinbarung & Haftungsausschluss",

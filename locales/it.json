@@ -19,14 +19,16 @@
       "status_off": "⏸️ Modalità automatica OFF",
       "description": "Abilita il controllo automatico della porta e il bot dei clic a fine stampa."
     },
-    "printer_status": "Stato Stampante",
+    "printer_status": "Stato stampante",
     "current_material": "Materiale Attuale",
     "door_opens_at": "La porta si apre a",
     "door_control": "Porta Bambi P2S",
     "open": "Apri",
     "close": "Chiudi",
     "stats": "Statistiche Sessione",
-    "parts_printed": "Pezzi Stampati"
+    "parts_printed": "Pezzi Stampati",
+    "active_printer": "Stampante attiva",
+    "percent_completed": "completato"
   },
   "settings": {
     "title": "Impostazioni di Sistema",
@@ -53,7 +55,10 @@
       "add": "+ Nuovo Profilo"
     },
     "save_all": "Salva Tutto",
-    "success": "Impostazioni salvate con successo!"
+    "success": "Impostazioni salvate con successo!",
+    "device_name": "Nome della stampante",
+    "add_printer": "Aggiungi nuova stampante",
+    "delete_printer": "Elimina stampante"
   },
   "bot": {
     "title": "Sequenza di Clic del Bot",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studio deve essere sempre aperto a schermo intero sul monitor principale.",
     "info_taskbar": "L'icona di Bambu Studio deve rimanere sempre nella stessa posizione sulla barra delle applicazioni.",
     "info_scaling": "Se cambi monitor o modifichi il ridimensionamento di Windows, devi catturare nuovamente i clic.",
-    "info_taskbar_hide": "La barra delle applicazioni di Windows non deve essere impostata su 'Nascondi automaticamente'."
+    "info_taskbar_hide": "La barra delle applicazioni di Windows non deve essere impostata su 'Nascondi automaticamente'.",
+    "multi_seq_desc": "Crea più sequenze che il bot eseguirà per ogni nuova stampa.",
+    "after_last_seq": "Dopo l'ultima sequenza:",
+    "mode_stop": "Ferma bot",
+    "mode_loop": "Ricomincia (Ciclo)",
+    "sequence": "Sequenza",
+    "add_sequence": "+ Nuova sequenza",
+    "config_sequence": "configurazione",
+    "delete_sequence": "Elimina sequenza",
+    "empty_sequence": "Nessun clic in questa sequenza.",
+    "test_sequence_btn": "prova",
+    "seq_min_error": "Deve esistere almeno una sequenza!"
   },
   "gcode": {
     "title": "Generatore G-code Finale",
@@ -107,7 +123,14 @@
     },
     "preview": "Anteprima",
     "copy": "Copia",
-    "copied": "G-Code copiato!"
+    "copied": "G-Code copiato!",
+    "hook": {
+      "toggle": "Abilita piegatura piastra (Hook Bending)",
+      "z_down": "Altezza Z giù (Tensione)",
+      "z_down_desc": "L'altezza Z a cui scende il piano per creare pressione sulla piastra.",
+      "z_up": "Altezza Z su (Rilascio)",
+      "z_up_desc": "L'altezza Z a cui il piano viene rialzato per rilassarsi."
+    }
   },
   "eula": {
     "title": "Accordo di Licenza & Disclaimer",

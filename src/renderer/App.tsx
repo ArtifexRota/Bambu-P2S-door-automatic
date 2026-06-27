@@ -12,39 +12,51 @@ const App: React.FC = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"dashboard" | "settings" | "gcode" | 'bot'>('dashboard');
   
-  const [printerData, setPrinterData] = useState<any>({
+  const [printerDataMap, setPrinterDataMap] = useState<Record<string, any>>({});
+  const [config, setConfig] = useState<any>(null);
+  const [activeDeviceId, setActiveDeviceId] = useState<string>("1");
+
+  useEffect(() => {
+    if (window.electronAPI) {
+      window.electronAPI.onInitConfigs((data: any) => {
+        console.log("Config empfangen:", data); 
+        setConfig(data.config || data);
+        if (data.config?.devices && data.config.devices.length > 0) {
+          const exists = data.config.devices.find((d: any) => d.id === activeDeviceId);
+          if (!exists) {
+            setActiveDeviceId(data.config.devices[0].id);
+          }
+        }
+      });
+
+      window.electronAPI.onPrinterUpdate((data: any) => {
+        setPrinterDataMap(data);
+      });
+      window.electronAPI.onAppError((msg: string) => {
+        toast.error(msg, { duration: 6000 });
+      });
+      window.electronAPI.requestConfig(); 
+    }
+  }, [activeDeviceId]);
+
+  if (!config) {
+    return <div style={{ color: "white", padding: '20px' }}>Loading...</div>;
+  }
+
+  const activeDevice = config.devices?.find((d: any) => d.id === activeDeviceId) || config.devices?.[0];
+  const printerData = printerDataMap[activeDeviceId] || {
     currentTemp: 0,
     targetTemp: 0,
     percent: 0,
     status: "offline",
     bambiState: "Unbekannt",
     printedParts: 0,
-  });
-  
-  const [config, setConfig] = useState<any>(null);
-
-  useEffect(() => {
-    if (window.electronAPI) {
-      window.electronAPI.onInitConfigs((data: any) => {
-        console.log("Config empfangen:", data); 
-        setConfig(data.config || data); 
-      });
-
-      window.electronAPI.onPrinterUpdate((data: any) => {
-        setPrinterData(data);
-      });
-
-      window.electronAPI.requestConfig(); 
-    }
-  }, []);
-
-  if (!config) {
-    return <div style={{ color: "white", padding: '20px' }}>Lade Konfiguration...</div>;
-  }
+    isDoorOpen: false
+  };
 
   // --- Aktives Material ermitteln ---
   const profiles = config.materials?.profiles || [];
-  const activeProfile = profiles.find((p: any) => p.id === config.materials?.activeProfileId);
+  const activeProfile = profiles.find((p: any) => p.id === activeDevice?.activeProfileId);
   const profileName = activeProfile ? activeProfile.name : "Kein Profil";
   const openTemp = activeProfile ? activeProfile.openTemp : "--";
 
@@ -151,6 +163,29 @@ const App: React.FC = () => {
       
       {/* Sidebar / Navigation */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '20px', borderBottom: '1px solid #333', marginBottom: '10px' }}>
+          <label style={{ display: 'block', color: '#888', marginBottom: '5px', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase' }}>
+            {t("dashboard.active_printer") || "Aktiver Drucker"}
+          </label>
+          <select 
+            value={activeDeviceId} 
+            onChange={(e) => setActiveDeviceId(e.target.value)}
+            style={{ 
+              width: '100%', 
+              padding: '10px', 
+              background: '#2a2a2e', 
+              color: 'white', 
+              border: '1px solid #555', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            {config.devices?.map((d: any) => (
+              <option key={d.id} value={d.id}>{d.name || `Drucker ${d.id}`}</option>
+            ))}
+          </select>
+        </div>
+
         <nav>
           <button
             className={activeTab === "dashboard" ? "active" : ""}
@@ -233,7 +268,7 @@ const App: React.FC = () => {
                   style={{ width: `${printerData.percent}%` }}
                 ></div>
               </div>
-              <p>{printerData.percent}% abgeschlossen</p>
+              <p>{printerData.percent}% {t("dashboard.percent_completed") || "abgeschlossen"}</p>
             </div>
 
             {/* 2. Aktuelles Material Card */}
@@ -269,12 +304,15 @@ const App: React.FC = () => {
                 <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
                   <input 
                     type="checkbox"
-                    checked={config.bot?.autoMode || false}
+                    checked={activeDevice?.bot?.autoMode || false}
                     onChange={(e) => {
-                      const updatedConfig = { 
-                        ...config, 
-                        bot: { ...config.bot, autoMode: e.target.checked } 
-                      };
+                      const updatedDevices = config.devices.map((d: any) => {
+                        if (d.id === activeDeviceId) {
+                          return { ...d, bot: { ...d.bot, autoMode: e.target.checked } };
+                        }
+                        return d;
+                      });
+                      const updatedConfig = { ...config, devices: updatedDevices };
                       setConfig(updatedConfig);
                       if (window.electronAPI && window.electronAPI.saveConfig) {
                         window.electronAPI.saveConfig(updatedConfig);
@@ -287,8 +325,8 @@ const App: React.FC = () => {
                     }}
                     style={{ width: '22px', height: '22px', cursor: 'pointer', accentColor: '#4caf50' }}
                   />
-                  <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: config.bot?.autoMode ? '#4caf50' : '#888' }}>
-                    {config.bot?.autoMode ? t("dashboard.auto_mode.status_on") : t("dashboard.auto_mode.status_off")}
+                  <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: activeDevice?.bot?.autoMode ? '#4caf50' : '#888' }}>
+                    {activeDevice?.bot?.autoMode ? t("dashboard.auto_mode.status_on") : t("dashboard.auto_mode.status_off")}
                   </span>
                 </label>
                 <p style={{ margin: '5px 0 0 32px', fontSize: '0.85rem', color: '#666' }}>
@@ -308,13 +346,13 @@ const App: React.FC = () => {
               </div>
               <div className="actions" style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
                 <button 
-                  onClick={() => window.electronAPI.sendSerial("OPEN")}
+                  onClick={() => window.electronAPI.sendSerial(activeDeviceId, "OPEN")}
                   style={{ flex: 1, padding: '10px', background: '#2a2a2e', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}
                 >
                   🔓 {t("dashboard.open")}
                 </button>
                 <button 
-                  onClick={() => window.electronAPI.sendSerial("CLOSE")}
+                  onClick={() => window.electronAPI.sendSerial(activeDeviceId, "CLOSE")}
                   style={{ flex: 1, padding: '10px', background: '#2a2a2e', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', transition: 'background 0.2s' }}
                 >
                   🔒 {t("dashboard.close")}
@@ -332,8 +370,8 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {activeTab === "settings" && <Settings initialConfig={config} />}
-        {activeTab === 'bot' && <BotConfig initialSequence={config?.bot?.sequence} />}
+        {activeTab === "settings" && <Settings initialConfig={config} activeDeviceId={activeDeviceId} />}
+        {activeTab === 'bot' && <BotConfig initialConfig={config} activeDeviceId={activeDeviceId} />}
         {activeTab === "gcode" && <GcodeGen />}
       </main>
     </div>

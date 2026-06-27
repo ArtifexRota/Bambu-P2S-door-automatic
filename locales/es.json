@@ -26,7 +26,9 @@
     "open": "Abrir",
     "close": "Cerrar",
     "stats": "Estadísticas de la sesión",
-    "parts_printed": "Piezas impresas"
+    "parts_printed": "Piezas impresas",
+    "active_printer": "Impresora activa",
+    "percent_completed": "completado"
   },
   "settings": {
     "title": "Ajustes del Sistema",
@@ -53,7 +55,10 @@
       "add": "+ Nuevo perfil"
     },
     "save_all": "Guardar Todo",
-    "success": "¡Ajustes guardados con éxito!"
+    "success": "¡Ajustes guardados con éxito!",
+    "device_name": "Nombre de la impresora",
+    "add_printer": "Agregar nueva impresora",
+    "delete_printer": "Eliminar impresora"
   },
   "bot": {
     "title": "Secuencia de clics del Bot",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studio debe estar siempre abierto en pantalla completa en tu monitor principal.",
     "info_taskbar": "El icono de Bambu Studio debe permanecer siempre en la misma posición en tu barra de tareas.",
     "info_scaling": "Si cambias de monitor o ajustas el escalado de pantalla de Windows (tamaño del texto), deberás volver a capturar las posiciones de clic.",
-    "info_taskbar_hide": "La barra de tareas de Windows no debe estar en modo 'Ocultar automáticamente', ya que esto desplazará las posiciones de clic."
+    "info_taskbar_hide": "La barra de tareas de Windows no debe estar en modo 'Ocultar automáticamente', ya que esto desplazará las posiciones de clic.",
+    "multi_seq_desc": "Crea varias secuencias que el bot ejecutará para cada nueva impresión.",
+    "after_last_seq": "Después de la última secuencia:",
+    "mode_stop": "Detener bot",
+    "mode_loop": "Empezar de nuevo (Bucle)",
+    "sequence": "Secuencia",
+    "add_sequence": "+ Nueva secuencia",
+    "config_sequence": "configuración",
+    "delete_sequence": "Eliminar secuencia",
+    "empty_sequence": "No hay clics en esta secuencia.",
+    "test_sequence_btn": "probar",
+    "seq_min_error": "¡Debe existir al menos una secuencia!"
   },
   "gcode": {
     "title": "Generador G-code Final",
@@ -107,7 +123,14 @@
     },
     "preview": "Vista previa",
     "copy": "Copiar",
-    "copied": "¡G-Code copiado!"
+    "copied": "¡G-Code copiado!",
+    "hook": {
+      "toggle": "Activar flexión de la placa (Hook Bending)",
+      "z_down": "Altura Z abajo (Tensión)",
+      "z_down_desc": "La altura Z a la que baja la cama para acumular presión sobre la placa.",
+      "z_up": "Altura Z arriba (Relajación)",
+      "z_up_desc": "La altura Z a la que vuelve a subir la cama para relajarse."
+    }
   },
   "eula": {
     "title": "Acuerdo de Licencia y Descargo de Responsabilidad",
@@ -144,7 +167,7 @@
   },
   "states": {
     "printer": {
-      "offline": "Desconectada",
+      "offline": "Desconectado",
       "idle": "Inactiva",
       "running": "Imprimiendo",
       "finish": "Terminado",

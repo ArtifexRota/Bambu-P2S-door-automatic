@@ -26,7 +26,9 @@
     "open": "열기",
     "close": "닫기",
     "stats": "세션 통계",
-    "parts_printed": "인쇄된 부품"
+    "parts_printed": "인쇄된 부품",
+    "active_printer": "활성 프린터",
+    "percent_completed": "완료"
   },
   "settings": {
     "title": "시스템 설정",
@@ -53,7 +55,10 @@
       "add": "+ 새 프로필"
     },
     "save_all": "모두 저장",
-    "success": "설정이 성공적으로 저장되었습니다!"
+    "success": "설정이 성공적으로 저장되었습니다!",
+    "device_name": "프린터 이름",
+    "add_printer": "새 프린터 추가",
+    "delete_printer": "프린터 삭제"
   },
   "bot": {
     "title": "봇 클릭 시퀀스",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studio는 항상 기본 모니터에서 전체 화면 모드로 열려 있어야 합니다.",
     "info_taskbar": "Bambu Studio 아이콘은 작업 표시줄에서 항상 같은 위치에 있어야 합니다.",
     "info_scaling": "모니터를 변경하거나 Windows 디스플레이 크기(텍스트 크기)를 조정하는 경우 클릭 위치를 다시 캡처해야 합니다.",
-    "info_taskbar_hide": "Windows 작업 표시줄을 '자동 숨기기'로 설정해서는 안 됩니다."
+    "info_taskbar_hide": "Windows 작업 표시줄을 '자동 숨기기'로 설정해서는 안 됩니다.",
+    "multi_seq_desc": "봇이 새 인쇄마다 실행할 여러 시퀀스를 만듭니다.",
+    "after_last_seq": "마지막 시퀀스 후:",
+    "mode_stop": "봇 중지",
+    "mode_loop": "처음부터 다시 시작 (루프)",
+    "sequence": "시퀀스",
+    "add_sequence": "+ 새 시퀀스",
+    "config_sequence": "구성",
+    "delete_sequence": "시퀀스 삭제",
+    "empty_sequence": "이 시퀀스에 클릭이 없습니다.",
+    "test_sequence_btn": "테스트",
+    "seq_min_error": "최소 하나 이상의 시퀀스가 있어야 합니다!"
   },
   "gcode": {
     "title": "종료 G-code 생성기",
@@ -107,7 +123,14 @@
     },
     "preview": "미리보기",
     "copy": "복사",
-    "copied": "G-Code가 복사되었습니다!"
+    "copied": "G-Code가 복사되었습니다!",
+    "hook": {
+      "toggle": "플레이트 구부리기 활성화 (Hook Bending)",
+      "z_down": "Z 높이 내림 (장력)",
+      "z_down_desc": "플레이트에 압력을 가하기 위해 베드를 내리는 Z 높이.",
+      "z_up": "Z 높이 올림 (이완)",
+      "z_up_desc": "이완을 위해 베드를 올리는 Z 높이."
+    }
   },
   "eula": {
     "title": "라이센스 계약 및 면책 조항",

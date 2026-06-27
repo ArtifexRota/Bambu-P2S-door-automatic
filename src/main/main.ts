@@ -18,24 +18,32 @@ interface MaterialProfile {
   openTemp: number;
 }
 
-interface Config {
-  printer: {
-    ip: string;
-    accessCode: string;
-    serial: string;
-  };
+interface ClickTask {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  delaySeconds: number;
+}
+
+interface DeviceConfig {
+  id: string;
+  name: string;
+  activeProfileId?: string;
+  printer: { ip: string; accessCode: string; serial: string; };
   serial: { port: string; baudRate: number };
   servo: { open: number; close: number };
   bot: {
     closeDelayMs: number;
-    sequence: Array<{
-      id: string;
-      name: string;
-      x: number;
-      y: number;
-      delaySeconds: number;
-    }>;
+    mode: "loop" | "stop";
+    currentSequenceIndex: number;
+    sequences: ClickTask[][];
+    autoMode?: boolean;
   };
+}
+
+interface Config {
+  devices: DeviceConfig[];
   materials: {
     activeProfileId: string;
     profiles: MaterialProfile[];
@@ -73,30 +81,27 @@ logToFile("App gestartet. Version: " + app.getVersion());
 
 // --- GLOBALE VARIABLEN ---
 let mainWindow: BrowserWindow | null = null;
-let port: SerialPort | null = null;
-let parser: ReadlineParser | null = null;
-let currentTranslations: any = {};
-let printFinishedHandled = false;
+const serialPorts: Record<string, SerialPort> = {};
+const serialParsers: Record<string, ReadlineParser> = {};
+const mqttClients: Record<string, mqtt.MqttClient> = {};
+const printerDataMap: Record<string, PrinterData> = {};
 
-// --- STANDARD KONFIGURATION (Hardcoded im Code) ---
-const defaultConfig: Config = {
-  printer: {
-    ip: "192.168.X.X",
-    accessCode: "",
-    serial: ""
-  },
-  serial: {
-    port: "COM3",
-    baudRate: 115200
-  },
-  servo: {
-    open: 0,
-    close: 175
-  },
+const defaultDevice: DeviceConfig = {
+  id: "1",
+  name: "Drucker 1",
+  printer: { ip: "192.168.X.X", accessCode: "", serial: "" },
+  serial: { port: "COM3", baudRate: 115200 },
+  servo: { open: 0, close: 175 },
   bot: {
-    closeDelayMs: 3000,
-    sequence: []
-  },
+    closeDelayMs: 20000,
+    mode: "stop",
+    currentSequenceIndex: 0,
+    sequences: [[]]
+  }
+};
+
+const defaultConfig: Config = {
+  devices: [defaultDevice],
   materials: {
     activeProfileId: "1",
     profiles: [
@@ -119,17 +124,52 @@ if (!fs.existsSync(userDataPath)) {
   fs.mkdirSync(userDataPath, { recursive: true });
 }
 
-let config: any; // oder dein Interface Config
+let config: Config;
 
-// SCHRITT 2: Datei laden oder erstellen
 try {
   if (fs.existsSync(configPath)) {
-    // Datei ist da -> Laden
     const rawData = fs.readFileSync(configPath, "utf-8");
-    config = JSON.parse(rawData);
+    let loadedConfig = JSON.parse(rawData);
+    
+    if (!loadedConfig.devices) {
+      logToFile("Migriere alte Config auf neues Multi-Printer-Format...");
+      const migratedDevice: DeviceConfig = {
+        id: "1",
+        name: "Drucker 1",
+        printer: loadedConfig.printer || defaultDevice.printer,
+        serial: loadedConfig.serial || defaultDevice.serial,
+        servo: loadedConfig.servo || defaultDevice.servo,
+        bot: {
+          closeDelayMs: loadedConfig.bot?.closeDelayMs || 20000,
+          mode: "stop",
+          currentSequenceIndex: 0,
+          sequences: [loadedConfig.bot?.sequence || []]
+        }
+      };
+      config = {
+        devices: [migratedDevice],
+        materials: loadedConfig.materials || defaultConfig.materials,
+        language: loadedConfig.language || defaultConfig.language,
+        eulaAccepted: loadedConfig.eulaAccepted || false
+      };
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    } else {
+      config = loadedConfig as Config;
+    }
+
+    // MIGRATION: config.materials.activeProfileId -> device.activeProfileId
+    if (config.materials && config.materials.activeProfileId) {
+      logToFile(`[Migration] Verschiebe activeProfileId zu Devices...`);
+      config.devices.forEach((device: any) => {
+        if (!device.activeProfileId) {
+          device.activeProfileId = config.materials.activeProfileId;
+        }
+      });
+      delete config.materials.activeProfileId;
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    }
     logToFile("Config geladen.");
   } else {
-    // Datei fehlt -> Standardwerte nehmen und SPEICHERN
     logToFile("Erstelle neue config.json...");
     config = defaultConfig;
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
@@ -139,6 +179,7 @@ try {
   config = defaultConfig;
 }
 
+let currentTranslations: any = {};
 // --- TRANSLATIONS LADEN (Robust) ---
 const lang = config.language || "de";
 // Fix: Use __dirname for relative path resolution within ASAR
@@ -170,16 +211,15 @@ try {
   logToFile(`[Main] CRITICAL: Fehler beim Laden der Übersetzungen: ${error.message}`);
 }
 
-let printerData: PrinterData = {
-  currentTemp: 0,
-  targetTemp: 0,
-  percent: 0,
-  status: "Offline",
-  bambiState: "Unbekannt",
-  isWaitingToClose: false,
-  isDoorOpen: false,
-  printedParts: 0,
-};
+let printFinishedHandledMap: Record<string, boolean> = {};
+
+config.devices.forEach(device => {
+  printerDataMap[device.id] = {
+    currentTemp: 0, targetTemp: 0, percent: 0, status: "Offline",
+    bambiState: "Unbekannt", isWaitingToClose: false, isDoorOpen: false, printedParts: 0
+  };
+  printFinishedHandledMap[device.id] = false;
+});
 
 // --- ELECTRON WINDOW ---
 function createWindow(): void {
@@ -241,8 +281,10 @@ function createWindow(): void {
 app.whenReady().then(() => {
   logToFile("[Main] App is Ready.");
   createWindow();
-  connectSerial();
-  connectMQTT();
+  config.devices.forEach(device => {
+    connectSerial(device.id);
+    connectMQTT(device.id);
+  });
 });
 
 ipcMain.on('get-initial-config', (event) => {
@@ -264,161 +306,176 @@ app.on("window-all-closed", () => {
 });
 
 // --- SERIELLE VERBINDUNG ---
-function connectSerial(): void {
-  try {
-    // NEU: Alte Verbindung schließen, falls vorhanden
-    if (port && port.isOpen) {
-      port.close();
-      logToFile("[Serial] Alte Verbindung geschlossen.");
+function connectSerial(deviceId: string): void {
+  const device = config.devices.find(d => d.id === deviceId);
+  if (!device) return;
+
+  const initPort = () => {
+    if (!device.serial.port) {
+      logToFile(`[Serial ${deviceId}] Kein COM-Port in der Konfiguration definiert.`);
+      return;
     }
+    try {
+      const p = new SerialPort({
+        path: device.serial.port,
+        baudRate: device.serial.baudRate,
+        autoOpen: false,
+      });
 
-    if (!config.serial.port) return;
+      serialPorts[deviceId] = p;
 
-    logToFile(`[Serial] Versuche Verbindung zu ${config.serial.port}...`);
-    port = new SerialPort({
-      path: config.serial.port,
-      baudRate: config.serial.baudRate,
-      autoOpen: false,
-    });
-
-    port.open((err) => {
-      if (err) {
-        logToFile(`[Serial] Port ${config.serial.port} nicht gefunden oder Fehler: ${err.message}`);
-      } else {
-        logToFile(`[Serial] Verbunden mit ${config.serial.port}`);
-      }
-    });
-
-    parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
-
-    parser.on("data", (data: string) => {
-      try {
-        const json = JSON.parse(data);
-        if (json.bambi === "moving") {
-          printerData.bambiState = json.target === "open" ? "ÖFFNET..." : "SCHLIEẞT...";
+      p.open((err) => {
+        if (err) {
+          logToFile(`[Serial ${deviceId}] Port ${device.serial.port} nicht gefunden oder Fehler: ${err.message}`);
+          if (mainWindow) mainWindow.webContents.send("app-error", `Serial Error (${device.name}): ${err.message}`);
+        } else {
+          logToFile(`[Serial ${deviceId}] Verbunden mit ${device.serial.port}`);
+          setTimeout(() => {
+            sendToBambi(deviceId, `SAVE:${device.servo.open}:${device.servo.close}`);
+            logToFile(`[Serial ${deviceId}] Initiale Settings an Arduino gesendet.`);
+          }, 2500);
         }
-        if (json.status === "detached_soft") {
-          printerData.bambiState = printerData.bambiState === "ÖFFNET..." ? "OFFEN" : "GESCHLOSSEN";
-        }
-        updateDashboard();
-      } catch (e) {
-        // Zu viel Spam im Log vermeiden
-      }
+      });
+
+      const parser = p.pipe(new ReadlineParser({ delimiter: "\r\n" }));
+      serialParsers[deviceId] = parser;
+
+      parser.on("data", (data: string) => {
+        try {
+          const json = JSON.parse(data);
+          const pData = printerDataMap[deviceId];
+          if (json.bambi === "moving") {
+            pData.bambiState = json.target === "open" ? "ÖFFNET..." : "SCHLIEẞT...";
+          }
+          if (json.status === "detached_soft") {
+            pData.bambiState = pData.bambiState === "ÖFFNET..." ? "OFFEN" : "GESCHLOSSEN";
+          }
+          updateDashboard();
+        } catch (e) {}
+      });
+    } catch (error: any) {
+      logToFile(`[Serial ${deviceId}] Fehler: ${error.message}`);
+    }
+  };
+
+  if (serialPorts[deviceId] && serialPorts[deviceId].isOpen) {
+    serialPorts[deviceId].close(() => {
+      initPort();
     });
-  } catch (error: any) {
-    logToFile(`SerialPort Fehler: ${error.message}`);
+  } else {
+    initPort();
   }
 }
 
-function sendToBambi(command: string): void {
-  if (port && port.isOpen) {
-    port.write(command + "\n");
+function sendToBambi(deviceId: string, command: string): void {
+  const p = serialPorts[deviceId];
+  if (p && p.isOpen) {
+    p.write(command + "\n");
   }
 }
 
 // --- MQTT VERBINDUNG ---
-let client: mqtt.MqttClient;
+function connectMQTT(deviceId: string): void {
+  const device = config.devices.find(d => d.id === deviceId);
+  if (!device) return;
 
-function connectMQTT(): void {
-  if (client) {
-    client.end(true); 
-    logToFile("[MQTT] Alte Verbindung getrennt.");
+  if (mqttClients[deviceId]) {
+    mqttClients[deviceId].end(true); 
+    logToFile(`[MQTT ${deviceId}] Alte Verbindung getrennt.`);
   }
 
-  // NEU: Gar nicht erst versuchen, wenn noch die Platzhalter-IP drinsteht
-  if (!config.printer.ip || config.printer.ip.includes("X.X")) {
-    logToFile("[MQTT] Keine gültige IP hinterlegt. Warte auf Benutzereingabe.");
+  if (!device.printer.ip || device.printer.ip.includes("X.X")) {
+    logToFile(`[MQTT ${deviceId}] Keine gültige IP hinterlegt. Warte auf Benutzereingabe.`);
     return;
   }
-  logToFile(`[MQTT] Versuche Verbindung zu ${config.printer.ip}...`);
-  client = mqtt.connect(`mqtts://${config.printer.ip}:8883`, {
+  logToFile(`[MQTT ${deviceId}] Versuche Verbindung zu ${device.printer.ip}...`);
+  const client = mqtt.connect(`mqtts://${device.printer.ip}:8883`, {
     username: "bblp",
-    password: config.printer.accessCode,
+    password: device.printer.accessCode,
     rejectUnauthorized: false,
   });
+  
+  mqttClients[deviceId] = client;
 
   client.on("connect", () => {
-    logToFile("[MQTT] Verbunden!");
-    printerData.status = "Verbunden";
-    client.subscribe(`device/${config.printer.serial}/report`);
+    logToFile(`[MQTT ${deviceId}] Verbunden!`);
+    printerDataMap[deviceId].status = "Verbunden";
+    client.subscribe(`device/${device.printer.serial}/report`);
     client.publish(
-      `device/${config.printer.serial}/request`,
+      `device/${device.printer.serial}/request`,
       JSON.stringify({ pushing: { sequenceId: "1", command: "pushing" } }),
     );
     updateDashboard();
   });
 
   client.on("error", (err) => {
-    logToFile(`[MQTT] Fehler: ${err.message}`);
+    logToFile(`[MQTT ${deviceId}] Fehler: ${err.message}`);
+    if (mainWindow) mainWindow.webContents.send("app-error", `MQTT Error (${device.name}): ${err.message}`);
   });
 
   client.on("message", (topic: string, message: Buffer) => {
     try {
       const data = JSON.parse(message.toString());
+      const pData = printerDataMap[deviceId];
       if (data && data.print) {
         const p = data.print;
-        if (p.bed_temper !== undefined) printerData.currentTemp = Math.round(p.bed_temper);
-        if (p.bed_target_temper !== undefined) printerData.targetTemp = Math.round(p.bed_target_temper);
-        if (p.mc_percent !== undefined) printerData.percent = p.mc_percent;
-        if (p.gcode_state) printerData.status = p.gcode_state;
+        if (p.bed_temper !== undefined) pData.currentTemp = Math.round(p.bed_temper);
+        if (p.bed_target_temper !== undefined) pData.targetTemp = Math.round(p.bed_target_temper);
+        if (p.mc_percent !== undefined) pData.percent = p.mc_percent;
+        if (p.gcode_state) pData.status = p.gcode_state;
 
-        // Sobald ein NEUER Druck startet, setzen wir die Sperre zurück!
-        if (printerData.status === "RUNNING") {
-            printFinishedHandled = false;
+        if (pData.status === "RUNNING") {
+            printFinishedHandledMap[deviceId] = false;
         }
 
-        // --- Die smarte Tür-Steuerung ---
-        const autoModeEnabled = config.bot?.autoMode === true; // Prüft, ob Automatik AN ist
+        const autoModeEnabled = device.bot?.autoMode === true; // AutoMode PER DEVICE
         const profiles = config.materials?.profiles || [];
-        const activeProfileId = config.materials?.activeProfileId;
-        const activeProfile = profiles.find((p: any) => p.id === activeProfileId);
+        const activeProfileId = device.activeProfileId;
+        const activeProfile = profiles.find((prof: any) => prof.id === activeProfileId);
 
-        // Führt die Logik nur aus, wenn die Automatik im Dashboard aktiviert wurde
         if (autoModeEnabled) {
-            if (!activeProfile && printerData.status === "RUNNING") {
-                if (!printerData.isDoorOpen) {
-                    logToFile('[Auto] ⚠️ WARNUNG: Kein Material-Profil ausgewählt!');
-                    printerData.isDoorOpen = true; 
+            if (!activeProfile && pData.status === "RUNNING") {
+                if (!pData.isDoorOpen) {
+                    logToFile(`[Auto ${deviceId}] ⚠️ WARNUNG: Kein Material-Profil ausgewählt!`);
+                    pData.isDoorOpen = true; 
                 }
             } else if (activeProfile) {
                 const currentTargetOpenTemp = activeProfile.openTemp;
-                const isNearEnd = printerData.percent > 80;        
-                const isSafeTemp = printerData.currentTemp <= currentTargetOpenTemp;
+                const isNearEnd = pData.percent > 80;        
+                const isSafeTemp = pData.currentTemp <= currentTargetOpenTemp;
 
                 if ( 
                     isSafeTemp &&              
                     isNearEnd &&               
-                    !printerData.isDoorOpen && 
-                    !printFinishedHandled // WICHTIG: Nicht öffnen, wenn der Druck bereits fertig ist!
+                    !pData.isDoorOpen && 
+                    !printFinishedHandledMap[deviceId]
                 ) {
-                    logToFile(`[Auto] 80% erreicht & Temperatur OK -> Öffne Tür!`);
-                    sendToBambi("OPEN");
-                    printerData.isDoorOpen = true; 
+                    logToFile(`[Auto ${deviceId}] 80% erreicht & Temperatur OK -> Öffne Tür!`);
+                    sendToBambi(deviceId, "OPEN");
+                    pData.isDoorOpen = true; 
                 }
             }
         }
 
-        // --- Finish Logik ---
         if (
-          (printerData.status === "FINISH" || printerData.status === "COMPLETED") &&
-          !printFinishedHandled && // 🛑 DIE SPERRE: Verhindert die Endlosschleife!
-          autoModeEnabled          // Nur wenn Automatik AN ist
+          (pData.status === "FINISH" || pData.status === "COMPLETED") &&
+          !printFinishedHandledMap[deviceId] && 
+          autoModeEnabled          
         ) {
-          printFinishedHandled = true; // Sperre sofort aktivieren (wird erst beim nächsten Druck resettet)
-          printerData.isWaitingToClose = true;
+          printFinishedHandledMap[deviceId] = true; 
+          pData.isWaitingToClose = true;
           
           setTimeout(() => {
-            sendToBambi("CLOSE");
-            printerData.isWaitingToClose = false;
-            printerData.isDoorOpen = false; 
+            sendToBambi(deviceId, "CLOSE");
+            pData.isWaitingToClose = false;
+            pData.isDoorOpen = false; 
             
             setTimeout(() => {
-              // Bevor der Bot startet, prüfen wir zur Sicherheit nochmal, ob die Automatik noch an ist
-              if ((printerData.status === "FINISH" || printerData.status === "IDLE") && config.bot?.autoMode === true) {
-                startNewSpool();
+              if ((pData.status === "FINISH" || pData.status === "IDLE") && device.bot?.autoMode === true) {
+                startNewSpool(deviceId);
               }
             }, 3000);
-          }, config.bot.closeDelayMs || 3000);
+          }, device.bot.closeDelayMs || 20000);
         }
       }
       updateDashboard();
@@ -448,61 +505,114 @@ function clickAt(x: number | string, y: number | string): void {
 // Wartet eine bestimmte Anzahl an Millisekunden
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-async function startNewSpool(): Promise<void> {
-  const sequence = config.bot.sequence;
-  
-  if (!sequence || sequence.length === 0) {
-      logToFile("[Bot] Keine Klick-Sequenz gespeichert. Bot bricht ab.");
+async function startNewSpool(deviceId: string): Promise<void> {
+  const device = config.devices.find(d => d.id === deviceId);
+  if (!device) return;
+
+  const sequences = device.bot.sequences || [];
+  if (sequences.length === 0) {
+      logToFile(`[Bot ${deviceId}] Keine Klick-Sequenzen gespeichert.`);
       return;
   }
 
-  logToFile(`[Bot] Starte Klick-Sequenz mit ${sequence.length} Schritten...`);
+  const seqIndex = device.bot.currentSequenceIndex || 0;
+  if (seqIndex >= sequences.length) {
+    logToFile(`[Bot ${deviceId}] Alle Sequenzen abgeschlossen.`);
+    return;
+  }
 
-  // Abarbeiten der dynamischen Liste
+  const sequence = sequences[seqIndex];
+  logToFile(`[Bot ${deviceId}] Starte Sequenz ${seqIndex + 1}/${sequences.length} mit ${sequence.length} Schritten...`);
+
   for (const step of sequence) {
-      logToFile(`[Bot] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
+      logToFile(`[Bot ${deviceId}] Führe aus: ${step.name} (X: ${step.x}, Y: ${step.y}) - Warte ${step.delaySeconds}s...`);
       clickAt(step.x, step.y);
-      
-      // Delay in Millisekunden umrechnen
       await delay(step.delaySeconds * 1000);
   }
 
-  logToFile("[Bot] Sequenz abgeschlossen.");
-  printerData.printedParts++;
+  logToFile(`[Bot ${deviceId}] Sequenz ${seqIndex + 1} abgeschlossen.`);
+  printerDataMap[deviceId].printedParts++;
   updateDashboard();
+
+  let nextIndex = seqIndex + 1;
+  if (nextIndex >= sequences.length) {
+    if (device.bot.mode === 'loop') {
+      nextIndex = 0;
+      logToFile(`[Bot ${deviceId}] Loop aktiv, beginne wieder bei Sequenz 1 für den nächsten Druck.`);
+    } else {
+      logToFile(`[Bot ${deviceId}] Ende erreicht (kein Loop).`);
+    }
+  } else {
+    logToFile(`[Bot ${deviceId}] Nächster Druck nutzt Sequenz ${nextIndex + 1}.`);
+  }
+  
+  device.bot.currentSequenceIndex = nextIndex;
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 }
 
 // --- KOMMUNIKATION MIT GUI ---
 function updateDashboard(): void {
   if (mainWindow) {
-    mainWindow.webContents.send("printer-data", printerData);
+    mainWindow.webContents.send("printer-data", printerDataMap);
   }
 }
 
-ipcMain.on("serial-command", (_event, cmd: string) => {
-  sendToBambi(cmd);
+ipcMain.on("serial-command", (_event, { deviceId, cmd }) => {
+  sendToBambi(deviceId, cmd);
 });
 
 ipcMain.on("save-config", (event, newConfig) => {
   try {
+    const oldConfig = JSON.parse(JSON.stringify(config)); // deep copy
     config = newConfig;
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    sendToBambi(`SAVE:${config.servo.open}:${config.servo.close}`);
+
+    config.devices.forEach(newDevice => {
+      if (!printerDataMap[newDevice.id]) {
+        printerDataMap[newDevice.id] = {
+          currentTemp: 0, targetTemp: 0, percent: 0, status: "Offline",
+          bambiState: "Unbekannt", isWaitingToClose: false, isDoorOpen: false, printedParts: 0
+        };
+        printFinishedHandledMap[newDevice.id] = false;
+        connectSerial(newDevice.id);
+        connectMQTT(newDevice.id);
+        return;
+      }
+
+      const oldDevice = oldConfig.devices.find((d: any) => d.id === newDevice.id);
+      if (oldDevice) {
+        if (oldDevice.serial.port !== newDevice.serial.port || oldDevice.serial.baudRate !== newDevice.serial.baudRate) {
+          logToFile(`[Settings] Port/BaudRate für ${newDevice.id} geändert, starte serielle Verbindung neu...`);
+          connectSerial(newDevice.id);
+        } else {
+          sendToBambi(newDevice.id, `SAVE:${newDevice.servo.open}:${newDevice.servo.close}`);
+        }
+
+        if (oldDevice.printer.ip !== newDevice.printer.ip || oldDevice.printer.accessCode !== newDevice.printer.accessCode || oldDevice.printer.serial !== newDevice.printer.serial) {
+          logToFile(`[Settings] MQTT für ${newDevice.id} geändert, starte neu...`);
+          connectMQTT(newDevice.id);
+        }
+      }
+    });
+
     logToFile('[Settings] Config erfolgreich aktualisiert!');
-    connectSerial();
-    connectMQTT();
   } catch (error: any) {
     logToFile(`[Settings] Fehler beim Speichern: ${error.message}`);
   }
 });
 
-ipcMain.on('save-bot-sequence', (event, sequence) => {
+ipcMain.on('save-bot-sequence', (event, { deviceId, sequences, mode }) => {
   try {
-    config.bot.sequence = sequence; 
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    logToFile(`[Bot] Erfolgreich in config.json gespeichert: ${sequence.length} Klicks`);
+    const device = config.devices.find(d => d.id === deviceId);
+    if (device) {
+      device.bot.sequences = sequences;
+      device.bot.mode = mode;
+      device.bot.currentSequenceIndex = 0; // Reset on save
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      logToFile(`[Bot ${deviceId}] Erfolgreich in config.json gespeichert: ${sequences.length} Sequenzen`);
+    }
   } catch (error: any) {
-    logToFile(`[Bot] Fehler beim Speichern der config.json: ${error.message}`);
+    logToFile(`[Bot ${deviceId}] Fehler beim Speichern der config.json: ${error.message}`);
   }
 });
 
@@ -528,14 +638,27 @@ ipcMain.on("change-language", (event, lang) => {
   }
 });
 
-ipcMain.on("start-bot", () => {
-  startNewSpool();
+ipcMain.on("start-bot", (event, deviceId) => {
+  startNewSpool(deviceId);
 });
+
+ipcMain.on("test-bot-sequence", async (event, sequence) => {
+  logToFile(`[Bot Test] Teste Sequenz mit ${sequence.length} Schritten...`);
+  for (const step of sequence) {
+    logToFile(`[Bot Test] Klick: ${step.name} (X: ${step.x}, Y: ${step.y})`);
+    clickAt(step.x, step.y);
+    await delay(step.delaySeconds * 1000);
+  }
+  logToFile("[Bot Test] Beendet.");
+});
+
+let captureResolve: ((val: any) => void) | null = null;
 
 // --- HOTKEY LOGIK (Richtiger Backend Code) ---
 ipcMain.handle('capture-cursor-hotkey', () => {
   return new Promise((resolve) => {
     const hotkey = 'F8'; 
+    captureResolve = resolve;
     
     globalShortcut.unregister(hotkey);
     logToFile(`[Bot] Versuche Hotkey (${hotkey}) bei Windows anzumelden...`);
@@ -553,15 +676,28 @@ ipcMain.handle('capture-cursor-hotkey', () => {
       
       new Notification({ title: title, body: body }).show();
 
-      resolve(point);
+      if (captureResolve) {
+        captureResolve(point);
+        captureResolve = null;
+      }
     });
 
     if (!success) {
-      logToFile(`[Bot] ❌ FEHLER: Windows blockiert ${hotkey}! Wird die Taste von einer anderen App genutzt?`);
+      logToFile(`[Bot] Fehler: Konnte ${hotkey} nicht registrieren.`);
     } else {
       logToFile(`[Bot] ✅ Hotkey ${hotkey} ist scharfgeschaltet. Warte auf Eingabe...`);
     }
   });
+});
+
+ipcMain.on('cancel-capture-cursor', () => {
+  const hotkey = 'F8';
+  globalShortcut.unregister(hotkey);
+  logToFile(`[Bot] Capture für ${hotkey} abgebrochen.`);
+  if (captureResolve) {
+    captureResolve(null);
+    captureResolve = null;
+  }
 });
 
 app.on('will-quit', () => {

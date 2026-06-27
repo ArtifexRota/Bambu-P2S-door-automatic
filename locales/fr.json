@@ -19,14 +19,16 @@
       "status_off": "⏸️ Le mode automatique est DÉSACTIVÉ",
       "description": "Active le contrôle automatique de la porte et le bot de clic à la fin de l'impression."
     },
-    "printer_status": "État de l'imprimante",
+    "printer_status": "Statut de l'imprimante",
     "current_material": "Matériau actuel",
     "door_opens_at": "La porte s'ouvre à",
     "door_control": "Porte Bambi P2S",
     "open": "Ouvrir",
     "close": "Fermer",
     "stats": "Statistiques de la session",
-    "parts_printed": "Pièces imprimées"
+    "parts_printed": "Pièces imprimées",
+    "active_printer": "Imprimante active",
+    "percent_completed": "terminé"
   },
   "settings": {
     "title": "Paramètres du Système",
@@ -53,7 +55,10 @@
       "add": "+ Nouveau profil"
     },
     "save_all": "Tout enregistrer",
-    "success": "Paramètres enregistrés avec succès !"
+    "success": "Paramètres enregistrés avec succès !",
+    "device_name": "Nom de l'imprimante",
+    "add_printer": "Ajouter une nouvelle imprimante",
+    "delete_printer": "Supprimer l'imprimante"
   },
   "bot": {
     "title": "Séquence de Clic du Bot",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studio doit toujours être ouvert en plein écran sur votre moniteur principal.",
     "info_taskbar": "L'icône de Bambu Studio doit toujours rester exactement à la même position dans votre barre des tâches.",
     "info_scaling": "Si vous changez de moniteur ou modifiez l'échelle d'affichage de Windows (taille du texte), vous devez réapprendre les positions de clic.",
-    "info_taskbar_hide": "La barre des tâches de Windows ne doit pas être réglée sur 'Masquer automatiquement', car cela décalera les positions de clic."
+    "info_taskbar_hide": "La barre des tâches de Windows ne doit pas être réglée sur 'Masquer automatiquement', car cela décalera les positions de clic.",
+    "multi_seq_desc": "Créez plusieurs séquences que le bot exécutera pour chaque nouvelle impression.",
+    "after_last_seq": "Après la dernière séquence :",
+    "mode_stop": "Arrêter le bot",
+    "mode_loop": "Recommencer (Boucle)",
+    "sequence": "Séquence",
+    "add_sequence": "+ Nouvelle séquence",
+    "config_sequence": "configuration",
+    "delete_sequence": "Supprimer la séquence",
+    "empty_sequence": "Aucun clic dans cette séquence.",
+    "test_sequence_btn": "tester",
+    "seq_min_error": "Il doit y avoir au moins une séquence !"
   },
   "gcode": {
     "title": "Générateur de G-code de fin",
@@ -107,7 +123,14 @@
     },
     "preview": "Aperçu",
     "copy": "Copier",
-    "copied": "G-Code copié !"
+    "copied": "G-Code copié !",
+    "hook": {
+      "toggle": "Activer le pliage de la plaque (Hook Bending)",
+      "z_down": "Hauteur Z bas (Tension)",
+      "z_down_desc": "La hauteur Z à laquelle le lit est abaissé pour créer une pression sur la plaque.",
+      "z_up": "Hauteur Z haut (Relâchement)",
+      "z_up_desc": "La hauteur Z à laquelle le lit est remonté pour se détendre."
+    }
   },
   "eula": {
     "title": "Contrat de Licence & Clause de non-responsabilité",

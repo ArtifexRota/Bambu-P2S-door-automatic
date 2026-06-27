@@ -19,14 +19,16 @@
       "status_off": "⏸️ 自動モード OFF",
       "description": "印刷終了時の自動ドア制御とクリックボットを有効にします。"
     },
-    "printer_status": "プリンターの状態",
+    "printer_status": "プリンターステータス",
     "current_material": "現在の材料",
     "door_opens_at": "ドアを開ける温度",
     "door_control": "Bambi P2S ドア",
     "open": "開く",
     "close": "閉じる",
     "stats": "セッション統計",
-    "parts_printed": "印刷されたパーツ"
+    "parts_printed": "印刷されたパーツ",
+    "active_printer": "アクティブプリンター",
+    "percent_completed": "完了"
   },
   "settings": {
     "title": "システム設定",
@@ -53,7 +55,10 @@
       "add": "+ 新しいプロファイル"
     },
     "save_all": "すべて保存",
-    "success": "設定が正常に保存されました！"
+    "success": "設定が正常に保存されました！",
+    "device_name": "プリンター名",
+    "add_printer": "新しいプリンターを追加",
+    "delete_printer": "プリンターを削除"
   },
   "bot": {
     "title": "ボットのクリックシーケンス",
@@ -78,7 +83,18 @@
     "info_fullscreen": "Bambu Studioは、メインモニターで常に全画面表示で開く必要があります。",
     "info_taskbar": "Bambu Studioのアイコンは、タスクバーの常に同じ位置にある必要があります。",
     "info_scaling": "モニターを変更したり、Windowsの表示スケールを変更した場合は、クリック位置を再学習させる必要があります。",
-    "info_taskbar_hide": "Windowsのタスクバーを「自動的に隠す」に設定しないでください。"
+    "info_taskbar_hide": "Windowsのタスクバーを「自動的に隠す」に設定しないでください。",
+    "multi_seq_desc": "新しいプリントごとにボットが実行する複数のシーケンスを作成します。",
+    "after_last_seq": "最後のシーケンスの後：",
+    "mode_stop": "ボットを停止",
+    "mode_loop": "最初からやり直す（ループ）",
+    "sequence": "シーケンス",
+    "add_sequence": "+ 新しいシーケンス",
+    "config_sequence": "構成",
+    "delete_sequence": "シーケンスを削除",
+    "empty_sequence": "このシーケンスにクリックはありません。",
+    "test_sequence_btn": "テスト",
+    "seq_min_error": "少なくとも1つのシーケンスが存在する必要があります！"
   },
   "gcode": {
     "title": "終了Gコードジェネレーター",
@@ -107,7 +123,14 @@
     },
     "preview": "プレビュー",
     "copy": "コピー",
-    "copied": "Gコードがコピーされました！"
+    "copied": "Gコードがコピーされました！",
+    "hook": {
+      "toggle": "プレート曲げを有効にする (Hook Bending)",
+      "z_down": "Zの高さ 下（テンション）",
+      "z_down_desc": "プレートに圧力をかけるためにベッドを下げるZの高さ。",
+      "z_up": "Zの高さ 上（リリース）",
+      "z_up_desc": "リラックスするためにベッドを上げるZの高さ。"
+    }
   },
   "eula": {
     "title": "ライセンス契約と免責事項",

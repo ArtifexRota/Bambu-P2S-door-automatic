@@ -26,7 +26,9 @@
     "open": "Abrir",
     "close": "Fechar",
     "stats": "Estatísticas da Sessão",
-    "parts_printed": "Peças Impressas"
+    "parts_printed": "Peças Impressas",
+    "active_printer": {},
+    "percent_completed": {}
   },
   "settings": {
     "title": "Configurações do Sistema",
@@ -53,7 +55,10 @@
       "add": "+ Novo Perfil"
     },
     "save_all": "Salvar Tudo",
-    "success": "Configurações salvas com sucesso!"
+    "success": "Configurações salvas com sucesso!",
+    "device_name": {},
+    "add_printer": {},
+    "delete_printer": {}
   },
   "bot": {
     "title": "Sequência de Cliques do Bot",
@@ -78,7 +83,18 @@
     "info_fullscreen": "O Bambu Studio deve estar sempre aberto em tela cheia no seu monitor principal.",
     "info_taskbar": "O ícone do Bambu Studio deve permanecer na mesma posição na barra de tarefas.",
     "info_scaling": "Se você alterar o monitor ou a escala do Windows, deverá capturar os cliques novamente.",
-    "info_taskbar_hide": "A barra de tarefas do Windows não deve estar no modo 'Ocultar automaticamente'."
+    "info_taskbar_hide": "A barra de tarefas do Windows não deve estar no modo 'Ocultar automaticamente'.",
+    "multi_seq_desc": {},
+    "after_last_seq": {},
+    "mode_stop": {},
+    "mode_loop": {},
+    "sequence": {},
+    "add_sequence": {},
+    "config_sequence": {},
+    "delete_sequence": {},
+    "empty_sequence": {},
+    "test_sequence_btn": {},
+    "seq_min_error": {}
   },
   "gcode": {
     "title": "Gerador de G-code Final",
@@ -107,7 +123,14 @@
     },
     "preview": "Pré-visualização",
     "copy": "Copiar",
-    "copied": "G-Code copiado!"
+    "copied": "G-Code copiado!",
+    "hook": {
+      "toggle": {},
+      "z_down": {},
+      "z_down_desc": {},
+      "z_up": {},
+      "z_up_desc": {}
+    }
   },
   "eula": {
     "title": "Contrato de Licença & Isenção de Responsabilidade",

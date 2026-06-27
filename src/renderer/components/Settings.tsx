@@ -10,6 +10,7 @@ interface MaterialProfile {
 
 interface SettingsProps {
   initialConfig: any;
+  activeDeviceId: string;
 }
 
 const inputStyle = {
@@ -29,8 +30,10 @@ const labelStyle = {
   fontSize: '0.9rem'
 };
 
-const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
+const Settings: React.FC<SettingsProps> = ({ initialConfig, activeDeviceId }) => {
   const { t } = useTranslation();
+  
+  const [deviceName, setDeviceName] = useState('');
   // --- STATE: Verbindung ---
   const [ip, setIp] = useState('');
   const [accessCode, setAccessCode] = useState('');
@@ -48,24 +51,30 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
   // Lade die Daten beim Start
   useEffect(() => {
     if (initialConfig) {
-      setIp(initialConfig.printer?.ip || '');
-      setAccessCode(initialConfig.printer?.accessCode || '');
-      setSerialNum(initialConfig.printer?.serial || '');
-      setComPort(initialConfig.serial?.port || '');
-      
-      setServoOpen(initialConfig.servo?.open || 0);
-      setServoClose(initialConfig.servo?.close || 175);
+      const device = initialConfig.devices?.find((d: any) => d.id === activeDeviceId) || initialConfig.devices?.[0];
+      if (device) {
+        setDeviceName(device.name || '');
+        setIp(device.printer?.ip || '');
+        setAccessCode(device.printer?.accessCode || '');
+        setSerialNum(device.printer?.serial || '');
+        setComPort(device.serial?.port || '');
+        setServoOpen(device.servo?.open || 0);
+        setServoClose(device.servo?.close || 175);
+        setActiveProfileId(device.activeProfileId || '');
+      }
 
-      // Falls schon Profile existieren, laden wir sie. Sonst Standard-Dummies.
       const loadedProfiles = initialConfig.materials?.profiles || [
         { id: '1', name: 'PLA', openTemp: 45 },
         { id: '2', name: 'ABS', openTemp: 80 },
         { id: '3', name: 'ASA', openTemp: 90 }
       ];
       setProfiles(loadedProfiles);
-      setActiveProfileId(initialConfig.materials?.activeProfileId || loadedProfiles[0]?.id || '');
+      // Fallback falls der Drucker noch keins hat
+      if (device && !device.activeProfileId && loadedProfiles.length > 0) {
+          setActiveProfileId(loadedProfiles[0].id);
+      }
     }
-  }, [initialConfig]);
+  }, [initialConfig, activeDeviceId]);
 
   // --- FUNKTIONEN: Profile verwalten ---
   const addProfile = () => {
@@ -88,14 +97,24 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
 
   // --- SPEICHERN ---
   const handleSave = () => {
-    // Wir bauen das Objekt so auf, wie die main.ts es erwartet
+    const updatedDevices = (initialConfig.devices || []).map((d: any) => {
+      if (d.id === activeDeviceId) {
+        return {
+          ...d,
+          name: deviceName,
+          activeProfileId,
+          printer: { ...d.printer, ip, accessCode, serial: serialNum },
+          serial: { ...d.serial, port: comPort },
+          servo: { ...d.servo, open: servoOpen, close: servoClose }
+        };
+      }
+      return d;
+    });
+
     const updatedConfig = {
       ...initialConfig,
-      printer: { ...initialConfig.printer, ip, accessCode, serial: serialNum },
-      serial: { ...initialConfig.serial, port: comPort },
-      servo: { ...initialConfig.servo, open: servoOpen, close: servoClose },
+      devices: updatedDevices,
       materials: {
-        activeProfileId,
         profiles
       }
     };
@@ -104,9 +123,63 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
       window.electronAPI.saveConfig(updatedConfig);
       toast.success(t("settings.success"));
 
-      // NEU: Wir zwingen die App, sich die frischen Daten vom Backend zu holen!
-      // Ein kleines Delay gibt dem Backend Zeit, in Ruhe die Datei zu speichern 
-      // und den COM-Port / MQTT neu zu verbinden.
+      setTimeout(() => {
+        if (window.electronAPI.requestConfig) {
+          window.electronAPI.requestConfig();
+        }
+      }, 250); 
+    }
+  };
+
+  const addNewPrinter = () => {
+    const newId = Date.now().toString();
+    const newDevice = {
+      id: newId,
+      name: `Drucker ${(initialConfig.devices?.length || 0) + 1}`,
+      printer: { ip: "192.168.X.X", accessCode: "", serial: "" },
+      serial: { port: "COM3", baudRate: 115200 },
+      servo: { open: 0, close: 175 },
+      bot: {
+        closeDelayMs: 20000,
+        mode: "stop",
+        currentSequenceIndex: 0,
+        sequences: [[]]
+      }
+    };
+    
+    const updatedConfig = {
+      ...initialConfig,
+      devices: [...(initialConfig.devices || []), newDevice]
+    };
+    
+    if (window.electronAPI && window.electronAPI.saveConfig) {
+      window.electronAPI.saveConfig(updatedConfig);
+      toast.success("Neuer Drucker hinzugefügt!");
+      setTimeout(() => {
+        if (window.electronAPI.requestConfig) {
+          window.electronAPI.requestConfig();
+        }
+      }, 250); 
+    }
+  };
+
+  const deleteCurrentPrinter = () => {
+    if ((initialConfig.devices || []).length <= 1) {
+      toast.error("Du kannst nicht den letzten Drucker löschen!");
+      return;
+    }
+    
+    if (!window.confirm(`Möchtest du "${deviceName}" wirklich löschen?`)) return;
+
+    const updatedDevices = (initialConfig.devices || []).filter((d: any) => d.id !== activeDeviceId);
+    const updatedConfig = {
+      ...initialConfig,
+      devices: updatedDevices
+    };
+
+    if (window.electronAPI && window.electronAPI.saveConfig) {
+      window.electronAPI.saveConfig(updatedConfig);
+      toast.success("Drucker gelöscht!");
       setTimeout(() => {
         if (window.electronAPI.requestConfig) {
           window.electronAPI.requestConfig();
@@ -118,15 +191,35 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
   return (
     <div className="card full-width" style={{ paddingBottom: '80px' }}>
       <h2>⚙️ {t("settings.title")}</h2>
-      <p style={{ color: '#888', marginBottom: '30px' }}>
-        {t("settings.description")}
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <p style={{ color: '#888', margin: 0 }}>
+          {t("settings.description")}
+        </p>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={addNewPrinter}
+            style={{ padding: '8px 16px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            ➕ {t("settings.add_printer") || "Neuen Drucker"}
+          </button>
+          <button 
+            onClick={deleteCurrentPrinter}
+            style={{ padding: '8px 16px', background: '#d32f2f', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            🗑️ {t("settings.delete_printer") || "Drucker löschen"}
+          </button>
+        </div>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '40px' }}>
         {/* LINKS: Verbindung */}
         <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
           <h3 style={{ marginTop: 0, marginBottom: '20px' }}>🔌 {t("settings.connection.title")}</h3>
           
+          <div style={{ marginBottom: '15px' }}>
+            <label style={labelStyle}>{t("settings.device_name") || "Drucker Name"}</label>
+            <input type="text" value={deviceName} onChange={e => setDeviceName(e.target.value)} style={inputStyle} />
+          </div>
           <div style={{ marginBottom: '15px' }}>
             <label style={labelStyle}>{t("settings.connection.ip")}</label>
             <input type="text" value={ip} onChange={e => setIp(e.target.value)} style={inputStyle} />
@@ -160,13 +253,13 @@ const Settings: React.FC<SettingsProps> = ({ initialConfig }) => {
           
           <div style={{ display: 'flex', gap: '10px', marginTop: '25px' }}>
             <button 
-              onClick={() => window.electronAPI?.sendSerial('OPEN')}
+              onClick={() => window.electronAPI?.sendSerial(activeDeviceId, 'OPEN')}
               style={{ flex: 1, padding: '10px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer' }}
             >
               {t("settings.servo.test_open")}
             </button>
             <button 
-              onClick={() => window.electronAPI?.sendSerial('CLOSE')}
+              onClick={() => window.electronAPI?.sendSerial(activeDeviceId, 'CLOSE')}
               style={{ flex: 1, padding: '10px', background: '#333', color: 'white', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer' }}
             >
               {t("settings.servo.test_close")}

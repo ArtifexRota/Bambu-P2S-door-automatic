@@ -40,13 +40,18 @@ const summaryStyle = {
 const GcodeGen: React.FC = () => {
   const { t } = useTranslation();
   const [doorOpenTemp, setDoorOpenTemp] = useState(80);
-const warningTemp = doorOpenTemp - 4;
+  const warningTemp = doorOpenTemp - 4;
   const [tempWait2, setTempWait2] = useState(60);
   const [pushX, setPushX] = useState(128);
   const [pushZ, setPushZ] = useState(20);
 
+  // New states for the Hook bending feature
+  const [useHooks, setUseHooks] = useState(false);
+  const [hookZ, setHookZ] = useState(150);
+  const [hookZRelease, setHookZRelease] = useState(140);
+
   const generateGcode = () => {
-    return `;========= BAMBI AUTOMATION START=========
+    let gcode = `;========= BAMBI AUTOMATION START=========
 M104 S0 ; turn off hotend
 M106 P2 S255 ; Fan Speed 100%
 M106 P3 S255
@@ -75,7 +80,24 @@ M400
 M190 S${tempWait2} ; Wait for push temp
 M190 S${tempWait2} ; Double check temp
 ;===now cool===
+`;
 
+    if (useHooks) {
+      gcode += `
+;=========Hook Bending (5x)=========
+`;
+      for (let i = 1; i <= 5; i++) {
+        gcode += `G1 Z${hookZ} F600 ; ${i}. Mal in die Haken biegen
+G4 S2 ; Kurz warten
+G1 Z${hookZRelease} F600 ; Wieder hochfahren zum Entspannen
+G4 S2 ; Kurz warten
+`;
+      }
+      gcode += `;===Hook Bending End===
+`;
+    }
+
+    gcode += `
 ;=========Pushing Print=========
 G1 Z${pushZ} F600 ; Bed height to push level
 G1 Y5 F3000 ; push out print
@@ -87,6 +109,8 @@ G1 X18 Y253 F6000 ; Poop position
 M106 P2 S0
 M106 P3 S0
 ;=========BAMBI AUTOMATION ENDE=========`;
+
+    return gcode;
   };
 
   const copyToClipboard = () => {
@@ -155,7 +179,7 @@ M106 P3 S0
               </details>
             </div>
 
-            <div>
+            <div style={{ marginBottom: '20px' }}>
               <label style={labelStyle}>{t("gcode.position.push_z")}</label>
               <input type="number" value={pushZ} onChange={(e) => setPushZ(Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
@@ -164,6 +188,35 @@ M106 P3 S0
                   {t("gcode.position.plastic_text")}
                 </p>
               </details>
+            </div>
+            
+            {/* NEW HOOKS SECTION */}
+            <div style={{ background: '#2a2a2e', padding: '15px', borderRadius: '6px', borderLeft: useHooks ? '4px solid #4caf50' : '4px solid transparent' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', ...labelStyle, marginBottom: 0 }}>
+                <input 
+                  type="checkbox" 
+                  checked={useHooks} 
+                  onChange={(e) => setUseHooks(e.target.checked)} 
+                  style={{ width: '18px', height: '18px' }}
+                />
+                {t("gcode.hook.toggle") || "Hook Bending aktivieren (Platte biegen)"}
+              </label>
+              
+              {useHooks && (
+                <div style={{ marginTop: '15px' }}>
+                  <label style={labelStyle}>{t("gcode.hook.z_down") || "Z-Höhe runter (Spannen)"}</label>
+                  <input type="number" value={hookZ} onChange={(e) => setHookZ(Number(e.target.value))} style={inputStyle} />
+                  <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '5px', marginBottom: '15px' }}>
+                    {t("gcode.hook.z_down_desc") || "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen."}
+                  </p>
+                  
+                  <label style={labelStyle}>{t("gcode.hook.z_up") || "Z-Höhe hoch (Entspannen)"}</label>
+                  <input type="number" value={hookZRelease} onChange={(e) => setHookZRelease(Number(e.target.value))} style={inputStyle} />
+                  <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '5px' }}>
+                    {t("gcode.hook.z_up_desc") || "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen."}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

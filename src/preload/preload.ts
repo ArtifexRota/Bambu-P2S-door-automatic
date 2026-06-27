@@ -2,16 +2,20 @@ import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   captureCursorWithHotkey: () => ipcRenderer.invoke("capture-cursor-hotkey"),
+  cancelCaptureCursor: () => ipcRenderer.send("cancel-capture-cursor"),
   changeLanguage: (lang: string) => ipcRenderer.send("change-language", lang),
-  saveBotSequence: (sequence: any) => ipcRenderer.send('save-bot-sequence', sequence),
+  saveBotSequence: (deviceId: string, sequences: any, mode: string) => ipcRenderer.send('save-bot-sequence', { deviceId, sequences, mode }),
+  testBotSequence: (sequence: any) => ipcRenderer.send('test-bot-sequence', sequence),
   quitApp: () => ipcRenderer.send('quit-app'),
   getCursorPosition: () => ipcRenderer.invoke('get-cursor-position'),
-  sendSerial: (cmd: string) => ipcRenderer.send("serial-command", cmd),
+  sendSerial: (deviceId: string, cmd: string) => ipcRenderer.send("serial-command", { deviceId, cmd }),
   saveConfig: (config: any) => ipcRenderer.send("save-config", config),
-startBot: () => ipcRenderer.send('start-bot'),
+  startBot: (deviceId: string) => ipcRenderer.send('start-bot', deviceId),
   requestConfig: () => ipcRenderer.send('get-initial-config'),
   onPrinterUpdate: (callback: (data: any) => void) =>
     ipcRenderer.on("printer-data", (_event, value) => callback(value)),
+  onAppError: (callback: (msg: string) => void) =>
+    ipcRenderer.on("app-error", (_event, msg) => callback(msg)),
   onInitConfigs: (callback: (config: any, i18n: any) => void) =>
     ipcRenderer.on("init-app", (_event, config, i18n) =>
       callback(config, i18n),

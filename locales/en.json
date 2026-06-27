@@ -13,12 +13,12 @@
       "finished": "🔄 Print finished. Bot taking over..."
     },
     "auto_mode": {
-  "activated_toast": "Auto-mode ENABLED 🤖",
-  "deactivated_toast": "Auto-mode DISABLED ⏸️",
-  "status_on": "🤖 Auto-mode is ON",
-  "status_off": "⏸️ Auto-mode is OFF",
-  "description": "Enables automatic door control and the click-bot at the end of the print."
-},
+      "activated_toast": "Auto-mode ENABLED 🤖",
+      "deactivated_toast": "Auto-mode DISABLED ⏸️",
+      "status_on": "🤖 Auto-mode is ON",
+      "status_off": "⏸️ Auto-mode is OFF",
+      "description": "Enables automatic door control and the click-bot at the end of the print."
+    },
     "printer_status": "Printer Status",
     "current_material": "Current Material",
     "door_opens_at": "Door opens at",
@@ -26,7 +26,9 @@
     "open": "Open",
     "close": "Close",
     "stats": "Session Statistics",
-    "parts_printed": "Printed Parts"
+    "parts_printed": "Printed Parts",
+    "active_printer": "Active Printer",
+    "percent_completed": "completed"
   },
   "settings": {
     "title": "System Settings",
@@ -53,7 +55,10 @@
       "add": "+ New Profile"
     },
     "save_all": "Save All",
-    "success": "Settings saved successfully!"
+    "success": "Settings saved successfully!",
+    "device_name": "Printer Name",
+    "add_printer": "Add New Printer",
+    "delete_printer": "Delete Printer"
   },
   "bot": {
     "title": "Bot Click Sequence",
@@ -70,15 +75,26 @@
     "info_title": "Important Reliability Notes",
     "capture_success_title": "Position saved! 🎯",
     "capture_instruction": "Switch to Bambu Studio, position your mouse and press F8",
-"capture_success": "Position saved! 🎯",
-"waiting_for_hotkey": "Waiting for F8...",
-"notification_title": "Position Captured",
-"notification_body": "The click coordinates have been successfully saved.",
-"capture_success_body": "The coordinates have been successfully applied.",
-"info_fullscreen": "Bambu Studio should always be opened in fullscreen mode on your primary monitor.",
-"info_taskbar": "The Bambu Studio icon must always remain in the exact same position on your taskbar.",
-"info_scaling": "If you change your monitor or adjust the Windows display scaling (text size), you must re-learn the click positions.",
-"info_taskbar_hide": "The Windows taskbar must not be set to 'Auto-hide', as this will shift the click positions."
+    "capture_success": "Position saved! 🎯",
+    "waiting_for_hotkey": "Waiting for F8...",
+    "notification_title": "Position Captured",
+    "notification_body": "The click coordinates have been successfully saved.",
+    "capture_success_body": "The coordinates have been successfully applied.",
+    "info_fullscreen": "Bambu Studio should always be opened in fullscreen mode on your primary monitor.",
+    "info_taskbar": "The Bambu Studio icon must always remain in the exact same position on your taskbar.",
+    "info_scaling": "If you change your monitor or adjust the Windows display scaling (text size), you must re-learn the click positions.",
+    "info_taskbar_hide": "The Windows taskbar must not be set to 'Auto-hide', as this will shift the click positions.",
+    "multi_seq_desc": "Create multiple sequences that the bot executes for each new print.",
+    "after_last_seq": "After last sequence:",
+    "mode_stop": "Stop bot",
+    "mode_loop": "Start over (Loop)",
+    "sequence": "Sequence",
+    "add_sequence": "+ New Sequence",
+    "config_sequence": "configuration",
+    "delete_sequence": "Delete Sequence",
+    "empty_sequence": "No clicks in this sequence.",
+    "test_sequence_btn": "test",
+    "seq_min_error": "At least one sequence must exist!"
   },
   "gcode": {
     "title": "End-Gcode Generator",
@@ -107,7 +123,14 @@
     },
     "preview": "Preview",
     "copy": "Copy",
-    "copied": "G-Code copied!"
+    "copied": "G-Code copied!",
+    "hook": {
+      "toggle": "Enable Hook Bending (Bend plate)",
+      "z_down": "Z-Height Down (Tension)",
+      "z_down_desc": "The Z-height the bed is lowered to build pressure on the plate.",
+      "z_up": "Z-Height Up (Release)",
+      "z_up_desc": "The Z-height the bed is raised back to relax."
+    }
   },
   "eula": {
     "title": "License Agreement & Disclaimer",
