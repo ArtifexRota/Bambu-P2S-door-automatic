@@ -128,6 +128,15 @@ if (!fs.existsSync(userDataPath)) {
   fs.mkdirSync(userDataPath, { recursive: true });
 }
 
+// Migration vom alten App-Namen "Bambi P2S Control" zu "Bambi Automatic Control"
+const oldUserDataPath = path.join(app.getPath("appData"), "Bambi P2S Control");
+const oldConfigPath = path.join(oldUserDataPath, "config.json");
+
+if (!fs.existsSync(configPath) && fs.existsSync(oldConfigPath)) {
+  fs.copyFileSync(oldConfigPath, configPath);
+  console.log("Config aus altem Ordner migriert.");
+}
+
 let config: Config;
 
 try {

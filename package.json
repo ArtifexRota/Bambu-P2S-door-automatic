@@ -1,7 +1,7 @@
 {
   "name": "bambi-automatic-control",
   "productName": "Bambi Automatic Control",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Automatische Steuerung für 3D Drucker",
   "main": "dist/main/main.js",
   "author": "Belling-Software",
