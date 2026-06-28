@@ -103,8 +103,7 @@ G1 Y5 F3000 ; push out print
 
 G1 Y50 F6000 ; get out
 G1 Z20 F600 ; Move bed back up to Z20
-G1 X18 Y240 ; no collision with wiper
-G1 X18 Y253 F6000 ; Poop position
+G1 X${pushX} Y20 F6000 ; Park toolhead safely out of the way
 ;===Push end===
 M106 P2 S0
 M106 P3 S0
