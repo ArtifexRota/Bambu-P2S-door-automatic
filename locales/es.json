@@ -10,7 +10,9 @@
       "waiting_80": "⏳ Esperando 80% de progreso...",
       "cooling": "🌡️ 80% alcanzado. Esperando enfriamiento...",
       "door_open": "✅ ¡La puerta está abierta!",
-      "finished": "🔄 Impresión terminada. El bot asume el control..."
+      "finished": "🔄 Impresión terminada. El bot asume el control...",
+      "bot_takeover": "El bot asume el control en",
+      "seconds": "segundos"
     },
     "auto_mode": {
       "activated_toast": "Modo automático ACTIVADO 🤖",
@@ -130,16 +132,16 @@
     "copy": "Copiar",
     "copied": "¡G-Code copiado!",
     "hook": {
-      "toggle": "Activar flexión de la placa (Hook Bending)",
-      "z_down": "Altura Z abajo (Tensión)",
-      "z_down_desc": "La altura Z a la que baja la cama para acumular presión sobre la placa.",
-      "z_up": "Altura Z arriba (Relajación)",
-      "z_up_desc": "La altura Z a la que vuelve a subir la cama para relajarse.",
-      "warning_title": "Importante: ¡Ajustar configuraciones!",
+      "toggle": "Activar doblador (Doblar placa)",
+      "warning_title": "¡Importante: Ajustar configuración!",
       "warning_height_title": "Reducir altura de impresión:",
-      "warning_height_desc": "Disminuya la altura máxima de impresión en la configuración de la impresora por la longitud exacta de los ganchos montados.",
+      "warning_height_desc": "Reduzca la altura máxima de impresión en la configuración de la impresora por la longitud exacta de los dobladores montados.",
       "warning_startcode_title": "Revisar G-code de inicio:",
-      "warning_startcode_desc": "Advertencia: ¡Cambiar la 'Printable height' a menudo NO cambia automáticamente los valores codificados en el G-code de inicio! Revise el G-code de inicio para los comandos de límite Z (como 'G28 Z P0 T...') y redúzcalos manualmente según la longitud del gancho, de lo contrario la cama chocará durante el homing."
+      "warning_startcode_desc": "Advertencia: ¡Cambiar la 'Altura de impresión' a menudo NO cambia automáticamente los valores codificados en el G-code de inicio! Revise el G-code de inicio para comandos de límite Z (como 'G28 Z P0 T...') y redúzcalos manualmente por la longitud del doblador, de lo contrario la cama chocará.",
+      "z_down": "Altura Z doblador abajo (Tensión)",
+      "z_down_desc": "La altura Z a la que baja la cama para aplicar presión.",
+      "z_up": "Altura Z doblador arriba (Liberación)",
+      "z_up_desc": "La altura Z a la que sube la cama para liberar tensión."
     }
   },
   "eula": {

@@ -15,6 +15,12 @@ const App: React.FC = () => {
   const [printerDataMap, setPrinterDataMap] = useState<Record<string, any>>({});
   const [config, setConfig] = useState<any>(null);
   const [activeDeviceId, setActiveDeviceId] = useState<string>("1");
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (window.electronAPI) {
@@ -87,6 +93,14 @@ const App: React.FC = () => {
       autoStatusColor = "#9c27b0"; // Lila
       autoStatusBorder = "1px solid #9c27b0";
       autoStatusBg = "rgba(156, 39, 176, 0.1)";
+  }
+  
+  if (printerData.botTakeoverTime && printerData.botTakeoverTime > now) {
+      const remainingSeconds = Math.ceil((printerData.botTakeoverTime - now) / 1000);
+      autoStatusText = `${t("dashboard.status.bot_takeover")} ${remainingSeconds} ${t("dashboard.status.seconds")}`;
+      autoStatusColor = "#ff9800"; // Orange
+      autoStatusBorder = "1px solid #ff9800";
+      autoStatusBg = "rgba(255, 152, 0, 0.1)";
   }
 
   const handleAcceptEula = () => {

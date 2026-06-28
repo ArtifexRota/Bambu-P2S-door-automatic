@@ -10,7 +10,9 @@
       "waiting_80": "⏳ In attesa dell'80%...",
       "cooling": "🌡️ 80% raggiunto. In attesa del raffreddamento...",
       "door_open": "✅ La porta è aperta!",
-      "finished": "🔄 Stampa terminata. Il Bot prende il controllo..."
+      "finished": "🔄 Stampa terminata. Il Bot prende il controllo...",
+      "bot_takeover": "Il bot prende il controllo in",
+      "seconds": "secondi"
     },
     "auto_mode": {
       "activated_toast": "Modalità Automatica ATTIVATA 🤖",
@@ -130,16 +132,16 @@
     "copy": "Copia",
     "copied": "G-Code copiato!",
     "hook": {
-      "toggle": "Abilita piegatura piastra (Hook Bending)",
-      "z_down": "Altezza Z giù (Tensione)",
-      "z_down_desc": "L'altezza Z a cui scende il piano per creare pressione sulla piastra.",
-      "z_up": "Altezza Z su (Rilascio)",
-      "z_up_desc": "L'altezza Z a cui il piano viene rialzato per rilassarsi.",
-      "warning_title": "Importante: Modifica le impostazioni!",
-      "warning_height_title": "Riduci l'altezza di stampa:",
-      "warning_height_desc": "Riduci l'altezza massima di stampa nelle impostazioni della stampante dell'esatta lunghezza dei ganci montati.",
-      "warning_startcode_title": "Controlla G-code di avvio:",
-      "warning_startcode_desc": "Attenzione: Modificare la 'Printable height' spesso NON cambia automaticamente i valori nel G-code di avvio! Controlla il G-code di avvio per i comandi limite Z (come 'G28 Z P0 T...') e riducili manualmente della lunghezza del gancio, altrimenti il letto si schianterà durante l'homing!"
+      "toggle": "Abilita piegatore (Piega piastra)",
+      "warning_title": "Importante: Regola impostazioni!",
+      "warning_height_title": "Riduci altezza di stampa:",
+      "warning_height_desc": "Riduci l'altezza massima stampabile nelle impostazioni della stampante della lunghezza esatta dei piegatori montati.",
+      "warning_startcode_title": "Controlla G-code iniziale:",
+      "warning_startcode_desc": "Attenzione: Modificare l''Altezza stampabile' spesso NON cambia automaticamente i valori nel G-code iniziale! Controlla i comandi di limite Z e riducili manualmente della lunghezza del piegatore, altrimenti il piatto sbatterà.",
+      "z_down": "Altezza Z piegatore giù (Tensione)",
+      "z_down_desc": "L'altezza Z a cui il piatto viene abbassato per creare pressione.",
+      "z_up": "Altezza Z piegatore su (Rilascio)",
+      "z_up_desc": "L'altezza Z a cui il piatto viene sollevato per rilasciare la tensione."
     }
   },
   "eula": {

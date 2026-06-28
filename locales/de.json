@@ -10,7 +10,9 @@
       "waiting_80": "⏳ Warte auf 80% Fortschritt...",
       "cooling": "🌡️ 80% erreicht. Warte auf Abkühlung...",
       "door_open": "✅ Tür ist offen!",
-      "finished": "🔄 Druck beendet. Bot übernimmt..."
+      "finished": "🔄 Druck beendet. Bot übernimmt...",
+      "bot_takeover": "Bot übernimmt in",
+      "seconds": "Sekunden"
     },
     "auto_mode": {
       "activated_toast": "Automatik AKTIVIERT 🤖",
@@ -130,16 +132,16 @@
     "copy": "Kopieren",
     "copied": "G-Code kopiert!",
     "hook": {
-      "toggle": "Hook Bending aktivieren (Platte biegen)",
-      "z_down": "Z-Höhe runter (Spannen)",
-      "z_down_desc": "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen.",
-      "z_up": "Z-Höhe hoch (Entspannen)",
-      "z_up_desc": "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen.",
+      "toggle": "Bender aktivieren (Platte biegen)",
       "warning_title": "Wichtig: Einstellungen anpassen!",
       "warning_height_title": "Druckhöhe reduzieren:",
-      "warning_height_desc": "Verringere die maximale Druckhöhe (Printable height) in den Druckereinstellungen um die exakte Länge der montierten Haken.",
+      "warning_height_desc": "Verringere die maximale Druckhöhe (Printable height) in den Druckereinstellungen um die exakte Länge der montierten Bender.",
       "warning_startcode_title": "Start-Gcode prüfen:",
-      "warning_startcode_desc": "Achtung: Das Ändern der 'Printable height' ändert oft NICHT automatisch hartkodierte Werte im Start-Gcode! Prüfe den Machine Start G-code auf Z-Limit-Befehle (wie 'G28 Z P0 T...') und reduziere diese manuell um die Haken-Länge, sonst kracht das Bett beim Homing unten rein!"
+      "warning_startcode_desc": "Achtung: Das Ändern der 'Printable height' ändert oft NICHT automatisch hartkodierte Werte im Start-Gcode! Prüfe den Machine Start G-code auf Z-Limit-Befehle (wie 'G28 Z P0 T...') und reduziere diese manuell um die Bender-Länge, sonst kracht das Bett beim Homing unten rein!",
+      "z_down": "Z-Höhe Bender runter (Spannen)",
+      "z_down_desc": "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen.",
+      "z_up": "Z-Höhe Bender hoch (Entspannen)",
+      "z_up_desc": "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen."
     }
   },
   "eula": {

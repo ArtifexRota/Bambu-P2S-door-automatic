@@ -64,6 +64,7 @@ interface PrinterData {
   isDoorOpen: boolean;
   printedParts: number;
   botStartTime?: number;
+  botTakeoverTime?: number;
 }
 
 // --- LOGGING ---
@@ -96,7 +97,7 @@ const defaultDevice: DeviceConfig = {
   serial: { port: "COM3", baudRate: 115200 },
   servo: { open: 0, close: 175 },
   bot: {
-    closeDelayMs: 20000,
+    closeDelayMs: 10000,
     mode: "stop",
     currentSequenceIndex: 0,
     sequences: [[]]
@@ -431,9 +432,10 @@ function connectMQTT(deviceId: string): void {
             printFinishedHandledMap[deviceId] = false;
         }
 
-        const autoModeEnabled = device.bot?.autoMode === true; // AutoMode PER DEVICE
+        const currentDevice = config.devices.find(d => d.id === deviceId);
+        const autoModeEnabled = currentDevice?.bot?.autoMode === true; // AutoMode PER DEVICE
         const profiles = config.materials?.profiles || [];
-        const activeProfileId = device.activeProfileId;
+        const activeProfileId = currentDevice?.activeProfileId;
         const activeProfile = profiles.find((prof: any) => prof.id === activeProfileId);
 
         if (autoModeEnabled) {
@@ -468,17 +470,24 @@ function connectMQTT(deviceId: string): void {
           printFinishedHandledMap[deviceId] = true; 
           pData.isWaitingToClose = true;
           
+          const delayMs = device.bot.closeDelayMs || 10000;
+          pData.botTakeoverTime = Date.now() + delayMs + 3000;
+          
           setTimeout(() => {
             sendToBambi(deviceId, "CLOSE");
             pData.isWaitingToClose = false;
             pData.isDoorOpen = false; 
             
             setTimeout(() => {
-              if ((pData.status === "FINISH" || pData.status === "IDLE") && device.bot?.autoMode === true) {
+              const latestDevice = config.devices.find(d => d.id === deviceId);
+              if ((pData.status === "FINISH" || pData.status === "IDLE") && latestDevice?.bot?.autoMode === true) {
                 startNewSpool(deviceId);
+              } else {
+                pData.botTakeoverTime = undefined;
+                updateDashboard();
               }
             }, 3000);
-          }, device.bot.closeDelayMs || 20000);
+          }, delayMs);
         }
       }
       updateDashboard();
@@ -511,6 +520,8 @@ const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 async function startNewSpool(deviceId: string): Promise<void> {
   const device = config.devices.find(d => d.id === deviceId);
   if (!device) return;
+  printerDataMap[deviceId].botTakeoverTime = undefined;
+  updateDashboard();
 
   if (device.bot.mode === 'target_count') {
     if (printerDataMap[deviceId].printedParts >= (device.bot.targetCount || 0)) {

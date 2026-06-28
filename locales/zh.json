@@ -10,7 +10,9 @@
       "waiting_80": "⏳ 等待 80% 进度...",
       "cooling": "🌡️ 已达到 80%。等待冷却...",
       "door_open": "✅ 门已打开！",
-      "finished": "🔄 打印完成。机器人接管..."
+      "finished": "🔄 打印完成。机器人接管...",
+      "bot_takeover": "机器人在",
+      "seconds": "秒后接管"
     },
     "auto_mode": {
       "activated_toast": "自动模式已启用 🤖",
@@ -130,16 +132,16 @@
     "copy": "复制",
     "copied": "G代码已复制！",
     "hook": {
-      "toggle": "启用弯曲板 (Hook Bending)",
-      "z_down": "Z高度下降（张力）",
-      "z_down_desc": "床降低的Z高度，以对印版建立压力。",
-      "z_up": "Z高度上升（释放）",
-      "z_up_desc": "床升高的Z高度，以放松。",
+      "toggle": "启用弯曲器 (弯曲构建板)",
       "warning_title": "重要提示：调整设置！",
       "warning_height_title": "降低打印高度：",
-      "warning_height_desc": "在打印机设置中，将最大打印高度减去安装挂钩的确切长度。",
+      "warning_height_desc": "在打印机设置中将最大可打印高度减去已安装弯曲器的确切长度。",
       "warning_startcode_title": "检查起始 G-code：",
-      "warning_startcode_desc": "警告：更改“可打印高度”通常不会自动更改起始 G-code 中的硬编码值！请检查机器起始 G-code 中的 Z 限制命令（如 'G28 Z P0 T...'），并根据挂钩长度手动减少它们，否则热床在回零时会发生碰撞！"
+      "warning_startcode_desc": "警告：更改“可打印高度”通常不会自动更改起始 G-code 中的值！请检查 Z 限制命令并手动减去弯曲器的长度，否则热床会发生碰撞。",
+      "z_down": "Z高度 弯曲器向下 (施加张力)",
+      "z_down_desc": "热床下降以施加压力的 Z 高度。",
+      "z_up": "Z高度 弯曲器向上 (释放张力)",
+      "z_up_desc": "热床上升以释放压力的 Z 高度。"
     }
   },
   "eula": {

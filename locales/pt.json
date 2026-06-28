@@ -10,7 +10,9 @@
       "waiting_80": "⏳ Aguardando 80% do progresso...",
       "cooling": "🌡️ 80% alcançado. Aguardando resfriamento...",
       "door_open": "✅ A porta está aberta!",
-      "finished": "🔄 Impressão concluída. Bot assumindo o controle..."
+      "finished": "🔄 Impressão concluída. Bot assumindo o controle...",
+      "bot_takeover": "O bot assume o controle em",
+      "seconds": "segundos"
     },
     "auto_mode": {
       "activated_toast": "Modo automático ATIVADO 🤖",
@@ -130,16 +132,16 @@
     "copy": "Copiar",
     "copied": "G-Code copiado!",
     "hook": {
-      "toggle": {},
-      "z_down": {},
-      "z_down_desc": {},
-      "z_up": {},
-      "z_up_desc": {},
-      "warning_title": {},
-      "warning_height_title": {},
-      "warning_height_desc": {},
-      "warning_startcode_title": {},
-      "warning_startcode_desc": {}
+      "toggle": "Ativar dobrador (Dobrar placa)",
+      "warning_title": "Importante: Ajustar configurações!",
+      "warning_height_title": "Reduzir altura de impressão:",
+      "warning_height_desc": "Diminua a altura máxima de impressão nas configurações da impressora pelo comprimento exato dos dobradores montados.",
+      "warning_startcode_title": "Verificar G-code inicial:",
+      "warning_startcode_desc": "Aviso: Alterar a 'Altura imprimível' geralmente NÃO muda automaticamente os valores no G-code inicial! Verifique os comandos de limite Z e reduza-os manualmente pelo comprimento do dobrador, caso contrário a cama baterá.",
+      "z_down": "Altura Z dobrador para baixo (Tensão)",
+      "z_down_desc": "A altura Z que a cama desce para aplicar pressão.",
+      "z_up": "Altura Z dobrador para cima (Liberação)",
+      "z_up_desc": "A altura Z que a cama sobe para liberar a tensão."
     }
   },
   "eula": {

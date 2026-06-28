@@ -84,16 +84,15 @@ M190 S${tempWait2} ; Double check temp
 
     if (useHooks) {
       gcode += `
-;=========Hook Bending (5x)=========
+;=========Bender (5x)=========
+G90
 `;
       for (let i = 1; i <= 5; i++) {
-        gcode += `G1 Z${hookZ} F600 ; ${i}. Mal in die Haken biegen
-G4 S2 ; Kurz warten
+        gcode += `G1 Z${hookZ} F600 ; ${i}. Mal in die Bender biegen
 G1 Z${hookZRelease} F600 ; Wieder hochfahren zum Entspannen
-G4 S2 ; Kurz warten
 `;
       }
-      gcode += `;===Hook Bending End===
+      gcode += `;===Bender End===
 `;
     }
 
@@ -103,6 +102,7 @@ G1 Z${pushZ} F600 ; Bed height to push level
 G1 Y5 F3000 ; push out print
 
 G1 Y50 F6000 ; get out
+G1 Z20 F600 ; Move bed back up to Z20
 G1 X18 Y240 ; no collision with wiper
 G1 X18 Y253 F6000 ; Poop position
 ;===Push end===
@@ -190,7 +190,7 @@ M106 P3 S0
               </details>
             </div>
             
-            {/* NEW HOOKS SECTION */}
+            {/* NEW BENDER SECTION */}
             <div style={{ background: '#2a2a2e', padding: '15px', borderRadius: '6px', borderLeft: useHooks ? '4px solid #4caf50' : '4px solid transparent' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', ...labelStyle, marginBottom: 0 }}>
                 <input 

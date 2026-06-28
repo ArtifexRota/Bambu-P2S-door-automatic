@@ -10,7 +10,9 @@
       "waiting_80": "⏳ En attente de 80% de progression...",
       "cooling": "🌡️ 80% atteint. En attente de refroidissement...",
       "door_open": "✅ La porte est ouverte !",
-      "finished": "🔄 Impression terminée. Le Bot prend le relais..."
+      "finished": "🔄 Impression terminée. Le Bot prend le relais...",
+      "bot_takeover": "Le bot prend le relais dans",
+      "seconds": "secondes"
     },
     "auto_mode": {
       "activated_toast": "Mode automatique ACTIVÉ 🤖",
@@ -130,16 +132,16 @@
     "copy": "Copier",
     "copied": "G-Code copié !",
     "hook": {
-      "toggle": "Activer le pliage de la plaque (Hook Bending)",
-      "z_down": "Hauteur Z bas (Tension)",
-      "z_down_desc": "La hauteur Z à laquelle le lit est abaissé pour créer une pression sur la plaque.",
-      "z_up": "Hauteur Z haut (Relâchement)",
-      "z_up_desc": "La hauteur Z à laquelle le lit est remonté pour se détendre.",
-      "warning_title": "Important: Ajustez les paramètres!",
-      "warning_height_title": "Réduire la hauteur d'impression:",
-      "warning_height_desc": "Diminuez la hauteur maximale d'impression dans les paramètres de l'imprimante de la longueur exacte des crochets montés.",
-      "warning_startcode_title": "Vérifier le G-code de démarrage:",
-      "warning_startcode_desc": "Attention: Modifier la 'Printable height' ne change souvent PAS automatiquement les valeurs codées en dur dans le G-code de démarrage! Vérifiez le G-code de démarrage pour les commandes de limite Z (comme 'G28 Z P0 T...') et réduisez-les manuellement de la longueur du crochet, sinon le plateau s'écrasera lors du retour à l'origine!"
+      "toggle": "Activer le plieur (Plier la plaque)",
+      "warning_title": "Important : Ajuster les paramètres !",
+      "warning_height_title": "Réduire la hauteur d'impression :",
+      "warning_height_desc": "Diminuez la hauteur maximale imprimable dans les paramètres de l'imprimante de la longueur exacte des plieurs montés.",
+      "warning_startcode_title": "Vérifier le G-code de démarrage :",
+      "warning_startcode_desc": "Attention : Modifier la 'Hauteur imprimable' ne change souvent PAS automatiquement les valeurs dans le G-code de démarrage ! Vérifiez le G-code pour les commandes de limite Z (ex: 'G28 Z P0 T...') et réduisez-les manuellement de la longueur du plieur.",
+      "z_down": "Hauteur Z plieur en bas (Tension)",
+      "z_down_desc": "La hauteur Z à laquelle le lit est abaissé pour créer une pression.",
+      "z_up": "Hauteur Z plieur en haut (Libération)",
+      "z_up_desc": "La hauteur Z à laquelle le lit est relevé pour relâcher la tension."
     }
   },
   "eula": {
