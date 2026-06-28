@@ -94,7 +94,12 @@
     "delete_sequence": "시퀀스 삭제",
     "empty_sequence": "이 시퀀스에 클릭이 없습니다.",
     "test_sequence_btn": "테스트",
-    "seq_min_error": "최소 하나 이상의 시퀀스가 있어야 합니다!"
+    "seq_min_error": "최소 하나 이상의 시퀀스가 있어야 합니다!",
+    "mode_target_count": "목표 수량(부품) 도달",
+    "mode_target_time": "목표 시간(시간) 도달",
+    "target_count_label": "부품 수:",
+    "target_time_label": "기간(시간):",
+    "duplicate_sequence": "시퀀스 복제"
   },
   "gcode": {
     "title": "종료 G-code 생성기",

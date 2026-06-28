@@ -94,7 +94,12 @@
     "delete_sequence": "删除序列",
     "empty_sequence": "此序列中没有点击。",
     "test_sequence_btn": "测试",
-    "seq_min_error": "至少必须存在一个序列！"
+    "seq_min_error": "至少必须存在一个序列！",
+    "mode_target_count": "达到目标数量（零件）",
+    "mode_target_time": "达到目标时长（小时）",
+    "target_count_label": "零件数量:",
+    "target_time_label": "时长（小时）:",
+    "duplicate_sequence": "复制序列"
   },
   "gcode": {
     "title": "结束 G代码生成器",

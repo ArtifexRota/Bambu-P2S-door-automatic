@@ -94,7 +94,12 @@
     "delete_sequence": "シーケンスを削除",
     "empty_sequence": "このシーケンスにクリックはありません。",
     "test_sequence_btn": "テスト",
-    "seq_min_error": "少なくとも1つのシーケンスが存在する必要があります！"
+    "seq_min_error": "少なくとも1つのシーケンスが存在する必要があります！",
+    "mode_target_count": "目標数量（部品）に到達",
+    "mode_target_time": "目標時間（時間）に到達",
+    "target_count_label": "部品の数:",
+    "target_time_label": "期間（時間）:",
+    "duplicate_sequence": "シーケンスを複製"
   },
   "gcode": {
     "title": "終了Gコードジェネレーター",

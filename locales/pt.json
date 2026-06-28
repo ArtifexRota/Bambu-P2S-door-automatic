@@ -94,7 +94,12 @@
     "delete_sequence": {},
     "empty_sequence": {},
     "test_sequence_btn": {},
-    "seq_min_error": {}
+    "seq_min_error": {},
+    "mode_target_count": "Quantidade alvo (peças) alcançada",
+    "mode_target_time": "Duração alvo (horas) alcançada",
+    "target_count_label": "Número de peças:",
+    "target_time_label": "Duração (horas):",
+    "duplicate_sequence": "Duplicar sequência"
   },
   "gcode": {
     "title": "Gerador de G-code Final",

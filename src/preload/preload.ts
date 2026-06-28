@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   captureCursorWithHotkey: () => ipcRenderer.invoke("capture-cursor-hotkey"),
   cancelCaptureCursor: () => ipcRenderer.send("cancel-capture-cursor"),
   changeLanguage: (lang: string) => ipcRenderer.send("change-language", lang),
-  saveBotSequence: (deviceId: string, sequences: any, mode: string) => ipcRenderer.send('save-bot-sequence', { deviceId, sequences, mode }),
+  saveBotSequence: (deviceId: string, sequences: any, mode: string, targetCount?: number, targetTimeHours?: number) => ipcRenderer.send('save-bot-sequence', { deviceId, sequences, mode, targetCount, targetTimeHours }),
   testBotSequence: (sequence: any) => ipcRenderer.send('test-bot-sequence', sequence),
   quitApp: () => ipcRenderer.send('quit-app'),
   getCursorPosition: () => ipcRenderer.invoke('get-cursor-position'),

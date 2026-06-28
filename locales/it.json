@@ -94,7 +94,12 @@
     "delete_sequence": "Elimina sequenza",
     "empty_sequence": "Nessun clic in questa sequenza.",
     "test_sequence_btn": "prova",
-    "seq_min_error": "Deve esistere almeno una sequenza!"
+    "seq_min_error": "Deve esistere almeno una sequenza!",
+    "mode_target_count": "Quantità obiettivo (pezzi) raggiunta",
+    "mode_target_time": "Durata obiettivo (ore) raggiunta",
+    "target_count_label": "Numero di pezzi:",
+    "target_time_label": "Durata (ore):",
+    "duplicate_sequence": "Duplica sequenza"
   },
   "gcode": {
     "title": "Generatore G-code Finale",

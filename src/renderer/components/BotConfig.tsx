@@ -20,7 +20,9 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
   const { t } = useTranslation();
   
   const [sequences, setSequences] = useState<ClickTask[][]>([[]]);
-  const [mode, setMode] = useState<'loop' | 'stop'>('stop');
+  const [mode, setMode] = useState<'loop' | 'stop' | 'target_count' | 'target_time'>('stop');
+  const [targetCount, setTargetCount] = useState<number>(20);
+  const [targetTimeHours, setTargetTimeHours] = useState<number>(10);
   const [activeSeqIndex, setActiveSeqIndex] = useState(0);
 
   const [capturingId, setCapturingId] = useState<string | null>(null);
@@ -31,6 +33,8 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
       if (device && device.bot) {
         setSequences(device.bot.sequences && device.bot.sequences.length > 0 ? device.bot.sequences : [[]]);
         setMode(device.bot.mode || 'stop');
+        setTargetCount(device.bot.targetCount || 20);
+        setTargetTimeHours(device.bot.targetTimeHours || 10);
         setActiveSeqIndex(0);
       }
     }
@@ -38,6 +42,16 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
 
   const addSequence = () => {
     setSequences([...sequences, []]);
+    setActiveSeqIndex(sequences.length);
+  };
+
+  const duplicateSequence = (index: number) => {
+    const seqToCopy = sequences[index] || [];
+    const newSeq = seqToCopy.map(task => ({
+      ...task,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+    }));
+    setSequences([...sequences, newSeq]);
     setActiveSeqIndex(sequences.length);
   };
 
@@ -119,12 +133,41 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
         <label style={{ color: '#fff', fontWeight: 'bold' }}>{t("bot.after_last_seq") || "Nach der letzten Sequenz:"}</label>
         <select 
           value={mode} 
-          onChange={e => setMode(e.target.value as 'loop' | 'stop')}
+          onChange={e => setMode(e.target.value as 'loop' | 'stop' | 'target_count' | 'target_time')}
           style={{ background: '#2a2a2e', color: 'white', border: '1px solid #555', padding: '8px', borderRadius: '4px' }}
         >
           <option value="stop">{t("bot.mode_stop") || "Bot stoppen"}</option>
           <option value="loop">{t("bot.mode_loop") || "Von vorne beginnen (Loop)"}</option>
+          <option value="target_count">{t("bot.mode_target_count") || "Ziel-Menge (Teile) erreicht"}</option>
+          <option value="target_time">{t("bot.mode_target_time") || "Ziel-Dauer (Stunden) erreicht"}</option>
         </select>
+
+        {mode === 'target_count' && (
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <label style={{ color: '#fff' }}>{t("bot.target_count_label") || "Anzahl Teile:"}</label>
+            <input 
+              type="number" 
+              value={targetCount}
+              onChange={e => setTargetCount(Number(e.target.value))}
+              min="1"
+              style={{ width: '80px', background: '#1e1e24', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '8px' }}
+            />
+          </div>
+        )}
+
+        {mode === 'target_time' && (
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <label style={{ color: '#fff' }}>{t("bot.target_time_label") || "Dauer (Stunden):"}</label>
+            <input 
+              type="number" 
+              value={targetTimeHours}
+              onChange={e => setTargetTimeHours(Number(e.target.value))}
+              min="0.1"
+              step="0.1"
+              style={{ width: '80px', background: '#1e1e24', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '8px' }}
+            />
+          </div>
+        )}
       </div>
 
       <details style={{ 
@@ -183,9 +226,14 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
       <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
           <h3 style={{ margin: 0 }}>{t("bot.sequence")} {activeSeqIndex + 1} {t("bot.config_sequence")}</h3>
-          <button onClick={() => removeSequence(activeSeqIndex)} style={{ background: '#d32f2f', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>
-            {t("bot.delete_sequence") || "Sequenz löschen"}
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => duplicateSequence(activeSeqIndex)} style={{ background: '#2196f3', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+              {t("bot.duplicate_sequence") || "Sequenz duplizieren"}
+            </button>
+            <button onClick={() => removeSequence(activeSeqIndex)} style={{ background: '#d32f2f', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}>
+              {t("bot.delete_sequence") || "Sequenz löschen"}
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -269,7 +317,7 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
       <button 
         onClick={() => {
           if (window.electronAPI && window.electronAPI.saveBotSequence) {
-            window.electronAPI.saveBotSequence(activeDeviceId, sequences, mode);
+            window.electronAPI.saveBotSequence(activeDeviceId, sequences, mode, targetCount, targetTimeHours);
             toast.success(t("bot.success"));
           }
         }} 

@@ -10,7 +10,8 @@ export interface IElectronAPI {
   onInitConfigs: (callback: (config: any, i18n: any) => void) => void;
   requestConfig: () => void; 
   quitApp: () => void;
-  saveBotSequence: (sequence: any) => void;
+  saveBotSequence: (deviceId: string, sequences: any[], mode: string, targetCount?: number, targetTimeHours?: number) => void;
+  testBotSequence: (sequence: any[]) => void;
   changeLanguage: (lang: string) => void;
   send: (channel: string, data: any) => void;
 }

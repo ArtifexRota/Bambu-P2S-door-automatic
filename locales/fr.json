@@ -94,7 +94,12 @@
     "delete_sequence": "Supprimer la séquence",
     "empty_sequence": "Aucun clic dans cette séquence.",
     "test_sequence_btn": "tester",
-    "seq_min_error": "Il doit y avoir au moins une séquence !"
+    "seq_min_error": "Il doit y avoir au moins une séquence !",
+    "mode_target_count": "Quantité cible (pièces) atteinte",
+    "mode_target_time": "Durée cible (heures) atteinte",
+    "target_count_label": "Nombre de pièces :",
+    "target_time_label": "Durée (heures) :",
+    "duplicate_sequence": "Dupliquer la séquence"
   },
   "gcode": {
     "title": "Générateur de G-code de fin",

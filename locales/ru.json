@@ -94,7 +94,12 @@
     "delete_sequence": {},
     "empty_sequence": {},
     "test_sequence_btn": {},
-    "seq_min_error": {}
+    "seq_min_error": {},
+    "mode_target_count": "Целевое количество (деталей) достигнуто",
+    "mode_target_time": "Целевая продолжительность (часов) достигнута",
+    "target_count_label": "Количество деталей:",
+    "target_time_label": "Продолжительность (часов):",
+    "duplicate_sequence": "Дублировать последовательность"
   },
   "gcode": {
     "title": "Генератор конечного G-кода",

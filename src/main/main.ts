@@ -35,10 +35,12 @@ interface DeviceConfig {
   servo: { open: number; close: number };
   bot: {
     closeDelayMs: number;
-    mode: "loop" | "stop";
+    mode: "loop" | "stop" | "target_count" | "target_time";
     currentSequenceIndex: number;
     sequences: ClickTask[][];
     autoMode?: boolean;
+    targetCount?: number;
+    targetTimeHours?: number;
   };
 }
 
@@ -61,6 +63,7 @@ interface PrinterData {
   isWaitingToClose: boolean;
   isDoorOpen: boolean;
   printedParts: number;
+  botStartTime?: number;
 }
 
 // --- LOGGING ---
@@ -216,7 +219,7 @@ let printFinishedHandledMap: Record<string, boolean> = {};
 config.devices.forEach(device => {
   printerDataMap[device.id] = {
     currentTemp: 0, targetTemp: 0, percent: 0, status: "Offline",
-    bambiState: "Unbekannt", isWaitingToClose: false, isDoorOpen: false, printedParts: 0
+    bambiState: "Unbekannt", isWaitingToClose: false, isDoorOpen: false, printedParts: 0, botStartTime: undefined
   };
   printFinishedHandledMap[device.id] = false;
 });
@@ -509,6 +512,26 @@ async function startNewSpool(deviceId: string): Promise<void> {
   const device = config.devices.find(d => d.id === deviceId);
   if (!device) return;
 
+  if (device.bot.mode === 'target_count') {
+    if (printerDataMap[deviceId].printedParts >= (device.bot.targetCount || 0)) {
+      logToFile(`[Bot ${deviceId}] Ziel-Menge erreicht (${device.bot.targetCount}). Stoppe Bot.`);
+      device.bot.autoMode = false;
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      updateDashboard();
+      return;
+    }
+  } else if (device.bot.mode === 'target_time') {
+    const startTime = printerDataMap[deviceId].botStartTime || Date.now();
+    const targetMs = (device.bot.targetTimeHours || 0) * 3600000;
+    if (Date.now() >= startTime + targetMs) {
+      logToFile(`[Bot ${deviceId}] Ziel-Zeit erreicht. Stoppe Bot.`);
+      device.bot.autoMode = false;
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+      updateDashboard();
+      return;
+    }
+  }
+
   const sequences = device.bot.sequences || [];
   if (sequences.length === 0) {
       logToFile(`[Bot ${deviceId}] Keine Klick-Sequenzen gespeichert.`);
@@ -536,9 +559,9 @@ async function startNewSpool(deviceId: string): Promise<void> {
 
   let nextIndex = seqIndex + 1;
   if (nextIndex >= sequences.length) {
-    if (device.bot.mode === 'loop') {
+    if (device.bot.mode === 'loop' || device.bot.mode === 'target_count' || device.bot.mode === 'target_time') {
       nextIndex = 0;
-      logToFile(`[Bot ${deviceId}] Loop aktiv, beginne wieder bei Sequenz 1 für den nächsten Druck.`);
+      logToFile(`[Bot ${deviceId}] Loop aktiv (${device.bot.mode}), beginne wieder bei Sequenz 1 für den nächsten Druck.`);
     } else {
       logToFile(`[Bot ${deviceId}] Ende erreicht (kein Loop).`);
     }
@@ -571,7 +594,7 @@ ipcMain.on("save-config", (event, newConfig) => {
       if (!printerDataMap[newDevice.id]) {
         printerDataMap[newDevice.id] = {
           currentTemp: 0, targetTemp: 0, percent: 0, status: "Offline",
-          bambiState: "Unbekannt", isWaitingToClose: false, isDoorOpen: false, printedParts: 0
+          bambiState: "Unbekannt", isWaitingToClose: false, isDoorOpen: false, printedParts: 0, botStartTime: undefined
         };
         printFinishedHandledMap[newDevice.id] = false;
         connectSerial(newDevice.id);
@@ -581,6 +604,11 @@ ipcMain.on("save-config", (event, newConfig) => {
 
       const oldDevice = oldConfig.devices.find((d: any) => d.id === newDevice.id);
       if (oldDevice) {
+        if (!oldDevice.bot?.autoMode && newDevice.bot?.autoMode) {
+          logToFile(`[Bot ${newDevice.id}] Auto-Modus aktiviert, setze Tracker zurück.`);
+          printerDataMap[newDevice.id].printedParts = 0;
+          printerDataMap[newDevice.id].botStartTime = Date.now();
+        }
         if (oldDevice.serial.port !== newDevice.serial.port || oldDevice.serial.baudRate !== newDevice.serial.baudRate) {
           logToFile(`[Settings] Port/BaudRate für ${newDevice.id} geändert, starte serielle Verbindung neu...`);
           connectSerial(newDevice.id);
@@ -601,18 +629,20 @@ ipcMain.on("save-config", (event, newConfig) => {
   }
 });
 
-ipcMain.on('save-bot-sequence', (event, { deviceId, sequences, mode }) => {
-  try {
-    const device = config.devices.find(d => d.id === deviceId);
-    if (device) {
+ipcMain.on('save-bot-sequence', (event, { deviceId, sequences, mode, targetCount, targetTimeHours }) => {
+  const device = config.devices.find(d => d.id === deviceId);
+  if (device) {
+    try {
       device.bot.sequences = sequences;
       device.bot.mode = mode;
+      if (targetCount !== undefined) device.bot.targetCount = targetCount;
+      if (targetTimeHours !== undefined) device.bot.targetTimeHours = targetTimeHours;
       device.bot.currentSequenceIndex = 0; // Reset on save
       fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
       logToFile(`[Bot ${deviceId}] Erfolgreich in config.json gespeichert: ${sequences.length} Sequenzen`);
+    } catch (error: any) {
+      logToFile(`[Bot ${deviceId}] Fehler beim Speichern der config.json: ${error.message}`);
     }
-  } catch (error: any) {
-    logToFile(`[Bot ${deviceId}] Fehler beim Speichern der config.json: ${error.message}`);
   }
 });
 
