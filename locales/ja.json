@@ -1,5 +1,5 @@
 {
-  "title": "Bambi P2S Control",
+  "title": "Bambi Automatic Control",
   "dashboard": {
     "title": "ダッシュボード",
     "settings": "設定",
@@ -24,7 +24,7 @@
     "printer_status": "プリンターステータス",
     "current_material": "現在の材料",
     "door_opens_at": "ドアを開ける温度",
-    "door_control": "Bambi P2S ドア",
+    "door_control": "Bambi Automatic ドア",
     "open": "開く",
     "close": "閉じる",
     "stats": "セッション統計",

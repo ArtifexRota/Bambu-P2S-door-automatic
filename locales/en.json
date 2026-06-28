@@ -1,5 +1,5 @@
 {
-  "title": "Bambi P2S Control",
+  "title": "Bambi Automatic Control",
   "dashboard": {
     "title": "Dashboard",
     "settings": "Settings",
@@ -24,7 +24,7 @@
     "printer_status": "Printer Status",
     "current_material": "Current Material",
     "door_opens_at": "Door opens at",
-    "door_control": "Bambi P2S Door",
+    "door_control": "Bambi Automatic Door",
     "open": "Open",
     "close": "Close",
     "stats": "Session Statistics",

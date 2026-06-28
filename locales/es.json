@@ -1,5 +1,5 @@
 {
-  "title": "Bambi P2S Control",
+  "title": "Bambi Automatic Control",
   "dashboard": {
     "title": "Panel de Control",
     "settings": "Ajustes",
@@ -24,7 +24,7 @@
     "printer_status": "Estado de la impresora",
     "current_material": "Material actual",
     "door_opens_at": "La puerta se abre a",
-    "door_control": "Puerta Bambi P2S",
+    "door_control": "Puerta Bambi Automatic",
     "open": "Abrir",
     "close": "Cerrar",
     "stats": "Estadísticas de la sesión",

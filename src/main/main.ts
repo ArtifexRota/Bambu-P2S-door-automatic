@@ -6,9 +6,9 @@ import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { exec } from "child_process";
 
-app.name = "Bambi P2S Control";
+app.name = "Bambi Automatic Control";
 if (process.platform === 'win32') {
-  app.setAppUserModelId("Bambi P2S Control");
+  app.setAppUserModelId("Bambi Automatic Control");
 }
 
 // --- INTERFACES ---

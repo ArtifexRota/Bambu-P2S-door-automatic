@@ -1,5 +1,5 @@
 {
-  "title": "Bambi P2S Control",
+  "title": "Bambi Automatic Control",
   "dashboard": {
     "title": "대시보드",
     "settings": "설정",
@@ -24,7 +24,7 @@
     "printer_status": "프린터 상태",
     "current_material": "현재 재료",
     "door_opens_at": "문 개방 온도",
-    "door_control": "Bambi P2S 문",
+    "door_control": "Bambi Automatic 문",
     "open": "열기",
     "close": "닫기",
     "stats": "세션 통계",

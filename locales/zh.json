@@ -1,5 +1,5 @@
 {
-  "title": "Bambi P2S Control",
+  "title": "Bambi Automatic Control",
   "dashboard": {
     "title": "仪表板",
     "settings": "设置",
@@ -24,7 +24,7 @@
     "printer_status": "打印机状态",
     "current_material": "当前材料",
     "door_opens_at": "开门温度",
-    "door_control": "Bambi P2S 门",
+    "door_control": "Bambi Automatic 门",
     "open": "打开",
     "close": "关闭",
     "stats": "会话统计",
