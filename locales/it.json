@@ -129,7 +129,7 @@
       "text": "Inserisci il codice generato esattamente prima di questo blocco nel G-code finale:"
     },
     "preview": "Anteprima",
-    "copy": "Copia",
+    "copy": "Copia e salva",
     "copied": "G-Code copiato!",
     "hook": {
       "toggle": "Abilita piegatore (Piega piastra)",
@@ -142,7 +142,8 @@
       "z_down_desc": "L'altezza Z a cui il piatto viene abbassato per creare pressione.",
       "z_up": "Altezza Z piegatore su (Rilascio)",
       "z_up_desc": "L'altezza Z a cui il piatto viene sollevato per rilasciare la tensione."
-    }
+    },
+    "missing_values_error": "Si prega di compilare tutti i campi vuoti prima di copiare il G-code!"
   },
   "eula": {
     "title": "Accordo di Licenza & Disclaimer",

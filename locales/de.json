@@ -129,7 +129,7 @@
       "text": "Füge den unten generierten Code exakt vor folgendem Block im Maschinen-End-G-code ein:"
     },
     "preview": "Vorschau",
-    "copy": "Kopieren",
+    "copy": "Kopieren und Speichern",
     "copied": "G-Code kopiert!",
     "hook": {
       "toggle": "Bender aktivieren (Platte biegen)",
@@ -142,7 +142,8 @@
       "z_down_desc": "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen.",
       "z_up": "Z-Höhe Bender hoch (Entspannen)",
       "z_up_desc": "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen."
-    }
+    },
+    "missing_values_error": "Bitte fülle erst alle leeren Felder aus, bevor du den G-Code kopierst!"
   },
   "eula": {
     "title": "Lizenzvereinbarung & Haftungsausschluss",

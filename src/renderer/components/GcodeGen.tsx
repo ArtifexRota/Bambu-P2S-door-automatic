@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from '../hooks/useTranslation';
+
+interface GcodeGenProps {
+  initialConfig: any;
+  activeDeviceId: string;
+}
 
 const inputStyle = {
   background: '#2a2a2e',
@@ -37,18 +42,69 @@ const summaryStyle = {
   outline: 'none'
 };
 
-const GcodeGen: React.FC = () => {
+const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) => {
   const { t } = useTranslation();
-  const [doorOpenTemp, setDoorOpenTemp] = useState(80);
-  const warningTemp = doorOpenTemp - 4;
-  const [tempWait2, setTempWait2] = useState(60);
-  const [pushX, setPushX] = useState(128);
-  const [pushZ, setPushZ] = useState(20);
+  const [doorOpenTemp, setDoorOpenTemp] = useState<number | ''>('');
+  const warningTemp = doorOpenTemp !== '' ? Number(doorOpenTemp) - 4 : '';
+  const [tempWait2, setTempWait2] = useState<number | ''>('');
+  const [pushX, setPushX] = useState<number | ''>('');
+  const [pushZ, setPushZ] = useState<number | ''>('');
 
-  // New states for the Hook bending feature
+  // New states for the Bender feature
   const [useHooks, setUseHooks] = useState(false);
-  const [hookZ, setHookZ] = useState(150);
-  const [hookZRelease, setHookZRelease] = useState(140);
+  const [hookZ, setHookZ] = useState<number | ''>('');
+  const [hookZRelease, setHookZRelease] = useState<number | ''>('');
+
+  useEffect(() => {
+    if (initialConfig && activeDeviceId) {
+      const device = initialConfig.devices?.find((d: any) => d.id === activeDeviceId);
+      if (device && device.gcodeSettings) {
+        setDoorOpenTemp(device.gcodeSettings.doorOpenTemp ?? '');
+        setTempWait2(device.gcodeSettings.tempWait2 ?? '');
+        setPushX(device.gcodeSettings.pushX ?? '');
+        setPushZ(device.gcodeSettings.pushZ ?? '');
+        setUseHooks(device.gcodeSettings.useHooks ?? false);
+        setHookZ(device.gcodeSettings.hookZ ?? '');
+        setHookZRelease(device.gcodeSettings.hookZRelease ?? '');
+      } else {
+        setDoorOpenTemp('');
+        setTempWait2('');
+        setPushX('');
+        setPushZ('');
+        setUseHooks(false);
+        setHookZ('');
+        setHookZRelease('');
+      }
+    }
+  }, [initialConfig, activeDeviceId]);
+
+  const saveSettings = () => {
+    if (doorOpenTemp === '' || tempWait2 === '' || pushX === '' || pushZ === '') {
+      toast.error(t("gcode.missing_values_error") || "Bitte fülle alle leeren Felder aus!");
+      return false;
+    }
+    if (useHooks && (hookZ === '' || hookZRelease === '')) {
+      toast.error(t("gcode.missing_values_error") || "Bitte fülle alle leeren Felder aus!");
+      return false;
+    }
+
+    const updatedDevices = initialConfig.devices.map((d: any) => {
+      if (d.id === activeDeviceId) {
+        return {
+          ...d,
+          gcodeSettings: {
+            doorOpenTemp, tempWait2, pushX, pushZ, useHooks, hookZ, hookZRelease
+          }
+        };
+      }
+      return d;
+    });
+    const updatedConfig = { ...initialConfig, devices: updatedDevices };
+    if (window.electronAPI && (window.electronAPI as any).saveConfig) {
+      (window.electronAPI as any).saveConfig(updatedConfig);
+    }
+    return true;
+  };
 
   const generateGcode = () => {
     let gcode = `;========= BAMBI AUTOMATION START=========
@@ -113,6 +169,7 @@ M106 P3 S0
   };
 
   const copyToClipboard = () => {
+    if (!saveSettings()) return; // save and validate before copying
     navigator.clipboard.writeText(generateGcode());
     toast.success(t("gcode.copied"));
   };
@@ -137,7 +194,7 @@ M106 P3 S0
   <input 
     type="number" 
     value={doorOpenTemp} 
-    onChange={(e) => setDoorOpenTemp(Number(e.target.value))} 
+    onChange={(e) => setDoorOpenTemp(e.target.value === '' ? '' : Number(e.target.value))} 
     style={inputStyle} 
   />
   
@@ -154,7 +211,7 @@ M106 P3 S0
 
             <div>
               <label style={labelStyle}>{t("gcode.temps.push_temp")}</label>
-              <input type="number" value={tempWait2} onChange={(e) => setTempWait2(Number(e.target.value))} style={inputStyle} />
+              <input type="number" value={tempWait2} onChange={(e) => setTempWait2(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
                 <summary style={summaryStyle}>ℹ️ {t("gcode.temps.why_no_buffer")}</summary>
                 <p style={{ margin: '8px 0 0 0' }}>
@@ -169,7 +226,7 @@ M106 P3 S0
             
             <div style={{ marginBottom: '20px' }}>
               <label style={labelStyle}>{t("gcode.position.start_x")}</label>
-              <input type="number" value={pushX} onChange={(e) => setPushX(Number(e.target.value))} style={inputStyle} />
+              <input type="number" value={pushX} onChange={(e) => setPushX(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
                 <summary style={summaryStyle}>ℹ️ {t("gcode.position.center_info")}</summary>
                 <p style={{ margin: '8px 0 0 0' }}>
@@ -180,7 +237,7 @@ M106 P3 S0
 
             <div style={{ marginBottom: '20px' }}>
               <label style={labelStyle}>{t("gcode.position.push_z")}</label>
-              <input type="number" value={pushZ} onChange={(e) => setPushZ(Number(e.target.value))} style={inputStyle} />
+              <input type="number" value={pushZ} onChange={(e) => setPushZ(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
               <details style={detailsStyle}>
                 <summary style={summaryStyle}>ℹ️ {t("gcode.position.plastic_info")}</summary>
                 <p style={{ margin: '8px 0 0 0' }}>
@@ -216,13 +273,13 @@ M106 P3 S0
                   </div>
 
                   <label style={labelStyle}>{t("gcode.hook.z_down") || "Z-Höhe runter (Spannen)"}</label>
-                  <input type="number" value={hookZ} onChange={(e) => setHookZ(Number(e.target.value))} style={inputStyle} />
+                  <input type="number" value={hookZ} onChange={(e) => setHookZ(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
                   <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '5px', marginBottom: '15px' }}>
                     {t("gcode.hook.z_down_desc") || "Die Z-Höhe, auf die das Druckbett runtergefahren wird, um Druck auf die Platte aufzubauen."}
                   </p>
                   
                   <label style={labelStyle}>{t("gcode.hook.z_up") || "Z-Höhe hoch (Entspannen)"}</label>
-                  <input type="number" value={hookZRelease} onChange={(e) => setHookZRelease(Number(e.target.value))} style={inputStyle} />
+                  <input type="number" value={hookZRelease} onChange={(e) => setHookZRelease(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
                   <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '5px' }}>
                     {t("gcode.hook.z_up_desc") || "Die Z-Höhe, auf die das Druckbett wieder hochgefahren wird, um zu entspannen."}
                   </p>

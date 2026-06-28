@@ -129,7 +129,7 @@
       "text": "Insert the generated code exactly before the following block in the Machine End G-code:"
     },
     "preview": "Preview",
-    "copy": "Copy",
+    "copy": "Copy and save",
     "copied": "G-Code copied!",
     "hook": {
       "toggle": "Enable Bender (Bend plate)",
@@ -142,7 +142,8 @@
       "z_down_desc": "The Z height the bed is lowered to build pressure on the plate.",
       "z_up": "Z height bender up (Release)",
       "z_up_desc": "The Z height the bed is raised to release tension."
-    }
+    },
+    "missing_values_error": "Please fill in all empty fields before copying the G-code!"
   },
   "eula": {
     "title": "License Agreement & Disclaimer",

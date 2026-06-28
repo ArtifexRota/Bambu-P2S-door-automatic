@@ -129,7 +129,7 @@
       "text": "Insira o código gerado exatamente antes deste bloco no G-code final:"
     },
     "preview": "Pré-visualização",
-    "copy": "Copiar",
+    "copy": "Copiar e salvar",
     "copied": "G-Code copiado!",
     "hook": {
       "toggle": "Ativar dobrador (Dobrar placa)",
@@ -142,7 +142,8 @@
       "z_down_desc": "A altura Z que a cama desce para aplicar pressão.",
       "z_up": "Altura Z dobrador para cima (Liberação)",
       "z_up_desc": "A altura Z que a cama sobe para liberar a tensão."
-    }
+    },
+    "missing_values_error": "Por favor, preencha todos os campos vazios antes de copiar o G-code!"
   },
   "eula": {
     "title": "Contrato de Licença & Isenção de Responsabilidade",

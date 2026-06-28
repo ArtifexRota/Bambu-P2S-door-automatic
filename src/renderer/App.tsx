@@ -386,7 +386,7 @@ const App: React.FC = () => {
 
         {activeTab === "settings" && <Settings initialConfig={config} activeDeviceId={activeDeviceId} />}
         {activeTab === 'bot' && <BotConfig initialConfig={config} activeDeviceId={activeDeviceId} />}
-        {activeTab === "gcode" && <GcodeGen />}
+        {activeTab === "gcode" && <GcodeGen initialConfig={config} activeDeviceId={activeDeviceId} />}
       </main>
     </div>
   );

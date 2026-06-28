@@ -129,7 +129,7 @@
       "text": "Inserta el código generado exactamente antes del siguiente bloque en el G-code final de la máquina:"
     },
     "preview": "Vista previa",
-    "copy": "Copiar",
+    "copy": "Copiar y guardar",
     "copied": "¡G-Code copiado!",
     "hook": {
       "toggle": "Activar doblador (Doblar placa)",
@@ -142,7 +142,8 @@
       "z_down_desc": "La altura Z a la que baja la cama para aplicar presión.",
       "z_up": "Altura Z doblador arriba (Liberación)",
       "z_up_desc": "La altura Z a la que sube la cama para liberar tensión."
-    }
+    },
+    "missing_values_error": "¡Por favor, complete todos los campos vacíos antes de copiar el código G!"
   },
   "eula": {
     "title": "Acuerdo de Licencia y Descargo de Responsabilidad",

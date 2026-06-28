@@ -129,7 +129,7 @@
       "text": "Insérez le code généré exactement avant le bloc suivant dans le G-code de fin de la machine :"
     },
     "preview": "Aperçu",
-    "copy": "Copier",
+    "copy": "Copier et sauvegarder",
     "copied": "G-Code copié !",
     "hook": {
       "toggle": "Activer le plieur (Plier la plaque)",
@@ -142,7 +142,8 @@
       "z_down_desc": "La hauteur Z à laquelle le lit est abaissé pour créer une pression.",
       "z_up": "Hauteur Z plieur en haut (Libération)",
       "z_up_desc": "La hauteur Z à laquelle le lit est relevé pour relâcher la tension."
-    }
+    },
+    "missing_values_error": "Veuillez remplir tous les champs vides avant de copier le G-code !"
   },
   "eula": {
     "title": "Contrat de Licence & Clause de non-responsabilité",
