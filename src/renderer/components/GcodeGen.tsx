@@ -45,7 +45,7 @@ const summaryStyle = {
 const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) => {
   const { t } = useTranslation();
   const [doorOpenTemp, setDoorOpenTemp] = useState<number | ''>('');
-  const warningTemp = doorOpenTemp !== '' ? Number(doorOpenTemp) - 5 : '';
+  const warningTemp = doorOpenTemp !== '' ? Number(doorOpenTemp) - 4 : '';
   const [tempWait2, setTempWait2] = useState<number | ''>('');
   const actualPushTemp = tempWait2 !== '' ? Number(tempWait2) - 5 : '';
   const [pushX, setPushX] = useState<number | ''>('');
