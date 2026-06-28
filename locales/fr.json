@@ -112,8 +112,8 @@
       "warning_sound": "Température du son d'avertissement",
       "auto_calc": "(Calculé à -4°C automatiquement en raison de la tolérance de 5°C de l'imprimante)",
       "push_temp": "Température de poussée (°C)",
-      "why_no_buffer": "Pourquoi pas de marge ?",
-      "why_no_buffer_text": "Aucune marge de 5°C n'est nécessaire ici, car la commande mécanique de poussée suit immédiatement. Réglez la température exacte à laquelle le matériau se détache de manière fiable."
+      "auto_calc_push": "Température G-Code réelle :",
+      "auto_calc_push_text": "Les imprimantes Bambu terminent souvent la commande de refroidissement 5°C trop tôt. Nous soustrayons donc automatiquement 5°C pour qu'elle refroidisse exactement à la température cible."
     },
     "position": {
       "title": "Position de poussée",

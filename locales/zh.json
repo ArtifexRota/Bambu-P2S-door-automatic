@@ -112,8 +112,8 @@
       "warning_sound": "警告音温度",
       "auto_calc": "(由于打印机有 5°C 的容差，已自动计算为 -4°C)",
       "push_temp": "顶出温度 (°C)",
-      "why_no_buffer": "为什么没有缓冲？",
-      "why_no_buffer_text": "这里不需要 5°C 的缓冲，因为随后会立即执行机械顶出命令。请设置材料能可靠脱离的准确温度。"
+      "auto_calc_push": "实际 G-Code 温度:",
+      "auto_calc_push_text": "Bambu 打印机通常会提前 5°C 结束冷却命令。因此我们自动减去 5°C，以便它准确冷却到您的目标温度。"
     },
     "position": {
       "title": "顶出位置",

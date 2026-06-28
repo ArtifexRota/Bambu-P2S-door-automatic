@@ -112,8 +112,8 @@
       "warning_sound": "Warning Sound Temp",
       "auto_calc": "(Calculated -4°C automatically due to 5°C printer tolerance)",
       "push_temp": "Push Temperature (°C)",
-      "why_no_buffer": "Why no buffer?",
-      "why_no_buffer_text": "No 5°C buffer is needed here, as the mechanical push command follows immediately. Set the exact temperature at which the material releases reliably."
+      "auto_calc_push": "Real G-Code Temperature:",
+      "auto_calc_push_text": "Bambu printers often finish the cooldown command 5°C too early. Therefore, we automatically subtract 5°C so it cools down exactly to your target temperature."
     },
     "position": {
       "title": "Push Position",

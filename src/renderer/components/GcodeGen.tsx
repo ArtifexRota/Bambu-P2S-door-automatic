@@ -45,8 +45,9 @@ const summaryStyle = {
 const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) => {
   const { t } = useTranslation();
   const [doorOpenTemp, setDoorOpenTemp] = useState<number | ''>('');
-  const warningTemp = doorOpenTemp !== '' ? Number(doorOpenTemp) - 4 : '';
+  const warningTemp = doorOpenTemp !== '' ? Number(doorOpenTemp) - 5 : '';
   const [tempWait2, setTempWait2] = useState<number | ''>('');
+  const actualPushTemp = tempWait2 !== '' ? Number(tempWait2) - 5 : '';
   const [pushX, setPushX] = useState<number | ''>('');
   const [pushZ, setPushZ] = useState<number | ''>('');
 
@@ -133,8 +134,8 @@ M1006 W
 G90
 G1 X${pushX} Y250 F6000 ; Head to target X position
 M400
-M190 S${tempWait2} ; Wait for push temp
-M190 S${tempWait2} ; Double check temp
+M190 S${actualPushTemp} ; Wait for push temp
+M190 S${actualPushTemp} ; Double check temp
 ;===now cool===
 `;
 
@@ -212,12 +213,15 @@ M106 P3 S0
             <div>
               <label style={labelStyle}>{t("gcode.temps.push_temp")}</label>
               <input type="number" value={tempWait2} onChange={(e) => setTempWait2(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
-              <details style={detailsStyle}>
-                <summary style={summaryStyle}>ℹ️ {t("gcode.temps.why_no_buffer")}</summary>
-                <p style={{ margin: '8px 0 0 0' }}>
-                  {t("gcode.temps.why_no_buffer_text")}
+              
+              <div style={{ background: '#333', padding: '10px', borderRadius: '4px', marginTop: '8px', borderLeft: '3px solid #e6a800' }}>
+                <p style={{ margin: 0, color: '#e6a800', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                  {t("gcode.temps.auto_calc_push")}: {actualPushTemp !== '' ? actualPushTemp : ''}°C
                 </p>
-              </details>
+                <p style={{ margin: '5px 0 0 0', color: '#bbb', fontSize: '0.8rem' }}>
+                  {t("gcode.temps.auto_calc_push_text")}
+                </p>
+              </div>
             </div>
           </div>
 

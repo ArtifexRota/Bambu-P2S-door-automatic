@@ -112,8 +112,8 @@
       "warning_sound": "Temperatura Suono di Avviso",
       "auto_calc": "(Calcolato -4°C in automatico per tolleranza di 5°C della stampante)",
       "push_temp": "Temperatura di Spinta (°C)",
-      "why_no_buffer": "Perché nessun margine?",
-      "why_no_buffer_text": "Non serve un margine di 5°C qui. Imposta la temperatura esatta a cui il materiale si stacca dal piatto."
+      "auto_calc_push": "Temperatura G-Code reale:",
+      "auto_calc_push_text": "Le stampanti Bambu spesso terminano il comando di raffreddamento 5°C prima. Pertanto, sottraiamo automaticamente 5°C in modo che si raffreddi esattamente alla temperatura desiderata."
     },
     "position": {
       "title": "Posizione di Spinta",

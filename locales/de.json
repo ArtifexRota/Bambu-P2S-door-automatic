@@ -112,8 +112,8 @@
       "warning_sound": "Warn-Sound Temperatur",
       "auto_calc": "(Automatisch -4°C berechnet wegen 5°C Druckertoleranz)",
       "push_temp": "Push-Temperatur (°C)",
-      "why_no_buffer": "Warum kein Puffer?",
-      "why_no_buffer_text": "Hier wird kein 5°C-Puffer benötigt, da direkt im Anschluss der mechanische Schiebe-Befehl ausgeführt wird. Stelle genau die Temperatur ein, bei der sich das Material verlässlich löst."
+      "auto_calc_push": "Echte G-Code Temperatur:",
+      "auto_calc_push_text": "Bambu Drucker beenden den Abkühl-Befehl oft 5°C zu früh. Daher ziehen wir automatisch 5°C ab, damit er exakt auf deine Wunschtemperatur abkühlt."
     },
     "position": {
       "title": "Schiebe-Position",

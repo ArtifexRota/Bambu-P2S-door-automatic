@@ -112,8 +112,8 @@
       "warning_sound": "Temperatura del sonido de advertencia",
       "auto_calc": "(Calculado -4°C automáticamente por tolerancia de 5°C de la impresora)",
       "push_temp": "Temperatura de empuje (°C)",
-      "why_no_buffer": "¿Por qué no hay margen?",
-      "why_no_buffer_text": "No se necesita un margen de 5°C aquí, ya que el comando mecánico de empuje sigue inmediatamente. Establece la temperatura exacta en la que el material se suelta de forma fiable."
+      "auto_calc_push": "Temperatura real G-Code:",
+      "auto_calc_push_text": "Las impresoras Bambu a menudo terminan el comando de enfriamiento 5°C antes. Por lo tanto, restamos automáticamente 5°C para que se enfríe exactamente a la temperatura deseada."
     },
     "position": {
       "title": "Posición de empuje",

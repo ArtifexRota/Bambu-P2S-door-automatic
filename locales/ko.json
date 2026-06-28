@@ -112,8 +112,8 @@
       "warning_sound": "경고음 온도",
       "auto_calc": "(프린터의 5°C 허용 오차로 인해 자동으로 -4°C 계산됨)",
       "push_temp": "배출 온도 (°C)",
-      "why_no_buffer": "버퍼가 없는 이유는 무엇입니까?",
-      "why_no_buffer_text": "기계적 푸시 명령이 바로 이어지므로 여기에 5°C 버퍼가 필요하지 않습니다."
+      "auto_calc_push": "실제 G-Code 온도:",
+      "auto_calc_push_text": "Bambu 프린터는 종종 5°C 일찍 냉각 명령을 마칩니다. 따라서 목표 온도까지 정확히 냉각되도록 자동으로 5°C를 뺍니다."
     },
     "position": {
       "title": "배출 위치",

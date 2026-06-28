@@ -112,8 +112,8 @@
       "warning_sound": "Temperatura do Som de Aviso",
       "auto_calc": "(Calculado -4°C automaticamente pela tolerância da impressora)",
       "push_temp": "Temperatura de Empurrar (°C)",
-      "why_no_buffer": "Por que sem margem?",
-      "why_no_buffer_text": "Não é necessária uma margem de 5°C aqui. Defina a temperatura exata em que a peça se solta da mesa."
+      "auto_calc_push": "Temperatura real G-Code:",
+      "auto_calc_push_text": "As impressoras Bambu geralmente terminam o comando de resfriamento 5°C antes. Portanto, subtraímos automaticamente 5°C para resfriar exatamente à temperatura desejada."
     },
     "position": {
       "title": "Posição de Empurrar",
