@@ -73,9 +73,11 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
   };
 
   const updateTask = (id: string, field: keyof ClickTask, value: any) => {
-    const newSeqs = [...sequences];
-    newSeqs[activeSeqIndex] = newSeqs[activeSeqIndex].map(t => t.id === id ? { ...t, [field]: value } : t);
-    setSequences(newSeqs);
+    setSequences(prevSeqs => {
+      const newSeqs = [...prevSeqs];
+      newSeqs[activeSeqIndex] = newSeqs[activeSeqIndex].map(t => t.id === id ? { ...t, [field]: value } : t);
+      return newSeqs;
+    });
   };
 
   // Die Countdown-Logik zum Erfassen der Maus
