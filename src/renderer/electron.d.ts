@@ -14,6 +14,11 @@ export interface IElectronAPI {
   testBotSequence: (sequence: any[]) => void;
   changeLanguage: (lang: string) => void;
   send: (channel: string, data: any) => void;
+  getFilaments: () => Promise<any[]>;
+  addFilament: (filament: any) => Promise<any>;
+  updateFilament: (id: string, updates: any) => Promise<any>;
+  deleteFilament: (id: string) => Promise<boolean>;
+  importPdf: () => Promise<string | null>;
 }
 
 declare global {

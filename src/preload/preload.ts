@@ -20,4 +20,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on("init-app", (_event, config, i18n) =>
       callback(config, i18n),
     ),
+  
+  // Filament DB
+  getFilaments: () => ipcRenderer.invoke('get-filaments'),
+  addFilament: (filament: any) => ipcRenderer.invoke('add-filament', filament),
+  updateFilament: (id: string, updates: any) => ipcRenderer.invoke('update-filament', id, updates),
+  deleteFilament: (id: string) => ipcRenderer.invoke('delete-filament', id),
+  importPdf: () => ipcRenderer.invoke('import-pdf')
 });

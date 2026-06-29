@@ -17,6 +17,11 @@ export interface IElectronAPI {
   captureCursorWithHotkey: () => Promise<{ x: number; y: number } | null>;
   cancelCaptureCursor: () => void;
   onAppError: (callback: (msg: string) => void) => void;
+  getFilaments: () => Promise<any[]>;
+  addFilament: (filament: any) => Promise<any>;
+  updateFilament: (id: string, updates: any) => Promise<any>;
+  deleteFilament: (id: string) => Promise<boolean>;
+  importPdf: () => Promise<string | null>;
 }
 
 declare global {

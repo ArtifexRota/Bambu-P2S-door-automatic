@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./App.css"; 
 import Settings from "./components/Settings";
-import BotConfig from './components/BotConfig';
+import BotConfig from "./components/BotConfig";
 import { Toaster } from 'react-hot-toast';
-import GcodeGen from './components/GcodeGen';
-import EulaModal from './components/EulaModal';
+import GcodeGen from "./components/GcodeGen";
+import EulaModal from "./components/EulaModal";
+import { FilamentManager } from "./components/FilamentManager";
 import toast from "react-hot-toast";
 import { useTranslation } from './hooks/useTranslation';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<"dashboard" | "settings" | "gcode" | 'bot'>('dashboard');
+  const [activeTab, setActiveTab] = useState<"dashboard" | "settings" | "gcode" | "bot" | "filament">('dashboard');
   
   const [printerDataMap, setPrinterDataMap] = useState<Record<string, any>>({});
   const [config, setConfig] = useState<any>(null);
@@ -222,6 +223,13 @@ const App: React.FC = () => {
           </button>
 
           <button
+            className={activeTab === "filament" ? "active" : ""}
+            onClick={() => setActiveTab("filament")}
+          >
+            🧵 Filament
+          </button>
+
+          <button
             className={activeTab === "gcode" ? "active" : ""}
             onClick={() => setActiveTab("gcode")}
           >
@@ -387,6 +395,7 @@ const App: React.FC = () => {
         {activeTab === "settings" && <Settings initialConfig={config} activeDeviceId={activeDeviceId} />}
         {activeTab === 'bot' && <BotConfig initialConfig={config} activeDeviceId={activeDeviceId} />}
         {activeTab === "gcode" && <GcodeGen initialConfig={config} activeDeviceId={activeDeviceId} />}
+        {activeTab === "filament" && <FilamentManager activePrinterId={activeDeviceId} printerData={printerDataMap[activeDeviceId]} />}
       </main>
     </div>
   );

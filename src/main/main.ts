@@ -5,6 +5,7 @@ import * as mqtt from "mqtt";
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { exec } from "child_process";
+import { initFilamentDb, getFilaments, addFilament, updateFilament, deleteFilament } from "./filamentDb";
 
 app.name = "Bambi Automatic Control";
 if (process.platform === 'win32') {
@@ -55,6 +56,21 @@ interface Config {
   eulaAccepted: boolean;
 }
 
+interface AmsTray {
+  id: string;
+  tray_info_idx: string;
+  tray_sub_brands: string;
+  tray_color: string;
+  tray_type: string;
+  tray_weight?: string;
+  remain?: number;
+  filamentId?: string;
+}
+
+interface AmsData {
+  trays: AmsTray[];
+}
+
 interface PrinterData {
   currentTemp: number;
   targetTemp: number;
@@ -66,6 +82,7 @@ interface PrinterData {
   printedParts: number;
   botStartTime?: number;
   botTakeoverTime?: number;
+  amsData?: AmsData;
 }
 
 // --- LOGGING ---
@@ -294,6 +311,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   logToFile("[Main] App is Ready.");
+  initFilamentDb();
   createWindow();
   config.devices.forEach(device => {
     connectSerial(device.id);
@@ -437,6 +455,26 @@ function connectMQTT(deviceId: string): void {
         if (p.bed_target_temper !== undefined) pData.targetTemp = Math.round(p.bed_target_temper);
         if (p.mc_percent !== undefined) pData.percent = p.mc_percent;
         if (p.gcode_state) pData.status = p.gcode_state;
+
+        if (p.ams && p.ams.ams && p.ams.ams.length > 0) {
+          let allTrays: any[] = [];
+          p.ams.ams.forEach((amsUnit: any, amsIndex: number) => {
+            if (amsUnit.tray) {
+              const letter = String.fromCharCode(65 + amsIndex); // 0 -> A, 1 -> B, etc.
+              allTrays = allTrays.concat(amsUnit.tray.map((t: any) => ({
+                id: `${letter}${parseInt(t.id) + 1}`, // A1, A2... B1, B2...
+                tray_info_idx: t.tray_info_idx,
+                tray_sub_brands: t.tray_sub_brands,
+                tray_color: t.tray_color,
+                tray_type: t.tray_type,
+                tray_weight: t.tray_weight,
+                remain: t.remain,
+                tag_uid: t.tag_uid || t.tray_uuid || ''
+              })));
+            }
+          });
+          pData.amsData = { trays: allTrays };
+        }
 
         if (pData.status === "RUNNING") {
             printFinishedHandledMap[deviceId] = false;
@@ -761,4 +799,37 @@ ipcMain.on('cancel-capture-cursor', () => {
 
 app.on('will-quit', () => {
   globalShortcut.unregisterAll();
+});
+
+// --- FILAMENT MANAGER IPC ---
+ipcMain.handle('get-filaments', () => getFilaments());
+ipcMain.handle('add-filament', (_event, f) => addFilament(f));
+ipcMain.handle('update-filament', (_event, id, updates) => updateFilament(id, updates));
+ipcMain.handle('delete-filament', (_event, id) => {
+  deleteFilament(id);
+  return true;
+});
+
+ipcMain.handle('import-pdf', async () => {
+  const { dialog } = require('electron');
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'PDF Invoices', extensions: ['pdf'] }]
+  });
+  
+  if (result.canceled || result.filePaths.length === 0) {
+    return null;
+  }
+  
+  try {
+    const fs = require('fs');
+    const { PDFParse } = require('pdf-parse');
+    const dataBuffer = fs.readFileSync(result.filePaths[0]);
+    const parser = new PDFParse({ data: dataBuffer });
+    const parsed = await parser.getText();
+    return parsed.text;
+  } catch (error) {
+    console.error("PDF Parsing Error:", error);
+    return "ERROR: " + error.message;
+  }
 });
