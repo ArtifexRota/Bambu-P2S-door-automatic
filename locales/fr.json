@@ -126,8 +126,8 @@
       "plastic_text": "C'est la distance entre la pointe de la buse et le plateau d'impression. Choisissez une hauteur pour qu'idéalement le boîtier en plastique solide de la tête d'impression pousse la pièce, et non la buse délicate elle-même !",
       "multi_push_info": "Pousser plusieurs objets",
       "multi_push_text": "Vous pouvez ajouter autant de poussées que vous le souhaitez. L'imprimante traitera pièce par pièce, en ajustant la hauteur Z et en poussant à la position X correspondante.",
-      "push_name": "Poussée",
-      "add_push": "+ Ajouter Poussée"
+      "push_name": "Push",
+      "add_push": "+ Push"
     },
     "instruction": {
       "title": "Où va ce code ?",

@@ -126,8 +126,8 @@
       "plastic_text": "这是喷嘴尖端与打印床之间的距离。选择一个高度，理想情况下由打印头坚固的塑料外壳推动部件，而不是脆弱的喷嘴本身！",
       "multi_push_info": "推出多个对象",
       "multi_push_text": "您可以添加任意数量的推出。打印机将逐个处理部件，调整 Z 高度并在相应的 X 位置推出。",
-      "push_name": "推出",
-      "add_push": "+ 添加推出"
+      "push_name": "Push",
+      "add_push": "+ Push"
     },
     "instruction": {
       "title": "代码放在哪里？",

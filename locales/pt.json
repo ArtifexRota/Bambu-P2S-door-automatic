@@ -126,8 +126,8 @@
       "plastic_text": "Escolha uma altura para que a carcaça de plástico sólido do cabeçote empurre a peça, e não o bico delicado!",
       "multi_push_info": "Empurrar vários objetos",
       "multi_push_text": "Você pode adicionar quantos empurrões desejar. A impressora processará peça por peça, ajustando a altura Z e empurrando na posição X correspondente.",
-      "push_name": "Empurrão",
-      "add_push": "+ Adicionar Empurrão"
+      "push_name": "Push",
+      "add_push": "+ Push"
     },
     "instruction": {
       "title": "Onde vai este código?",

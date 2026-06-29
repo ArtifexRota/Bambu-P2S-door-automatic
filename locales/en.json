@@ -127,7 +127,7 @@
       "multi_push_info": "Push multiple objects",
       "multi_push_text": "You can add as many pushes as you like. The printer will process part by part, adjusting the Z height and pushing at the corresponding X position.",
       "push_name": "Push",
-      "add_push": "+ Add Push"
+      "add_push": "+ Push"
     },
     "instruction": {
       "title": "Where does the code go?",

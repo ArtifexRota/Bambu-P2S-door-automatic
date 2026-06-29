@@ -127,7 +127,7 @@
       "multi_push_info": "Mehrere Objekte schieben",
       "multi_push_text": "Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus.",
       "push_name": "Push",
-      "add_push": "+ Push hinzufügen"
+      "add_push": "+ Push"
     },
     "instruction": {
       "title": "Wo muss der Code hin?",

@@ -126,8 +126,8 @@
       "plastic_text": "Esta es la distancia entre la punta de la boquilla y la cama de impresión. ¡Elige una altura para que idealmente la carcasa de plástico sólido del cabezal empuje la pieza, no la delicada boquilla en sí!",
       "multi_push_info": "Empujar múltiples objetos",
       "multi_push_text": "Puedes agregar tantos empujes como desees. La impresora procesará pieza por pieza, ajustando la altura Z y empujando en la posición X correspondiente.",
-      "push_name": "Empuje",
-      "add_push": "+ Agregar Empuje"
+      "push_name": "Push",
+      "add_push": "+ Push"
     },
     "instruction": {
       "title": "¿Dónde va el código?",
