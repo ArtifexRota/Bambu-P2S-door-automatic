@@ -101,7 +101,8 @@
     "mode_target_time": "Durée cible (heures) atteinte",
     "target_count_label": "Nombre de pièces :",
     "target_time_label": "Durée (heures) :",
-    "duplicate_sequence": "Dupliquer la séquence"
+    "duplicate_sequence": "Dupliquer la séquence",
+    "use_custom_start_seq": "Utiliser une séquence de départ spécifique"
   },
   "gcode": {
     "title": "Générateur de G-code de fin",
@@ -122,7 +123,9 @@
       "center_text": "Visez exactement le centre de gravité de votre pièce. Cela évite que l'impression ne tourne ou ne se coince lors de la poussée. (Centre du plateau = 128)",
       "push_z": "Hauteur de poussée Axe Z (mm)",
       "plastic_info": "Utilisez le plastique, pas la buse",
-      "plastic_text": "C'est la distance entre la pointe de la buse et le plateau d'impression. Choisissez une hauteur pour qu'idéalement le boîtier en plastique solide de la tête d'impression pousse la pièce, et non la buse délicate elle-même !"
+      "plastic_text": "C'est la distance entre la pointe de la buse et le plateau d'impression. Choisissez une hauteur pour qu'idéalement le boîtier en plastique solide de la tête d'impression pousse la pièce, et non la buse délicate elle-même !",
+      "multi_push_info": "Pousser plusieurs objets",
+      "multi_push_text": "Vous pouvez ajouter autant de poussées que vous le souhaitez. L'imprimante traitera pièce par pièce, en ajustant la hauteur Z et en poussant à la position X correspondante."
     },
     "instruction": {
       "title": "Où va ce code ?",

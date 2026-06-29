@@ -101,7 +101,8 @@
     "delete_sequence": "Delete Sequence",
     "empty_sequence": "No clicks in this sequence.",
     "test_sequence_btn": "test",
-    "seq_min_error": "At least one sequence must exist!"
+    "seq_min_error": "At least one sequence must exist!",
+    "use_custom_start_seq": "Use specific start sequence"
   },
   "gcode": {
     "title": "End-Gcode Generator",
@@ -122,7 +123,9 @@
       "center_text": "Aim exactly for the center of gravity of your part. This prevents the print from rotating or jamming while pushing. (Bed center = 128)",
       "push_z": "Push Height Z-Axis (mm)",
       "plastic_info": "Use the plastic, not the nozzle",
-      "plastic_text": "This is the distance between the nozzle tip and the print bed. Choose a height so that ideally the solid plastic housing of the print head pushes the part, not the delicate nozzle itself!"
+      "plastic_text": "This is the distance between the nozzle tip and the print bed. Choose a height so that ideally the solid plastic housing of the print head pushes the part, not the delicate nozzle itself!",
+      "multi_push_info": "Push multiple objects",
+      "multi_push_text": "You can add as many pushes as you like. The printer will process part by part, adjusting the Z height and pushing at the corresponding X position."
     },
     "instruction": {
       "title": "Where does the code go?",

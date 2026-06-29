@@ -300,10 +300,18 @@ M106 P3 S0
               </div>
             ))}
             
-            <details style={detailsStyle}>
-              <summary style={summaryStyle}>ℹ️ Mehrere Objekte schieben</summary>
+            <details style={{...detailsStyle, marginBottom: '10px'}}>
+              <summary style={summaryStyle}>ℹ️ {t("gcode.position.center_info")}</summary>
+              <p style={{ margin: '8px 0 0 0' }}>{t("gcode.position.center_text")}</p>
+            </details>
+            <details style={{...detailsStyle, marginBottom: '10px'}}>
+              <summary style={summaryStyle}>ℹ️ {t("gcode.position.plastic_info")}</summary>
+              <p style={{ margin: '8px 0 0 0' }}>{t("gcode.position.plastic_text")}</p>
+            </details>
+            <details style={{...detailsStyle, marginBottom: '20px'}}>
+              <summary style={summaryStyle}>ℹ️ {t("gcode.position.multi_push_info") || "Mehrere Objekte schieben"}</summary>
               <p style={{ margin: '8px 0 0 0' }}>
-                Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus.
+                {t("gcode.position.multi_push_text") || "Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus."}
               </p>
             </details>
             

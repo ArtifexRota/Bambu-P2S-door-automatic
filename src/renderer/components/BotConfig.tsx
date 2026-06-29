@@ -187,7 +187,7 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
           id="useCustomStartSeq"
         />
         <label htmlFor="useCustomStartSeq" style={{ color: '#fff', cursor: 'pointer' }}>
-          Spezifische Start-Sequenz verwenden
+          {t("bot.use_custom_start_seq") || "Spezifische Start-Sequenz verwenden"}
         </label>
         {useCustomStartSeq && (
           <input 

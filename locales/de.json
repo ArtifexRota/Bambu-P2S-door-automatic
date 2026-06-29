@@ -101,7 +101,8 @@
     "delete_sequence": "Sequenz löschen",
     "empty_sequence": "Keine Klicks in dieser Sequenz.",
     "test_sequence_btn": "testen",
-    "seq_min_error": "Es muss mindestens eine Sequenz existieren!"
+    "seq_min_error": "Es muss mindestens eine Sequenz existieren!",
+    "use_custom_start_seq": "Spezifische Start-Sequenz verwenden"
   },
   "gcode": {
     "title": "End-Gcode Generator",
@@ -122,7 +123,9 @@
       "center_text": "Ziele genau auf die gewichtliche Mitte deines Bauteils. Das verhindert, dass sich der Druck beim Schieben dreht oder verkantet. (Mitte des Druckbetts = 128)",
       "push_z": "Schiebe-Höhe Z-Achse (mm)",
       "plastic_info": "Nutze das Plastik, nicht die Nozzle",
-      "plastic_text": "Dies ist der Abstand zwischen Nozzle-Spitze und Druckbett. Wähle die Höhe so, dass idealerweise das massive Plastikgehäuse des Druckkopfs das Teil wegschiebt, nicht die empfindliche Nozzle selbst!"
+      "plastic_text": "Dies ist der Abstand zwischen Nozzle-Spitze und Druckbett. Wähle die Höhe so, dass idealerweise das massive Plastikgehäuse des Druckkopfs das Teil wegschiebt, nicht die empfindliche Nozzle selbst!",
+      "multi_push_info": "Mehrere Objekte schieben",
+      "multi_push_text": "Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus."
     },
     "instruction": {
       "title": "Wo muss der Code hin?",

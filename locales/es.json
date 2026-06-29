@@ -101,7 +101,8 @@
     "mode_target_time": "Duración objetivo (horas) alcanzada",
     "target_count_label": "Número de piezas:",
     "target_time_label": "Duración (horas):",
-    "duplicate_sequence": "Duplicar secuencia"
+    "duplicate_sequence": "Duplicar secuencia",
+    "use_custom_start_seq": "Usar secuencia de inicio específica"
   },
   "gcode": {
     "title": "Generador G-code Final",
@@ -122,7 +123,9 @@
       "center_text": "Apunta exactamente al centro de gravedad de tu pieza. Esto evita que la impresión gire o se atasque al empujar. (Centro de la cama = 128)",
       "push_z": "Altura de empuje Eje Z (mm)",
       "plastic_info": "Usa el plástico, no la boquilla",
-      "plastic_text": "Esta es la distancia entre la punta de la boquilla y la cama de impresión. ¡Elige una altura para que idealmente la carcasa de plástico sólido del cabezal empuje la pieza, no la delicada boquilla en sí!"
+      "plastic_text": "Esta es la distancia entre la punta de la boquilla y la cama de impresión. ¡Elige una altura para que idealmente la carcasa de plástico sólido del cabezal empuje la pieza, no la delicada boquilla en sí!",
+      "multi_push_info": "Empujar múltiples objetos",
+      "multi_push_text": "Puedes agregar tantos empujes como desees. La impresora procesará pieza por pieza, ajustando la altura Z y empujando en la posición X correspondiente."
     },
     "instruction": {
       "title": "¿Dónde va el código?",

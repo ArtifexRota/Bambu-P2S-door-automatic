@@ -101,7 +101,8 @@
     "mode_target_time": "Duração alvo (horas) alcançada",
     "target_count_label": "Número de peças:",
     "target_time_label": "Duração (horas):",
-    "duplicate_sequence": "Duplicar sequência"
+    "duplicate_sequence": "Duplicar sequência",
+    "use_custom_start_seq": "Usar sequência de início específica"
   },
   "gcode": {
     "title": "Gerador de G-code Final",
@@ -122,7 +123,9 @@
       "center_text": "Aponte exatamente para o centro de gravidade da peça. (Centro da mesa = 128)",
       "push_z": "Altura do Empurrão Eixo Z (mm)",
       "plastic_info": "Use o plástico, não o bico",
-      "plastic_text": "Escolha uma altura para que a carcaça de plástico sólido do cabeçote empurre a peça, e não o bico delicado!"
+      "plastic_text": "Escolha uma altura para que a carcaça de plástico sólido do cabeçote empurre a peça, e não o bico delicado!",
+      "multi_push_info": "Empurrar vários objetos",
+      "multi_push_text": "Você pode adicionar quantos empurrões desejar. A impressora processará peça por peça, ajustando a altura Z e empurrando na posição X correspondente."
     },
     "instruction": {
       "title": "Onde vai este código?",

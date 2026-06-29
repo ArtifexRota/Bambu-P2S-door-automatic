@@ -101,7 +101,8 @@
     "mode_target_time": "Durata obiettivo (ore) raggiunta",
     "target_count_label": "Numero di pezzi:",
     "target_time_label": "Durata (ore):",
-    "duplicate_sequence": "Duplica sequenza"
+    "duplicate_sequence": "Duplica sequenza",
+    "use_custom_start_seq": "Usa sequenza di avvio specifica"
   },
   "gcode": {
     "title": "Generatore G-code Finale",
@@ -122,7 +123,9 @@
       "center_text": "Punta esattamente al centro di gravità del pezzo per evitare rotazioni. (Centro del piatto = 128)",
       "push_z": "Altezza Spinta Asse Z (mm)",
       "plastic_info": "Usa la plastica, non l'ugello",
-      "plastic_text": "Scegli un'altezza in modo che sia la scocca in plastica della testina a spingere il pezzo, non l'ugello!"
+      "plastic_text": "Scegli un'altezza in modo che sia la scocca in plastica della testina a spingere il pezzo, non l'ugello!",
+      "multi_push_info": "Spingi oggetti multipli",
+      "multi_push_text": "Puoi aggiungere tutte le spinte che desideri. La stampante elaborerà pezzo per pezzo, regolando l'altezza Z e spingendo nella posizione X corrispondente."
     },
     "instruction": {
       "title": "Dove va inserito il codice?",

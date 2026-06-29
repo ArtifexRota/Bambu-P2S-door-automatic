@@ -101,7 +101,8 @@
     "mode_target_time": "목표 시간(시간) 도달",
     "target_count_label": "부품 수:",
     "target_time_label": "기간(시간):",
-    "duplicate_sequence": "시퀀스 복제"
+    "duplicate_sequence": "시퀀스 복제",
+    "use_custom_start_seq": "특정 시작 시퀀스 사용"
   },
   "gcode": {
     "title": "종료 G-code 생성기",
@@ -122,7 +123,9 @@
       "center_text": "부품의 무게 중심을 정확히 겨냥하십시오. (베드 중심 = 128)",
       "push_z": "배출 높이 Z축 (mm)",
       "plastic_info": "노즐이 아닌 플라스틱 사용",
-      "plastic_text": "섬세한 노즐 자체가 아니라 프린트 헤드의 단단한 플라스틱 하우징이 부품을 밀도록 높이를 선택하십시오!"
+      "plastic_text": "섬세한 노즐 자체가 아니라 프린트 헤드의 단단한 플라스틱 하우징이 부품을 밀도록 높이를 선택하십시오!",
+      "multi_push_info": "여러 객체 밀기",
+      "multi_push_text": "원하는 만큼 푸시를 추가할 수 있습니다. 프린터는 부품별로 처리하며 Z 높이를 조정하고 해당 X 위치에서 밉니다."
     },
     "instruction": {
       "title": "코드는 어디에 입력합니까?",
