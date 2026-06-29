@@ -137,15 +137,15 @@
     "copy": "Copia e salva",
     "copied": "G-Code copiato!",
     "hook": {
-      "toggle": "Abilita piegatore (Piega piastra)",
+      "toggle": "Abilita Bender (Piega piastra)",
       "warning_title": "Importante: Regola impostazioni!",
       "warning_height_title": "Riduci altezza di stampa:",
-      "warning_height_desc": "Riduci l'altezza massima stampabile nelle impostazioni della stampante della lunghezza esatta dei piegatori montati.",
+      "warning_height_desc": "Riduci l'altezza massima stampabile nelle impostazioni della stampante della lunghezza esatta dei Benders montati.",
       "warning_startcode_title": "Controlla G-code iniziale:",
-      "warning_startcode_desc": "Attenzione: Modificare l''Altezza stampabile' spesso NON cambia automaticamente i valori nel G-code iniziale! Controlla i comandi di limite Z e riducili manualmente della lunghezza del piegatore, altrimenti il piatto sbatterà.",
-      "z_down": "Altezza Z piegatore giù (Tensione)",
+      "warning_startcode_desc": "Attenzione: Modificare l''Altezza stampabile' spesso NON cambia automaticamente i valori nel G-code iniziale! Controlla i comandi di limite Z e riducili manualmente della lunghezza del Bender, altrimenti il piatto sbatterà.",
+      "z_down": "Altezza Z Bender giù (Tensione)",
       "z_down_desc": "L'altezza Z a cui il piatto viene abbassato per creare pressione.",
-      "z_up": "Altezza Z piegatore su (Rilascio)",
+      "z_up": "Altezza Z Bender su (Rilascio)",
       "z_up_desc": "L'altezza Z a cui il piatto viene sollevato per rilasciare la tensione."
     },
     "missing_values_error": "Si prega di compilare tutti i campi vuoti prima di copiare il G-code!"

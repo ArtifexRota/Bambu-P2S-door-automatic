@@ -137,15 +137,15 @@
     "copy": "Copier et sauvegarder",
     "copied": "G-Code copié !",
     "hook": {
-      "toggle": "Activer le plieur (Plier la plaque)",
+      "toggle": "Activer Bender (Plier la plaque)",
       "warning_title": "Important : Ajuster les paramètres !",
       "warning_height_title": "Réduire la hauteur d'impression :",
-      "warning_height_desc": "Diminuez la hauteur maximale imprimable dans les paramètres de l'imprimante de la longueur exacte des plieurs montés.",
+      "warning_height_desc": "Diminuez la hauteur maximale imprimable dans les paramètres de l'imprimante de la longueur exacte des Benders montés.",
       "warning_startcode_title": "Vérifier le G-code de démarrage :",
-      "warning_startcode_desc": "Attention : Modifier la 'Hauteur imprimable' ne change souvent PAS automatiquement les valeurs dans le G-code de démarrage ! Vérifiez le G-code pour les commandes de limite Z (ex: 'G28 Z P0 T...') et réduisez-les manuellement de la longueur du plieur.",
-      "z_down": "Hauteur Z plieur en bas (Tension)",
+      "warning_startcode_desc": "Attention : Modifier la 'Hauteur imprimable' ne change souvent PAS automatiquement les valeurs dans le G-code de démarrage ! Vérifiez le G-code pour les commandes de limite Z (ex: 'G28 Z P0 T...') et réduisez-les manuellement de la longueur du Bender.",
+      "z_down": "Hauteur Z Bender en bas (Tension)",
       "z_down_desc": "La hauteur Z à laquelle le lit est abaissé pour créer une pression.",
-      "z_up": "Hauteur Z plieur en haut (Libération)",
+      "z_up": "Hauteur Z Bender en haut (Libération)",
       "z_up_desc": "La hauteur Z à laquelle le lit est relevé pour relâcher la tension."
     },
     "missing_values_error": "Veuillez remplir tous les champs vides avant de copier le G-code !"

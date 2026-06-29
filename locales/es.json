@@ -137,15 +137,15 @@
     "copy": "Copiar y guardar",
     "copied": "¡G-Code copiado!",
     "hook": {
-      "toggle": "Activar doblador (Doblar placa)",
+      "toggle": "Activar Bender (Doblar placa)",
       "warning_title": "¡Importante: Ajustar configuración!",
       "warning_height_title": "Reducir altura de impresión:",
-      "warning_height_desc": "Reduzca la altura máxima de impresión en la configuración de la impresora por la longitud exacta de los dobladores montados.",
+      "warning_height_desc": "Reduzca la altura máxima de impresión en la configuración de la impresora por la longitud exacta de los Benders montados.",
       "warning_startcode_title": "Revisar G-code de inicio:",
-      "warning_startcode_desc": "Advertencia: ¡Cambiar la 'Altura de impresión' a menudo NO cambia automáticamente los valores codificados en el G-code de inicio! Revise el G-code de inicio para comandos de límite Z (como 'G28 Z P0 T...') y redúzcalos manualmente por la longitud del doblador, de lo contrario la cama chocará.",
-      "z_down": "Altura Z doblador abajo (Tensión)",
+      "warning_startcode_desc": "Advertencia: ¡Cambiar la 'Altura de impresión' a menudo NO cambia automáticamente los valores codificados en el G-code de inicio! Revise el G-code de inicio para comandos de límite Z (como 'G28 Z P0 T...') y redúzcalos manualmente por la longitud del Bender, de lo contrario la cama chocará.",
+      "z_down": "Altura Z Bender abajo (Tensión)",
       "z_down_desc": "La altura Z a la que baja la cama para aplicar presión.",
-      "z_up": "Altura Z doblador arriba (Liberación)",
+      "z_up": "Altura Z Bender arriba (Liberación)",
       "z_up_desc": "La altura Z a la que sube la cama para liberar tensión."
     },
     "missing_values_error": "¡Por favor, complete todos los campos vacíos antes de copiar el código G!"

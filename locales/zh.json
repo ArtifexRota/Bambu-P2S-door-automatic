@@ -137,15 +137,15 @@
     "copy": "复制并保存",
     "copied": "G代码已复制！",
     "hook": {
-      "toggle": "启用弯曲器 (弯曲构建板)",
+      "toggle": "启用Bender (弯曲构建板)",
       "warning_title": "重要提示：调整设置！",
       "warning_height_title": "降低打印高度：",
-      "warning_height_desc": "在打印机设置中将最大可打印高度减去已安装弯曲器的确切长度。",
+      "warning_height_desc": "在打印机设置中将最大可打印高度减去已安装Bender的确切长度。",
       "warning_startcode_title": "检查起始 G-code：",
-      "warning_startcode_desc": "警告：更改“可打印高度”通常不会自动更改起始 G-code 中的值！请检查 Z 限制命令并手动减去弯曲器的长度，否则热床会发生碰撞。",
-      "z_down": "Z高度 弯曲器向下 (施加张力)",
+      "warning_startcode_desc": "警告：更改“可打印高度”通常不会自动更改起始 G-code 中的值！请检查 Z 限制命令并手动减去Bender的长度，否则热床会发生碰撞。",
+      "z_down": "Z高度 Bender向下 (施加张力)",
       "z_down_desc": "热床下降以施加压力的 Z 高度。",
-      "z_up": "Z高度 弯曲器向上 (释放张力)",
+      "z_up": "Z高度 Bender向上 (释放张力)",
       "z_up_desc": "热床上升以释放压力的 Z 高度。"
     },
     "missing_values_error": "在复制 G-code 之前，请填写所有空白字段！"

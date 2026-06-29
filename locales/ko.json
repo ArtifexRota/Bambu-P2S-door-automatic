@@ -137,16 +137,16 @@
     "copy": "복사 및 저장",
     "copied": "G-Code가 복사되었습니다!",
     "hook": {
-      "toggle": "벤더 활성화 (플레이트 구부리기)",
+      "toggle": "Bender 활성화 (플레이트 구부리기)",
       "warning_title": "중요: 설정 조정!",
       "warning_height_title": "인쇄 높이 감소:",
-      "warning_height_desc": "프린터 설정에서 장착된 벤더의 정확한 길이만큼 최대 인쇄 가능 높이를 줄이십시오.",
+      "warning_height_desc": "프린터 설정에서 장착된 Bender의 정확한 길이만큼 최대 인쇄 가능 높이를 줄이십시오.",
       "warning_startcode_title": "시작 G-code 확인:",
-      "warning_startcode_desc": "주의: '인쇄 가능 높이'를 변경해도 시작 G-code의 값이 자동으로 변경되지 않습니다! Z 제한 명령을 확인하고 수동으로 벤더 길이만큼 줄이십시오.",
-      "z_down": "Z 높이 벤더 내림 (장력)",
-      "z_down_desc": "압력을 가하기 위해 침대가 내려가는 Z 높이.",
-      "z_up": "Z 높이 벤더 올림 (해제)",
-      "z_up_desc": "장력을 풀기 위해 침대가 올라가는 Z 높이."
+      "warning_startcode_desc": "주의: '인쇄 가능 높이'를 변경해도 시작 G-code의 값이 자동으로 변경되지 않습니다! Z 제한 명령을 확인하고 수동으로 Bender 길이만큼 줄이십시오.",
+      "z_down": "Z 높이 Bender 내림 (장력)",
+      "z_down_desc": "압력을 가하기 위해 베드가 내려가는 Z 높이.",
+      "z_up": "Z 높이 Bender 올림 (해제)",
+      "z_up_desc": "장력을 풀기 위해 베드가 올라가는 Z 높이."
     },
     "missing_values_error": "G-code를 복사하기 전에 모든 빈 필드를 채워주세요!"
   },
