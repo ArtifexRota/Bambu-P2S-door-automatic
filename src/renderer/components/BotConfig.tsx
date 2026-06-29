@@ -24,6 +24,8 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
   const [targetCount, setTargetCount] = useState<number>(20);
   const [targetTimeHours, setTargetTimeHours] = useState<number>(10);
   const [activeSeqIndex, setActiveSeqIndex] = useState(0);
+  const [useCustomStartSeq, setUseCustomStartSeq] = useState(false);
+  const [customStartSeq, setCustomStartSeq] = useState<number>(1);
 
   const [capturingId, setCapturingId] = useState<string | null>(null);
 
@@ -35,6 +37,13 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
         setMode(device.bot.mode || 'stop');
         setTargetCount(device.bot.targetCount || 20);
         setTargetTimeHours(device.bot.targetTimeHours || 10);
+        if (device.bot.customStartSeq !== undefined) {
+          setUseCustomStartSeq(true);
+          setCustomStartSeq(device.bot.customStartSeq);
+        } else {
+          setUseCustomStartSeq(false);
+          setCustomStartSeq(1);
+        }
         setActiveSeqIndex(0);
       }
     }
@@ -167,6 +176,28 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
               style={{ width: '80px', background: '#1e1e24', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '8px' }}
             />
           </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px', background: '#2a2a2e', padding: '10px 15px', borderRadius: '4px', border: '1px solid #444' }}>
+        <input 
+          type="checkbox" 
+          checked={useCustomStartSeq}
+          onChange={e => setUseCustomStartSeq(e.target.checked)}
+          id="useCustomStartSeq"
+        />
+        <label htmlFor="useCustomStartSeq" style={{ color: '#fff', cursor: 'pointer' }}>
+          Spezifische Start-Sequenz verwenden
+        </label>
+        {useCustomStartSeq && (
+          <input 
+            type="number" 
+            value={customStartSeq}
+            onChange={e => setCustomStartSeq(Number(e.target.value))}
+            min="1"
+            max={sequences.length}
+            style={{ width: '60px', background: '#1e1e24', color: 'white', border: '1px solid #555', borderRadius: '4px', padding: '5px', marginLeft: '10px' }}
+          />
         )}
       </div>
 
@@ -317,7 +348,8 @@ const BotConfig: React.FC<BotConfigProps> = ({ initialConfig, activeDeviceId }) 
       <button 
         onClick={() => {
           if (window.electronAPI && window.electronAPI.saveBotSequence) {
-            window.electronAPI.saveBotSequence(activeDeviceId, sequences, mode, targetCount, targetTimeHours);
+            const startSeq = useCustomStartSeq ? customStartSeq : undefined;
+            window.electronAPI.saveBotSequence(activeDeviceId, sequences, mode, targetCount, targetTimeHours, startSeq);
             toast.success(t("bot.success"));
           }
         }} 

@@ -41,6 +41,7 @@ interface DeviceConfig {
     autoMode?: boolean;
     targetCount?: number;
     targetTimeHours?: number;
+    customStartSeq?: number;
   };
 }
 
@@ -649,21 +650,29 @@ ipcMain.on("save-config", (event, newConfig) => {
   }
 });
 
-ipcMain.on('save-bot-sequence', (event, { deviceId, sequences, mode, targetCount, targetTimeHours }) => {
-  const device = config.devices.find(d => d.id === deviceId);
-  if (device) {
-    try {
-      device.bot.sequences = sequences;
-      device.bot.mode = mode;
-      if (targetCount !== undefined) device.bot.targetCount = targetCount;
-      if (targetTimeHours !== undefined) device.bot.targetTimeHours = targetTimeHours;
-      device.bot.currentSequenceIndex = 0; // Reset on save
-      fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-      logToFile(`[Bot ${deviceId}] Erfolgreich in config.json gespeichert: ${sequences.length} Sequenzen`);
-    } catch (error: any) {
-      logToFile(`[Bot ${deviceId}] Fehler beim Speichern der config.json: ${error.message}`);
+ipcMain.on('save-bot-sequence', (event, { deviceId, sequences, mode, targetCount, targetTimeHours, customStartSeq }) => {
+    const device = config.devices.find(d => d.id === deviceId);
+    if (device) {
+      try {
+        device.bot.sequences = sequences;
+        device.bot.mode = mode;
+        if (targetCount !== undefined) device.bot.targetCount = targetCount;
+        if (targetTimeHours !== undefined) device.bot.targetTimeHours = targetTimeHours;
+        
+        if (customStartSeq !== undefined) {
+          device.bot.customStartSeq = customStartSeq;
+          device.bot.currentSequenceIndex = customStartSeq - 1; // 1-indexed in UI, 0-indexed in code
+        } else {
+          device.bot.customStartSeq = undefined;
+          device.bot.currentSequenceIndex = 0;
+        }
+
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+        logToFile(`[Bot ${deviceId}] Erfolgreich in config.json gespeichert: ${sequences.length} Sequenzen`);
+      } catch (error: any) {
+        logToFile(`[Bot ${deviceId}] Fehler beim Speichern der config.json: ${error.message}`);
+      }
     }
-  }
 });
 
 ipcMain.on('quit-app', () => {

@@ -48,8 +48,7 @@ const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) =>
   const warningTemp = doorOpenTemp !== '' ? Number(doorOpenTemp) - 4 : '';
   const [tempWait2, setTempWait2] = useState<number | ''>('');
   const actualPushTemp = tempWait2 !== '' ? Number(tempWait2) - 5 : '';
-  const [pushX, setPushX] = useState<number | ''>('');
-  const [pushZ, setPushZ] = useState<number | ''>('');
+  const [pushCoordinates, setPushCoordinates] = useState<{x: number | '', z: number | ''}[]>([{x: '', z: ''}]);
 
   // New states for the Bender feature
   const [useHooks, setUseHooks] = useState(false);
@@ -62,16 +61,20 @@ const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) =>
       if (device && device.gcodeSettings) {
         setDoorOpenTemp(device.gcodeSettings.doorOpenTemp ?? '');
         setTempWait2(device.gcodeSettings.tempWait2 ?? '');
-        setPushX(device.gcodeSettings.pushX ?? '');
-        setPushZ(device.gcodeSettings.pushZ ?? '');
+        if (device.gcodeSettings.pushCoordinates) {
+          setPushCoordinates(device.gcodeSettings.pushCoordinates);
+        } else if (device.gcodeSettings.pushX !== undefined && device.gcodeSettings.pushZ !== undefined) {
+          setPushCoordinates([{x: device.gcodeSettings.pushX, z: device.gcodeSettings.pushZ}]);
+        } else {
+          setPushCoordinates([{x: '', z: ''}]);
+        }
         setUseHooks(device.gcodeSettings.useHooks ?? false);
         setHookZ(device.gcodeSettings.hookZ ?? '');
         setHookZRelease(device.gcodeSettings.hookZRelease ?? '');
       } else {
         setDoorOpenTemp('');
         setTempWait2('');
-        setPushX('');
-        setPushZ('');
+        setPushCoordinates([{x: '', z: ''}]);
         setUseHooks(false);
         setHookZ('');
         setHookZRelease('');
@@ -80,7 +83,8 @@ const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) =>
   }, [initialConfig, activeDeviceId]);
 
   const saveSettings = () => {
-    if (doorOpenTemp === '' || tempWait2 === '' || pushX === '' || pushZ === '') {
+    const hasEmptyPush = pushCoordinates.some(p => p.x === '' || p.z === '');
+    if (doorOpenTemp === '' || tempWait2 === '' || hasEmptyPush) {
       toast.error(t("gcode.missing_values_error") || "Bitte fülle alle leeren Felder aus!");
       return false;
     }
@@ -94,7 +98,7 @@ const GcodeGen: React.FC<GcodeGenProps> = ({ initialConfig, activeDeviceId }) =>
         return {
           ...d,
           gcodeSettings: {
-            doorOpenTemp, tempWait2, pushX, pushZ, useHooks, hookZ, hookZRelease
+            doorOpenTemp, tempWait2, pushCoordinates, useHooks, hookZ, hookZRelease
           }
         };
       }
@@ -132,7 +136,6 @@ M1006 W
 
 ;===Wait for Part Push Temp===
 G90
-G1 X${pushX} Y250 F6000 ; Head to target X position
 M400
 M190 S${actualPushTemp} ; Wait for push temp
 M190 S${actualPushTemp} ; Double check temp
@@ -155,12 +158,22 @@ G1 Z${hookZRelease} F600 ; Wieder hochfahren zum Entspannen
 
     gcode += `
 ;=========Pushing Print=========
-G1 Z${pushZ} F600 ; Bed height to push level
+`;
+    
+    pushCoordinates.forEach((coord, idx) => {
+      gcode += `;--- Push ${idx + 1} ---
+G1 Z${coord.z} F600 ; Bed height to push level
+G1 X${coord.x} Y250 F6000 ; Head to target X position
 G1 Y5 F3000 ; push out print
-
 G1 Y50 F6000 ; get out
+`;
+    });
+
+    const lastX = pushCoordinates.length > 0 ? pushCoordinates[pushCoordinates.length - 1].x : 100;
+    
+    gcode += `
 G1 Z20 F600 ; Move bed back up to Z20
-G1 X${pushX} Y20 F6000 ; Park toolhead safely out of the way
+G1 X${lastX} Y20 F6000 ; Park toolhead safely out of the way
 ;===Push end===
 M106 P2 S0
 M106 P3 S0
@@ -228,27 +241,71 @@ M106 P3 S0
           <div style={{ background: '#1e1e24', padding: '20px', borderRadius: '8px' }}>
             <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#fff' }}>🎯 {t("gcode.position.title")}</h3>
             
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t("gcode.position.start_x")}</label>
-              <input type="number" value={pushX} onChange={(e) => setPushX(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
-              <details style={detailsStyle}>
-                <summary style={summaryStyle}>ℹ️ {t("gcode.position.center_info")}</summary>
-                <p style={{ margin: '8px 0 0 0' }}>
-                  {t("gcode.position.center_text")}
-                </p>
-              </details>
-            </div>
+            {pushCoordinates.map((coord, index) => (
+              <div key={index} style={{ marginBottom: '20px', background: '#2a2a2e', padding: '15px', borderRadius: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h4 style={{ margin: 0, color: '#2196f3' }}>Push {index + 1}</h4>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    {pushCoordinates.length > 1 && (
+                      <button 
+                        onClick={() => {
+                          const newCoords = [...pushCoordinates];
+                          newCoords.splice(index, 1);
+                          setPushCoordinates(newCoords);
+                        }}
+                        style={{ background: '#d32f2f', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        🗑️
+                      </button>
+                    )}
+                    {index === pushCoordinates.length - 1 && (
+                      <button 
+                        onClick={() => setPushCoordinates([...pushCoordinates, {x: '', z: ''}])}
+                        style={{ background: '#4caf50', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        + Push
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t("gcode.position.push_z")}</label>
-              <input type="number" value={pushZ} onChange={(e) => setPushZ(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
-              <details style={detailsStyle}>
-                <summary style={summaryStyle}>ℹ️ {t("gcode.position.plastic_info")}</summary>
-                <p style={{ margin: '8px 0 0 0' }}>
-                  {t("gcode.position.plastic_text")}
-                </p>
-              </details>
-            </div>
+                <div style={{ display: 'flex', gap: '15px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>{t("gcode.position.start_x")} (X)</label>
+                    <input 
+                      type="number" 
+                      value={coord.x} 
+                      onChange={(e) => {
+                        const newCoords = [...pushCoordinates];
+                        newCoords[index].x = e.target.value === '' ? '' : Number(e.target.value);
+                        setPushCoordinates(newCoords);
+                      }} 
+                      style={inputStyle} 
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>{t("gcode.position.push_z")} (Z)</label>
+                    <input 
+                      type="number" 
+                      value={coord.z} 
+                      onChange={(e) => {
+                        const newCoords = [...pushCoordinates];
+                        newCoords[index].z = e.target.value === '' ? '' : Number(e.target.value);
+                        setPushCoordinates(newCoords);
+                      }} 
+                      style={inputStyle} 
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            <details style={detailsStyle}>
+              <summary style={summaryStyle}>ℹ️ Mehrere Objekte schieben</summary>
+              <p style={{ margin: '8px 0 0 0' }}>
+                Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus.
+              </p>
+            </details>
             
             {/* NEW BENDER SECTION */}
             <div style={{ background: '#2a2a2e', padding: '15px', borderRadius: '6px', borderLeft: useHooks ? '4px solid #4caf50' : '4px solid transparent' }}>

@@ -2,7 +2,7 @@ export interface IElectronAPI {
   onInitConfigs: (callback: (data: any) => void) => void;
   requestConfig: () => void;
   saveConfig: (config: any) => void;
-  saveBotSequence: (deviceId: string, sequences: any[], mode: string, targetCount?: number, targetTimeHours?: number) => void;
+  saveBotSequence: (deviceId: string, sequences: any[], mode: string, targetCount?: number, targetTimeHours?: number, customStartSeq?: number) => void;
   startBot: (deviceId: string) => void;
   testBotSequence: (sequence: any[]) => void;
   sendSerial: (deviceId: string, cmd: string) => void;
