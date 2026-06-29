@@ -622,6 +622,7 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
                     const nameStr = (tray.tray_sub_brands || tray.tray_type || "").toLowerCase();
                     const isTranslucent = nameStr.includes("translucent") || nameStr.includes("transparent") || nameStr.includes("clear");
                     const isSparkle = nameStr.includes("sparkle") || nameStr.includes("galaxy");
+                    const isGlow = nameStr.includes("glow") || nameStr.includes("luminous");
                     
                     if (isEmpty) {
                       return (
@@ -640,8 +641,9 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
                         
                         <div className="fm-card-top">
                           <div 
-                            className={`fm-color-circle ${isSparkle ? 'fm-sparkle' : ''}`}
+                            className={`fm-color-circle ${isSparkle ? 'fm-sparkle' : ''} ${isGlow ? 'fm-glow' : ''}`}
                             style={{ 
+                              color: actualColor,
                               backgroundColor: actualColor,
                               opacity: isTranslucent ? 0.6 : 1,
                               border: isTranslucent ? '2px solid rgba(255,255,255,0.4)' : '3px solid #111'
@@ -757,12 +759,14 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
               const searchStr = (f.material + " " + f.colorName).toLowerCase();
               const isTranslucent = searchStr.includes("translucent") || searchStr.includes("transparent") || searchStr.includes("clear");
               const isSparkle = searchStr.includes("sparkle") || searchStr.includes("galaxy");
+              const isGlow = searchStr.includes("glow") || searchStr.includes("luminous");
 
               return (
                 <div 
                   key={f.id} 
-                  className={`fm-card ${isSparkle ? 'fm-sparkle' : ''}`}
+                  className={`fm-card ${isSparkle ? 'fm-sparkle' : ''} ${isGlow ? 'fm-glow' : ''}`}
                   style={{ 
+                    color: f.colorHex,
                     backgroundColor: hexToRgba(f.colorHex, 0.25),
                     borderColor: hexToRgba(f.colorHex, 0.6)
                   }}
@@ -777,8 +781,9 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
 
                   <div className="fm-card-top">
                     <div 
-                      className={`fm-color-circle ${isSparkle ? 'fm-sparkle' : ''}`}
+                      className={`fm-color-circle ${isSparkle ? 'fm-sparkle' : ''} ${isGlow ? 'fm-glow' : ''}`}
                       style={{ 
+                        color: f.colorHex,
                         backgroundColor: f.colorHex,
                         opacity: isTranslucent ? 0.6 : 1,
                         border: isTranslucent ? '2px solid rgba(255,255,255,0.4)' : '3px solid #111'

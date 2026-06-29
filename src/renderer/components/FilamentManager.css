@@ -142,6 +142,25 @@
   position: relative;
 }
 
+.fm-color-circle.fm-glow {
+  animation: glow-pulse 2s infinite alternate;
+  box-shadow: 0 0 10px 2px currentColor, inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.fm-card.fm-glow {
+  animation: glow-pulse-card 2s infinite alternate;
+}
+
+@keyframes glow-pulse {
+  from { box-shadow: 0 0 5px 1px currentColor, inset 0 0 10px rgba(0,0,0,0.5); }
+  to { box-shadow: 0 0 15px 5px currentColor, inset 0 0 10px rgba(0,0,0,0.5); }
+}
+
+@keyframes glow-pulse-card {
+  from { box-shadow: 0 0 5px 1px currentColor; }
+  to { box-shadow: 0 0 15px 3px currentColor; }
+}
+
 .fm-color-circle.fm-sparkle::after,
 .fm-card.fm-sparkle::after {
   content: '';
