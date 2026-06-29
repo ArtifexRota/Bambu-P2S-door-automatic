@@ -125,7 +125,9 @@
       "plastic_info": "Use the plastic, not the nozzle",
       "plastic_text": "This is the distance between the nozzle tip and the print bed. Choose a height so that ideally the solid plastic housing of the print head pushes the part, not the delicate nozzle itself!",
       "multi_push_info": "Push multiple objects",
-      "multi_push_text": "You can add as many pushes as you like. The printer will process part by part, adjusting the Z height and pushing at the corresponding X position."
+      "multi_push_text": "You can add as many pushes as you like. The printer will process part by part, adjusting the Z height and pushing at the corresponding X position.",
+      "push_name": "Push",
+      "add_push": "+ Add Push"
     },
     "instruction": {
       "title": "Where does the code go?",

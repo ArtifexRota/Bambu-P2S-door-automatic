@@ -125,7 +125,9 @@
       "plastic_info": "Nutze das Plastik, nicht die Nozzle",
       "plastic_text": "Dies ist der Abstand zwischen Nozzle-Spitze und Druckbett. Wähle die Höhe so, dass idealerweise das massive Plastikgehäuse des Druckkopfs das Teil wegschiebt, nicht die empfindliche Nozzle selbst!",
       "multi_push_info": "Mehrere Objekte schieben",
-      "multi_push_text": "Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus."
+      "multi_push_text": "Du kannst beliebig viele Pushes anlegen. Der Drucker fährt dann Teil für Teil ab, passt jeweils die Z-Höhe an und schiebt bei der entsprechenden X-Position aus.",
+      "push_name": "Push",
+      "add_push": "+ Push hinzufügen"
     },
     "instruction": {
       "title": "Wo muss der Code hin?",

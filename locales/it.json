@@ -125,7 +125,9 @@
       "plastic_info": "Usa la plastica, non l'ugello",
       "plastic_text": "Scegli un'altezza in modo che sia la scocca in plastica della testina a spingere il pezzo, non l'ugello!",
       "multi_push_info": "Spingi oggetti multipli",
-      "multi_push_text": "Puoi aggiungere tutte le spinte che desideri. La stampante elaborerà pezzo per pezzo, regolando l'altezza Z e spingendo nella posizione X corrispondente."
+      "multi_push_text": "Puoi aggiungere tutte le spinte che desideri. La stampante elaborerà pezzo per pezzo, regolando l'altezza Z e spingendo nella posizione X corrispondente.",
+      "push_name": "Spinta",
+      "add_push": "+ Aggiungi Spinta"
     },
     "instruction": {
       "title": "Dove va inserito il codice?",

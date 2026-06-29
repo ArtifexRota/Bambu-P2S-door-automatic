@@ -244,7 +244,7 @@ M106 P3 S0
             {pushCoordinates.map((coord, index) => (
               <div key={index} style={{ marginBottom: '20px', background: '#2a2a2e', padding: '15px', borderRadius: '6px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <h4 style={{ margin: 0, color: '#2196f3' }}>Push {index + 1}</h4>
+                  <h4 style={{ margin: 0, color: '#2196f3' }}>{t("gcode.position.push_name") || "Push"} {index + 1}</h4>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     {pushCoordinates.length > 1 && (
                       <button 
@@ -263,7 +263,7 @@ M106 P3 S0
                         onClick={() => setPushCoordinates([...pushCoordinates, {x: '', z: ''}])}
                         style={{ background: '#4caf50', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
                       >
-                        + Push
+                        {t("gcode.position.add_push") || "+ Push hinzufügen"}
                       </button>
                     )}
                   </div>
