@@ -143,7 +143,7 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
       colorName: tray.tray_sub_brands || "Unknown Color",
       colorHex: getBambuColor(tray.tray_color) || '#888888',
       startWeight: startW,
-      remainingWeight: tray.remain ? (tray.remain / 100) * startW : startW,
+      remainingWeight: (tray.remain !== undefined && tray.remain >= 0) ? (tray.remain / 100) * startW : startW,
       price: 0,
       serialNumber: tray.tag_uid || "",
       purchaseDate: new Date().toISOString()
@@ -197,7 +197,7 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
       amsTrayId: tray.id,
       colorHex: hex === 'transparent' ? '#888888' : hex,
       startWeight: startW,
-      remainingWeight: tray.remain ? (tray.remain / 100) * startW : undefined
+      remainingWeight: (tray.remain !== undefined && tray.remain >= 0) ? (tray.remain / 100) * startW : undefined
     });
     loadFilaments();
   };
@@ -659,8 +659,11 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
                         if (parsedW > 10) startW = parsedW;
                         else if (parsedW > 0) startW = parsedW * 1000;
                       }
-                      displayWeight = `~${Math.round((tray.remain / 100) * startW)}g`;
+                      displayWeight = `~${Math.round(((tray.remain < 0 ? 100 : tray.remain) / 100) * startW)}g`;
                     }
+                    
+                    const displayPercent = tray.remain < 0 ? "?" : `${tray.remain}%`;
+                    const barPercent = tray.remain < 0 ? 100 : tray.remain;
                     
                     if (isEmpty) {
                       return (
@@ -707,13 +710,13 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
                           {tray.remain !== undefined && (
                             <>
                               <div className="fm-progress-text">
-                                <span>{tray.remain}% {displayWeight && `(${displayWeight})`}</span>
+                                <span>{displayPercent} {displayWeight && `(${displayWeight})`}</span>
                                 <span>{startW}g</span>
                               </div>
                               <div className="fm-progress-bar">
                                 <div 
                                   className="fm-progress-fill" 
-                                  style={{ width: `${tray.remain}%`, backgroundColor: '#00e676' }}
+                                  style={{ width: `${barPercent}%`, backgroundColor: '#00e676' }}
                                 ></div>
                               </div>
                             </>

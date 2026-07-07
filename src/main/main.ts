@@ -490,9 +490,11 @@ function connectMQTT(deviceId: string): void {
                   if (parsedW > 10) startW = parsedW;
                   else if (parsedW > 0) startW = parsedW * 1000;
                 }
-                const calcWeight = (tray.remain / 100) * startW;
-                if (Math.abs(linkedFilament.remainingWeight - calcWeight) > 1) {
-                  updateFilament(linkedFilament.id, { remainingWeight: calcWeight });
+                if (tray.remain >= 0) {
+                  const calcWeight = (tray.remain / 100) * startW;
+                  if (Math.abs(linkedFilament.remainingWeight - calcWeight) > 1) {
+                    updateFilament(linkedFilament.id, { remainingWeight: calcWeight });
+                  }
                 }
               }
             }
