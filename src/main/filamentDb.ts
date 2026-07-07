@@ -13,6 +13,7 @@ export interface Filament {
   price?: number;
   purchaseDate?: string;
   serialNumber?: string;
+  amsTrayId?: string;
 }
 
 let dbPath = '';
@@ -23,6 +24,19 @@ export function initFilamentDb() {
 
   if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, JSON.stringify([]), 'utf-8');
+  } else {
+    // Clear amsTrayId for generic spools on boot
+    const filaments = getFilaments();
+    let changed = false;
+    filaments.forEach(f => {
+      if ((!f.serialNumber || f.serialNumber === '0000000000000000') && f.amsTrayId) {
+        delete f.amsTrayId;
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveFilaments(filaments);
+    }
   }
 }
 

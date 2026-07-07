@@ -25,6 +25,7 @@ interface Filament {
   price?: number;
   purchaseDate?: string;
   serialNumber?: string;
+  amsTrayId?: string;
 }
 
 interface Props {
@@ -86,6 +87,10 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
 
   useEffect(() => {
     loadFilaments();
+    const interval = setInterval(() => {
+      loadFilaments();
+    }, 2000); // Aktualisiert das Lager alle 2 Sekunden automatisch
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -125,13 +130,20 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
     setDuplicateWarning(null);
     if (!window.electronAPI?.addFilament) return;
 
+    let startW = 1000;
+    if (tray.tray_weight && !isNaN(parseInt(tray.tray_weight, 10))) {
+      const parsedW = parseInt(tray.tray_weight, 10);
+      if (parsedW > 10) startW = parsedW;
+      else if (parsedW > 0) startW = parsedW * 1000; // Just in case it's in kg
+    }
+
     const newFilament = {
       brand: tray.tray_sub_brands ? "Bambu Lab" : "Generic",
       material: tray.tray_type || "Unknown",
       colorName: tray.tray_sub_brands || "Unknown Color",
       colorHex: getBambuColor(tray.tray_color) || '#888888',
-      startWeight: 1000,
-      remainingWeight: tray.remain ? (tray.remain / 100) * 1000 : 1000,
+      startWeight: startW,
+      remainingWeight: tray.remain ? (tray.remain / 100) * startW : startW,
       price: 0,
       serialNumber: tray.tag_uid || "",
       purchaseDate: new Date().toISOString()
@@ -171,10 +183,21 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
     if (!window.electronAPI?.updateFilament) return;
     const hex = getBambuColor(tray.tray_color) || '#888888';
     
+    const targetFilament = filaments.find(f => f.id === filamentId);
+    let startW = targetFilament ? targetFilament.startWeight : 1000;
+    
+    if (tray.tray_weight && !isNaN(parseInt(tray.tray_weight, 10))) {
+      const parsedW = parseInt(tray.tray_weight, 10);
+      if (parsedW > 10) startW = parsedW;
+      else if (parsedW > 0) startW = parsedW * 1000;
+    }
+    
     await window.electronAPI.updateFilament(filamentId, {
       serialNumber: tray.tag_uid || "",
+      amsTrayId: tray.id,
       colorHex: hex === 'transparent' ? '#888888' : hex,
-      remainingWeight: tray.remain ? (tray.remain / 100) * 1000 : undefined
+      startWeight: startW,
+      remainingWeight: tray.remain ? (tray.remain / 100) * startW : undefined
     });
     loadFilaments();
   };
@@ -624,6 +647,21 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
                     const isSparkle = nameStr.includes("sparkle") || nameStr.includes("galaxy");
                     const isGlow = nameStr.includes("glow") || nameStr.includes("luminous");
                     
+                    const linkedFilament = filaments.find(f => f.amsTrayId === tray.id);
+                    let displayWeight = "";
+                    let startW = 1000;
+                    if (linkedFilament) {
+                      displayWeight = `${Math.round(linkedFilament.remainingWeight)}g`;
+                      startW = linkedFilament.startWeight;
+                    } else if (tray.remain !== undefined) {
+                      if (tray.tray_weight && !isNaN(parseInt(tray.tray_weight, 10))) {
+                        const parsedW = parseInt(tray.tray_weight, 10);
+                        if (parsedW > 10) startW = parsedW;
+                        else if (parsedW > 0) startW = parsedW * 1000;
+                      }
+                      displayWeight = `~${Math.round((tray.remain / 100) * startW)}g`;
+                    }
+                    
                     if (isEmpty) {
                       return (
                         <div key={tray.id} className="fm-card" style={{ opacity: 0.5 }}>
@@ -667,12 +705,18 @@ export const FilamentManager: React.FC<Props> = ({ activePrinterId, printerData 
 
                         <div className="fm-progress-container">
                           {tray.remain !== undefined && (
-                            <div className="fm-progress-bar">
-                              <div 
-                                className="fm-progress-fill" 
-                                style={{ width: `${tray.remain}%`, backgroundColor: '#00e676' }}
-                              ></div>
-                            </div>
+                            <>
+                              <div className="fm-progress-text">
+                                <span>{tray.remain}% {displayWeight && `(${displayWeight})`}</span>
+                                <span>{startW}g</span>
+                              </div>
+                              <div className="fm-progress-bar">
+                                <div 
+                                  className="fm-progress-fill" 
+                                  style={{ width: `${tray.remain}%`, backgroundColor: '#00e676' }}
+                                ></div>
+                              </div>
+                            </>
                           )}
                         </div>
 

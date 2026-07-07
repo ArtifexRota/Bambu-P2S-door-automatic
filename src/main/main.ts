@@ -474,6 +474,29 @@ function connectMQTT(deviceId: string): void {
             }
           });
           pData.amsData = { trays: allTrays };
+
+          // Auto-Sync Filament Inventory
+          const localFilaments = getFilaments();
+          
+          allTrays.forEach(tray => {
+            const linkedFilament = localFilaments.find(f => f.amsTrayId === tray.id);
+            if (linkedFilament) {
+              if (!tray.tray_type) {
+                updateFilament(linkedFilament.id, { amsTrayId: undefined });
+              } else if (tray.remain !== undefined) {
+                let startW = linkedFilament.startWeight;
+                if (tray.tray_weight && !isNaN(parseInt(tray.tray_weight, 10))) {
+                  const parsedW = parseInt(tray.tray_weight, 10);
+                  if (parsedW > 10) startW = parsedW;
+                  else if (parsedW > 0) startW = parsedW * 1000;
+                }
+                const calcWeight = (tray.remain / 100) * startW;
+                if (Math.abs(linkedFilament.remainingWeight - calcWeight) > 1) {
+                  updateFilament(linkedFilament.id, { remainingWeight: calcWeight });
+                }
+              }
+            }
+          });
         }
 
         if (pData.status === "RUNNING") {
